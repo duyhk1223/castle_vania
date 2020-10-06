@@ -23,6 +23,9 @@
     <Filter Include="Framework\Scene">
       <UniqueIdentifier>{380e1e80-d599-4b61-8c1b-091de808652d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Framework\Camera">
+      <UniqueIdentifier>{5cda631b-f4f1-4cf0-b50f-1dc90f20794b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -34,9 +37,6 @@
     <ClCompile Include="define.cpp">
       <Filter>Framework\Define</Filter>
     </ClCompile>
-    <ClCompile Include="Texture.cpp">
-      <Filter>Framework\Animation</Filter>
-    </ClCompile>
     <ClCompile Include="Scene.cpp">
       <Filter>Framework\Scene</Filter>
     </ClCompile>
@@ -46,6 +46,21 @@
     <ClCompile Include="Game.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>Object</Filter>
+    </ClCompile>
+    <ClCompile Include="GSprite.cpp">
+      <Filter>Framework\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Framework\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureManager.cpp">
+      <Filter>Framework\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="GTexture.cpp">
+      <Filter>Framework\Animation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="debug.h">
@@ -53,9 +68,6 @@
     </ClInclude>
     <ClInclude Include="define.h">
       <Filter>Framework\Define</Filter>
-    </ClInclude>
-    <ClInclude Include="Texture.h">
-      <Filter>Framework\Animation</Filter>
     </ClInclude>
     <ClInclude Include="Scene.h">
       <Filter>Framework\Scene</Filter>
@@ -65,6 +77,21 @@
     </ClInclude>
     <ClInclude Include="Game.h">
       <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>Object</Filter>
+    </ClInclude>
+    <ClInclude Include="GSprite.h">
+      <Filter>Framework\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Framework\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureManager.h">
+      <Filter>Framework\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="GTexture.h">
+      <Filter>Framework\Animation</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
