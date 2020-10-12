@@ -7,7 +7,7 @@
 class GTexture
 {
 private:
-	int frameWidth, frameHeight, textureColumn, textureRow;
+	int frameWidth, frameHeight, textureColumns, textureRows;
 
 public:
 	int textureTotalFrames;

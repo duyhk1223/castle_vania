@@ -38,11 +38,11 @@ class GameObject
 
 protected:
 	DWORD LastTimeAttacked; // thời điểm bị tấn công cuối cùng
-	int Health;
-	int id;
+	int objectHealth;
+	int objectId;
 
 	int direction;	// hướng -1 : trái, 1: phải
-	eType type; // Loại Object
+	objectType oType; // Loại Object
 
 	float x;
 	float y;
@@ -55,8 +55,8 @@ protected:
 
 	DWORD dt;
 
-	GTexture* texture;
-	GSprite* sprite;
+	GTexture* objectTexture;
+	GSprite* objectSprite;
 
 
 
@@ -83,17 +83,17 @@ public:
 	int GetObjectId();
 
 	// Position, kích thước của object và get loại object
-	float GetX();
-	float GetY();
-	float GetVx();
-	float GetVy();
-	void SetX(float X);
-	void SetY(float Y);
-	void SetVx(float VX);
-	void SetVy(float VY);
+	float GetObjectCoordinateX();
+	float GetObjectCoordinateY();
+	float GetObjectVx();
+	float GetObjectVy();
+	void SetObjectCoordinateX(float X);
+	void SetObjectCoordinateY(float Y);
+	void SetObjectVx(float VX);
+	void SetObjectVy(float VY);
 	int GetObjectHeight();
 	int GetObjectWidth();
-	eType GetObjectType();
+	objectType GetObjectType();
 
 	void RenderBoundingBox(Camera* camera);
 	LPCOLLISIONEVENT SweptAABBEx(GameObject* coO);

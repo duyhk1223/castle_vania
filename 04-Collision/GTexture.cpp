@@ -12,18 +12,18 @@ int GTexture::GetFrameWidth()
 
 int GTexture::GetTextureColumn()
 {
-	textureColumn;
+	return textureColumns;
 }
 
 int GTexture::GetTextureRow()
 {
-	return textureRow;
+	return textureRows;
 }
 
 GTexture::GTexture(char* filePath, int column, int row, int totalframes, int R, int G, int B)
 {
-	textureColumn = column;
-	textureRow = row;
+	textureColumns = column;
+	textureRows = row;
 	textureTotalFrames = totalframes;
 
 	D3DXIMAGE_INFO info;
@@ -34,8 +34,8 @@ GTexture::GTexture(char* filePath, int column, int row, int totalframes, int R, 
 		return;
 	}
 
-	this->frameWidth = info.Width / textureColumn;
-	this->frameHeight = info.Height / textureRow;
+	this->frameWidth = info.Width / textureColumns;
+	this->frameHeight = info.Height / textureRows;
 
 	LPDIRECT3DDEVICE9 d3ddv = Game::GetInstance()->GetDirect3DDevice();
 

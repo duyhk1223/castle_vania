@@ -30,6 +30,8 @@ extern D3DCOLOR D3DBACKGROUND_COLOR;
 extern int isDebug_RenderBBox;
 #define IS_DEBUG_RENDER_BBOX isDebug_RenderBBox
 
+extern int isDebug_Untouchable;
+
 
 enum objectType
 {
