@@ -31,6 +31,7 @@ void TextureManager::LoadResource()
 
 	// ========== Ground obj ======================
 	AddTexture(TAG::TRANSPARENT_BRICK, new Texture("Resources/ground/brick_transparent.png"));
+	AddTexture(TAG::TEX_BRICK_MAP_2, new Texture("Resources/ground/2-2.png"));
 	
 
 	// ========== MAP =============================

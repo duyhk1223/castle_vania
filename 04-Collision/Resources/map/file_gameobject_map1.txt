@@ -1,12 +1,6 @@
 1
-
-6 21 -1 0 370 1536 32 4
-
+1 21 -1 0 370 1536 32 4
 
 
 
-// 21 là Brick
-// id 7: object hidden -> vao cua
-// id 8: object hidden -> money 
 
-# Phan nao khong can thiet thi dien so 0

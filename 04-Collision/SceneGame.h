@@ -20,6 +20,7 @@ private:
 
 	TAG mapCurrent;
 	vector<GameObject*> listObj;
+
 public:
 	SceneGame();
 	~SceneGame();

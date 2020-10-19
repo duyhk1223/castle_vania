@@ -42,7 +42,7 @@ enum TAG // id texture, object (nên tách ra là 1 cái texture 1 cái obje
 	MAP2 = 2000,
 
 	// Brick
-	BRICK = 20, // id object
+	BRICK = 21, // id object
 		
 	TRANSPARENT_BRICK = 25,
 	TEX_BRICK_MAP_2 = 26,

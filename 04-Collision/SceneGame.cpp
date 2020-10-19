@@ -11,10 +11,25 @@ SceneGame::~SceneGame()
 
 void SceneGame::KeyState(BYTE* state)
 {
+	//=========================================
+	if (Game::GetInstance()->IsKeyDown(DIK_RIGHT))
+		camera->SetPosition(camera->GetXCam() + 2, camera->GetYCam());
+	if (Game::GetInstance()->IsKeyDown(DIK_LEFT))
+		camera->SetPosition(camera->GetXCam() - 2, camera->GetYCam());
 }
 
 void SceneGame::OnKeyDown(int KeyCode)
 {
+	if (KeyCode == DIK_R) // render bbox debug
+	{
+		if (isDebug_RenderBBox == 0)
+			isDebug_RenderBBox = 1;
+		else
+			isDebug_RenderBBox = 0;
+	}
+
+	
+	
 }
 
 void SceneGame::OnKeyUp(int KeyCode)
@@ -39,15 +54,20 @@ void SceneGame::InitGame()
 
 void SceneGame::ResetResource()
 {
-	
+	gridGame->ReloadGrid();
 }
 
 void SceneGame::Update(DWORD dt)
 {
 	gridGame->GetListObject(listObj, camera);
 
-
 	camera->Update(dt);
+	
+	for (UINT i = 0; i < listObj.size(); i++)
+		listObj[i]->Update(dt, &listObj);
+	
+
+	
 }
 
 void SceneGame::Render()
@@ -66,6 +86,7 @@ void SceneGame::LoadMap(TAG x)
 	{
 	case TAG::MAP1:
 		gridGame->SetFilePath("Resources/map/file_gameobject_map1.txt");
+
 		tileMap->LoadMap(TAG::MAP1);
 
 		camera->SetAllowFollowSimon(true);
