@@ -23,6 +23,18 @@
     <Filter Include="Framework\Scene">
       <UniqueIdentifier>{380e1e80-d599-4b61-8c1b-091de808652d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Framework\Camera">
+      <UniqueIdentifier>{81b52f37-ca24-4bc5-9146-0d6a7e054452}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Ground">
+      <UniqueIdentifier>{f6bbe078-1b4a-4efb-b12f-ab07fd11d9f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework\Map">
+      <UniqueIdentifier>{18dca5d2-e739-4938-9140-7d5f8d4b4c1e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework\Grid">
+      <UniqueIdentifier>{a4d12a7f-04da-481a-9b0b-5e1d00382b81}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -46,6 +58,30 @@
     <ClCompile Include="Game.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
+    <ClCompile Include="Sprite.cpp">
+      <Filter>Framework\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureManager.cpp">
+      <Filter>Framework\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Framework\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Map.cpp">
+      <Filter>Framework\Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Brick.cpp">
+      <Filter>Object\Ground</Filter>
+    </ClCompile>
+    <ClCompile Include="Grid.cpp">
+      <Filter>Framework\Grid</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneGame.cpp">
+      <Filter>Framework\Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="debug.h">
@@ -65,6 +101,30 @@
     </ClInclude>
     <ClInclude Include="Game.h">
       <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite.h">
+      <Filter>Framework\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureManager.h">
+      <Filter>Framework\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Framework\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Map.h">
+      <Filter>Framework\Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Brick.h">
+      <Filter>Object\Ground</Filter>
+    </ClInclude>
+    <ClInclude Include="Grid.h">
+      <Filter>Framework\Grid</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneGame.h">
+      <Filter>Framework\Scene</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

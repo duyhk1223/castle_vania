@@ -31,24 +31,29 @@ extern int isDebug_RenderBBox;
 #define IS_DEBUG_RENDER_BBOX isDebug_RenderBBox
 
 
-enum TAG
+enum TAG // id texture, object (nên tách ra là 1 cái texture 1 cái object ?)
 {
 	SIMON = 01,
 	SIMON_TRANS = 02,
 	SIMON_DEADTH = 03,
 	BBOX = 04,
 
+	MAP1 = 1000,
+	MAP2 = 2000,
+
 	// Brick
-	TEX_BRICK_TRANSPARENT = 25,
-	/*TEX_BRICK_MAP_2 = 26,
+	BRICK = 20, // id object
+		
+	TRANSPARENT_BRICK = 25,
+	TEX_BRICK_MAP_2 = 26,
 	TEX_BRICK_3_32 = 27,
-	TEX_BRICK_4_32 = 28,*/
+	TEX_BRICK_4_32 = 28,
 
 	// Object
 	TORCH = 41,
 	OBJECT_HIDDEN = 42,
 	CANDLE = 43,
-	
+
 
 	// Weapon
 	MORNINGSTAR = 61,
@@ -58,7 +63,7 @@ enum TAG
 	LARGEHEART = 81,
 	UPGRADEMORNINGSTAR = 82,
 	ITEMDAGGER = 83,
-	
+
 
 };
 
