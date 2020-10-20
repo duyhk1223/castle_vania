@@ -15,12 +15,15 @@ class FirstScene : public Scene
 private:
 	Map* firstSceneTileMap;
 	Camera* firstSceneCamera; 
+	Grid* mapGrid;
 
 	vector<GameObject*> mapObjectsList;
 	vector<GameObject*> enemyList;
 
 	/* Xử lí gameover*/
 	bool isGameOver;
+
+	int currentState; // Màn hiện tại
 
 	objectType currentMap; // Biến lưu trữ giá trị biểu thị map hiện tại
 

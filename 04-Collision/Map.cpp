@@ -35,7 +35,9 @@ void Map::ReadMapFromTXTFile(char* fileName)
 	{
 		for (int j = 0; j < MapColumns; j++)
 		{
+			
 			mapInfo >> TileMapMatrix[i][j];
+
 		}
 	}
 
@@ -44,7 +46,7 @@ void Map::ReadMapFromTXTFile(char* fileName)
 
 void Map::DrawMap(Camera* camera)
 {
-	// Xét xem camera đang nằm ở hàng nào, cột nào dể9 vẽ các tile set tương ứng trong hàng và cột đó
+	// Xét xem camera đang nằm ở hàng nào, cột nào để vẽ các tile set tương ứng trong hàng và cột đó
 	int row = (int)(camera->GetCamCoordinateY()) / mapTexture->GetFrameHeight();
 	int column = (int)(camera->GetCamCoordinateX()) / mapTexture->GetFrameHeight();
 

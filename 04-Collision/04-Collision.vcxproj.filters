@@ -41,6 +41,9 @@
     <Filter Include="Framework\Grid">
       <UniqueIdentifier>{1319745b-00c6-4c43-8945-dbfde09bf875}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Object\Ground">
+      <UniqueIdentifier>{115f64c0-79d4-43cc-8282-6876ead46072}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -88,6 +91,9 @@
     <ClCompile Include="Grid.cpp">
       <Filter>Framework\Grid</Filter>
     </ClCompile>
+    <ClCompile Include="Brick.cpp">
+      <Filter>Object\Ground</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="debug.h">
@@ -131,6 +137,9 @@
     </ClInclude>
     <ClInclude Include="Grid.h">
       <Filter>Framework\Grid</Filter>
+    </ClInclude>
+    <ClInclude Include="Brick.h">
+      <Filter>Object\Ground</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

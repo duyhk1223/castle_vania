@@ -2,24 +2,21 @@
 
 FirstScene::FirstScene()
 {
-	LoadGameResources();
+	LoadResources();
 }
 
 FirstScene::~FirstScene()
 {
 	SAFE_DELETE(firstSceneTileMap);
+	SAFE_DELETE(mapGrid);
 }
 
 void FirstScene::KeyState(BYTE* state)
 {
 	if (Game::GetInstance()->IsKeyDown(DIK_RIGHT))
-	{
-
-	}
-	else
-	{
-
-	}
+		firstSceneCamera->SetCameraPosition(firstSceneCamera->GetCamCoordinateX() + 2, firstSceneCamera->GetCamCoordinateY());
+	if (Game::GetInstance()->IsKeyDown(DIK_LEFT))
+		firstSceneCamera->SetCameraPosition(firstSceneCamera->GetCamCoordinateX() - 2, firstSceneCamera->GetCamCoordinateY());
 }
 
 void FirstScene::OnKeyDown(int KeyCode)
@@ -45,6 +42,7 @@ void FirstScene::LoadResources()
 {
 	TextureManager* _textureManager = TextureManager::GetInstance(); // Load toàn bộ các hình ảnh lên
 	firstSceneTileMap = new Map();
+	mapGrid = new Grid();
 
 	firstSceneCamera = new Camera(SCREEN_WIDTH, SCREEN_HEIGHT);
 
@@ -58,20 +56,34 @@ void FirstScene::InitGamePlayForFirstScene()
 
 void FirstScene::ResetGameResources()
 {
-
+	mapGrid->ReloadMapGrid(); // nạp lại grid
 }
 
 void FirstScene::Update(DWORD dt)
 {
-	
+	mapGrid->GetListObjectFromMapGrid(mapObjectsList, firstSceneCamera);
+	firstSceneCamera->Update(dt);
+
+	for (UINT i = 0; i < mapObjectsList.size(); i++)
+		mapObjectsList[i]->Update(dt, &mapObjectsList);  // đã kiểm tra "Alive" lúc lấy từ lưới ra
 }
 
 void FirstScene::Render()
 {
-	if (!isGameOver)
-	{
-		firstSceneTileMap->DrawMap(firstSceneCamera);
-	}
+	// Nếu game vẫn còn chưa kết thúc
+	firstSceneTileMap->DrawMap(firstSceneCamera);
+
+	for (UINT i = 0; i < mapObjectsList.size(); i++)
+		mapObjectsList[i]->Render(firstSceneCamera);
+
+	//if (!isGameOver)
+	//{
+	//	
+	//}
+	//else
+	//{
+	//	// Sau khi kết thúc game
+	//}
 	
 	// Vẽ các object trong grid
 
@@ -95,15 +107,28 @@ void FirstScene::LoadFirstSceneMap(objectType mapType)
 	switch (mapType)
 	{
 	case objectType::MAP1:
-		firstSceneTileMap->LoadMapFromResource(mapType);
+		mapGrid->SetObjectFilePath("Resources/map/file_gameobject_map1.txt");
+		firstSceneTileMap->LoadMapFromResource(objectType::MAP1);
 
+		
 		// Set up camera với Simon
+		firstSceneCamera->SetIsFollowingSimon(true);
+
+		firstSceneCamera->SetCameraBoundary(0.0f, (float)(firstSceneTileMap->GetMapWidth() - firstSceneCamera->GetCamWidth())); // set biên camera dựa vào kích thước map
+		//camera->SetBoundaryBackup(camera->GetBoundaryLeft(), camera->GetBoundaryRight()); // backup lại biên
+
+		firstSceneCamera->SetCameraPosition(0, 0);
+		//------------------------------------------------//
+
+		currentState = 1; // Khởi tạo màn hiện tại
 		break;
 
 	case objectType::MAP2:
+		mapGrid->SetObjectFilePath("Resources/map/file_gameobject_map2.txt");
 		firstSceneTileMap->LoadMapFromResource(mapType);
 
 		// Set up camera với Simon
+		//------------------------------------------------//
 		break;
 	default:
 		break;
