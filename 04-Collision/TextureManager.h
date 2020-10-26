@@ -7,14 +7,14 @@
 
 class TextureManager
 {
-	unordered_map<objectType, GTexture*> _allGameTextures;
+	unordered_map<objectType, GTexture*> _ArrTextures;
 
 public:
 	static TextureManager* __Instance;
 	static TextureManager* GetInstance();
 
-	void AddTextureToMap(objectType type, GTexture* texture);
-	GTexture* GetTexture(objectType type);
+	void AddTexture(objectType oType, GTexture* texture);
+	GTexture* GetTexture(objectType oType);
 
 	void LoadResource();
 

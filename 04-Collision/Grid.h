@@ -12,25 +12,28 @@ using namespace std;
 #define GRID_CELL_WIDTH (SCREEN_WIDTH / 4.0f)
 #define GRID_CELL_HEIGHT (SCREEN_HEIGHT / 4.0f)
 
-#define GRID_MAP_CELL_MAX_ROW 20 // Số lượng hàng tối đa chứa cell có trong map
-#define GRID_MAP_CELL_MAX_COLUMN 100 // Số lượng cột tối đa chứa cell có trong map
+#define GRID_CELL_MAX_ROW 10 // số dòng tối đa chứa các object
+#define GRID_CELL_MAX_COLUMN 50 // số cột tối đa chứa các object
+
 
 class Grid
 {
 private:
-	vector<GameObject*> mapCells[GRID_MAP_CELL_MAX_ROW][GRID_MAP_CELL_MAX_COLUMN]; // Matrix chứa các ô trong map
-	char* objectFilePath;
+	vector<GameObject*> cells[GRID_CELL_MAX_ROW][GRID_CELL_MAX_COLUMN];
+	char* filepath;
 
 public:
 	Grid();
 	~Grid();
 
-	void SetObjectFilePath(char* filePathStr);
-	void ReloadMapGrid();
+	void SetFilePath(char* str); // Đọc các object từ file
+	void ReloadGrid();
 
-	GameObject* CreateNewGridObject(int oType, float x, float y, int oWidth, int oHeight, int brickModel);
-	void InsertObjectToGrid(int objectID, int oType, int objectDirection, float x, float y, int oWidth, int oHeight, int brickModel);
-	void GetListObjectFromMapGrid(vector<GameObject*>& ObjectList, Camera* camera);
+
+	GameObject* CreateNewObject(int type, float x, float y, int w, int h, int Model);
+	void Insert(int id, int type, int direction, float x, float y, int w, int h, int Model); //Thêm object vào grid
+	void GetListObject(vector<GameObject*>& ListObj, Camera* camera);
+
 };
 
 #endif

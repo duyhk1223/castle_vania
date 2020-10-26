@@ -1,102 +1,101 @@
 ﻿#include "Grid.h"
 
-Grid::Grid() {}
+Grid::Grid()
+{
+}
 
 Grid::~Grid()
 {
-	// Vòng lặp giải phóng vùng nhớ của Grid
-	for (int i = 0; i, GRID_MAP_CELL_MAX_ROW; i++)
-		for (int j = 0; j < GRID_MAP_CELL_MAX_COLUMN; j++)
-			mapCells[i][j].clear();
+	for (int i = 0; i < GRID_CELL_MAX_ROW; i++)
+		for (int j = 0; j < GRID_CELL_MAX_COLUMN; j++)
+		{
+			cells[i][j].clear();
+		}
 }
 
-void Grid::SetObjectFilePath(char* filePathStr)
+void Grid::SetFilePath(char* str)
 {
-	objectFilePath = filePathStr;
+	filepath = str;
 }
 
-void Grid::ReloadMapGrid()
+void Grid::ReloadGrid() // đọc file + insert object
 {
-	// Reset lại grid thành rỗng
-	for (int i = 0; i < GRID_MAP_CELL_MAX_ROW; i++)
-		for (int j = 0; j < GRID_MAP_CELL_MAX_COLUMN; j++)
-			mapCells[i][j].clear();
 
-	int oID, oType, oDirection, oWidth, oHeight, brickModel, numberOfObJects;
+	for (int i = 0; i < GRID_CELL_MAX_ROW; i++)
+		for (int j = 0; j < GRID_CELL_MAX_COLUMN; j++)
+		{
+			cells[i][j].clear();
+		}
+
+
+	int id, type, direction, w, h, model, n;
 	float x, y;
 
-	ifstream fileInfo(objectFilePath, ios::in);
-	fileInfo >> numberOfObJects;
-
-	for (int i = 0; i < numberOfObJects; i++)
+	ifstream inp(filepath, ios::in);
+	inp >> n;
+	for (int i = 0; i < n; i++)
 	{
-		fileInfo >> oID >> oType >> oDirection >> x >> y >> oWidth >> oHeight >> brickModel;
-		InsertObjectToGrid(oID, oType, oDirection, x, y, oWidth, oHeight, brickModel);
+		inp >> id >> type >> direction >> x >> y >> w >> h >> model;
+		Insert(id, type, direction, x, y, w, h, model);
 	}
-
-	fileInfo.close();
+	inp.close();
 }
 
-GameObject* Grid::CreateNewGridObject(int oType, float x, float y, int oWidth, int oHeight, int brickModel)
+GameObject* Grid::CreateNewObject(int type, float x, float y, int w, int h, int Model)
 {
-	switch (oType)
+	switch (type)
 	{
 	case objectType::BRICK:
-		 return new Brick(x, y, oWidth, oHeight, brickModel);
-		break;
-	case objectType::TORCH:
-		// return new Torch(x, y);
-		break;
+		return new Brick(x, y, w, h, Model);
 	}
-
 	return NULL;
 }
 
-void Grid::GetListObjectFromMapGrid(vector<GameObject*>& ObjectList, Camera* camera)
+void Grid::GetListObject(vector<GameObject*>& ListObj, Camera* camera)
 {
-	ObjectList.clear();
+	ListObj.clear();
 
 	unordered_map<int, GameObject*> mapObject;
 
-	int bottom = (int)((camera->GetCamCoordinateY() + camera->GeCamtHeight() - 1) / GRID_CELL_HEIGHT);
-	int top = (int)((camera->GetCamCoordinateY() + 1) / GRID_CELL_HEIGHT);
+	int bottom = (int)((camera->GetYCam() + camera->GetHeight() - 1) / GRID_CELL_HEIGHT);
+	int top = (int)((camera->GetYCam() + 1) / GRID_CELL_HEIGHT);
 
-	int left = (int)((camera->GetCamCoordinateX() + 1) / GRID_CELL_WIDTH);
-	int right = (int)((camera->GetCamCoordinateX() + camera->GetCamWidth() - 1) / GRID_CELL_WIDTH);
+	int left = (int)((camera->GetXCam() + 1) / GRID_CELL_WIDTH);
+	int right = (int)((camera->GetXCam() + camera->GetWidth() - 1) / GRID_CELL_WIDTH);
 
 	for (int i = top; i <= bottom; i++)
 		for (int j = left; j <= right; j++)
-			for (UINT k = 0; k < mapCells[i][j].size(); k++)
+			for (UINT k = 0; k < cells[i][j].size(); k++)
 			{
-				if (mapCells[i][j].at(k)->GetObjectHealth() > 0) // còn tồn tại
+				if (cells[i][j].at(k)->GetHealth() > 0) // còn tồn tại
 				{
-					if (mapObject.find(mapCells[i][j].at(k)->GetObjectId()) == mapObject.end()) // ko tìm thấy
-						mapObject[mapCells[i][j].at(k)->GetObjectId()] = mapCells[i][j].at(k);
+					if (mapObject.find(cells[i][j].at(k)->GetId()) == mapObject.end()) // ko tìm thấy
+						mapObject[cells[i][j].at(k)->GetId()] = cells[i][j].at(k);
 				}
+
 			}
 
 	for (auto& x : mapObject)
 	{
-		ObjectList.push_back(x.second);
+		ListObj.push_back(x.second);
 	}
 }
 
-void Grid::InsertObjectToGrid(int oID, int oType, int oDirection, float x, float y, int oWidth, int oHeight, int brickModel)
+void Grid::Insert(int id, int type, int direction, float x, float y, int w, int h, int Model)
 {
-	// Lấy vùng chứa các cell đang nằm trong vùng hiển thị
 	int top = (int)(y / GRID_CELL_HEIGHT);
-	int bottom = (int)((y + oHeight) / GRID_CELL_HEIGHT);
+	int bottom = (int)((y + h) / GRID_CELL_HEIGHT);
 	int left = (int)(x / GRID_CELL_WIDTH);
-	int right = (int)((x + oWidth) / GRID_CELL_WIDTH);
+	int right = (int)((x + w) / GRID_CELL_WIDTH);
 
-	GameObject* obj = CreateNewGridObject(oType, x, y, oWidth, oHeight, brickModel);
+	GameObject* obj = CreateNewObject(type, x, y, w, h, Model);
 	if (obj == NULL)
 		return;
 
-	obj->SetObjectId(oID);
-	obj->SetObjectDirection(oDirection);
+	obj->SetId(id);
+	obj->SetDirection(direction);
 
 	for (int i = top; i <= bottom; i++)
 		for (int j = left; j <= right; j++)
-			mapCells[i][j].push_back(obj);
+			cells[i][j].push_back(obj);
 }

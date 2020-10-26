@@ -1,32 +1,21 @@
 ﻿#include "GSprite.h"
 
-int GSprite::GetObjectAnimationCurrentFrame()
+RECT GSprite::GetRectFrame(int idFrame)
 {
-	return objectCurrentAnimationFrame;
+	RECT res;
+	res.left = (idFrame % texture->GetColumn()) * texture->GetFrameWidth();
+	res.top = (idFrame / texture->GetColumn()) * texture->GetFrameHeight();
+	res.right = res.left + texture->GetFrameWidth();
+	res.bottom = res.top + texture->GetFrameHeight();
+	return res;
 }
 
-int GSprite::GetTextureTotalFrames()
+GSprite::GSprite(GTexture* Texture, DWORD TimeAnimation)
 {
-	return textureTotalFrames;
-}
-
-RECT GSprite::GetFrameRect(int frameID)
-{
-	RECT frameRect;
-	frameRect.left = (frameID % textureInfo->GetTextureColumn()) * textureInfo->GetFrameWidth();
-	frameRect.top = (frameID / textureInfo->GetTextureRow()) * textureInfo->GetFrameHeight();
-	frameRect.right = frameRect.left + textureInfo->GetFrameWidth();
-	frameRect.bottom = frameRect.top + textureInfo->GetFrameHeight();
-
-	return frameRect;
-}
-
-GSprite::GSprite(GTexture* texture, DWORD frameAnimationTime)
-{
-	this->textureInfo = texture;
-	objectCurrentAnimationFrame = 0;
-	textureTotalFrames = texture->textureTotalFrames - 1; // frame đếm từ 0
-	this->frameAnimationTime = frameAnimationTime;
+	texture = Texture;
+	currentFrame = 0;
+	totalFrames = texture->totalFrames - 1;
+	this->timeAnimation = TimeAnimation;
 	spriteHandler = Game::GetInstance()->GetSpriteHandler();
 }
 
@@ -35,62 +24,73 @@ GSprite::~GSprite()
 
 }
 
-void GSprite::moveToNextFrame()
+void GSprite::MoveToNextFrame()
 {
-	objectCurrentAnimationFrame++;
-	if (objectCurrentAnimationFrame > textureTotalFrames)
-		objectCurrentAnimationFrame = 0;
+	currentFrame++;
+	if (currentFrame > totalFrames)
+		currentFrame = 0;
 }
 
-void GSprite::ReseAccumulatedtTime()
+void GSprite::ResetTime()
 {
-	animationFrameAccumulatedTime = 0;
+	timeAccumulated = 0;
 }
 
-void GSprite::SelectObjectAnimationFrame(int frameID)
+void GSprite::SelectFrame(int idFrame)
 {
-	objectCurrentAnimationFrame = frameID;
+	currentFrame = idFrame;
+	//timeAccumulated = 0;
 }
 
 void GSprite::Update(DWORD dt)
 {
-	animationFrameAccumulatedTime += dt;
-	if (animationFrameAccumulatedTime >= frameAnimationTime)
+	timeAccumulated += dt;
+	if (timeAccumulated >= timeAnimation)
 	{
-		animationFrameAccumulatedTime -= frameAnimationTime;
-		this->moveToNextFrame();
+		timeAccumulated -= timeAnimation;
+		this->MoveToNextFrame();
 	}
+}
+
+void GSprite::Draw(float X, float Y, int alpha, int R, int G, int B)
+{
+	DrawFrame(currentFrame, X, Y, alpha, R, G, B);
 }
 
 void GSprite::DrawFrame(int idFrame, float X, float Y, int alpha, int R, int G, int B)
 {
-	RECT r = GetFrameRect(idFrame);
+	RECT r = GetRectFrame(idFrame);
 	D3DXVECTOR3 p(trunc(X), trunc(Y), 0);
-	spriteHandler->Draw(this->textureInfo->textureInfo, &r, NULL, &p, D3DCOLOR_ARGB(alpha, R, G, B));
+	spriteHandler->Draw(texture->texture, &r, NULL, &p, D3DCOLOR_ARGB(alpha, R, G, B));
 }
 
-// Vẽ frame nghịch đảo
-void GSprite::Draw(float X, float Y, int alpha, int R, int G, int B)
+void GSprite::DrawFlipX(float X, float Y, int alpha, int R, int G, int B)
 {
-	DrawFrame(objectCurrentAnimationFrame, X, Y, alpha, R, G, B);
+	this->DrawFrameFlipX(currentFrame, X, Y, alpha, R, G, B);
 }
 
 void GSprite::DrawFrameFlipX(int idFrame, float X, float Y, int alpha, int R, int G, int B)
 {
-	RECT r = GetFrameRect(idFrame);
+	RECT r = GetRectFrame(idFrame);
 
 	D3DXMATRIX AA, BB;
 	spriteHandler->GetTransform(&AA);
 	D3DXMatrixTransformation2D(&BB, &D3DXVECTOR2(X, X), 0.0f, &D3DXVECTOR2(-1.0f, 1.0f), NULL, 0.0f, NULL);
 	D3DXMATRIX CC = AA * BB;
 	spriteHandler->SetTransform(&CC);
-	X -= textureInfo->GetFrameWidth();
+	X -= texture->GetFrameWidth();
 	D3DXVECTOR3 p(trunc(X), trunc(Y), 0);
-	spriteHandler->Draw(textureInfo->textureInfo, &r, NULL, &p, D3DCOLOR_ARGB(alpha, R, G, B));
-	spriteHandler->SetTransform(&AA); // Reset về hướng ban đầu
+	spriteHandler->Draw(texture->texture, &r, NULL, &p, D3DCOLOR_ARGB(alpha, R, G, B));
+	spriteHandler->SetTransform(&AA); // Reset ve ban dau
 }
 
-void GSprite::DrawFlipX(float X, float Y, int alpha, int R, int G, int B)
+
+int GSprite::GetCurrentFrame()
 {
-	this->DrawFrameFlipX(objectCurrentAnimationFrame, X, Y, alpha, R, G, B);
+	return currentFrame;
+}
+
+int GSprite::GetTotalFrames()
+{
+	return totalFrames;
 }

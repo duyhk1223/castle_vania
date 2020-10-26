@@ -1,13 +1,16 @@
 ﻿#ifndef __GAMEOBJECT_H__
 #define __GAMEOBJECT_H__
 
+
 #include "define.h"
 #include "GSprite.h"
-#include "Camera.h"
-#include "TextureManager.h"
 #include "GTexture.h"
+#include "Camera.h" 
+#include "define.h"
+#include "TextureManager.h"
 
 using namespace std;
+
 
 class GameObject;
 typedef GameObject* LPGAMEOBJECT;
@@ -38,11 +41,11 @@ class GameObject
 
 protected:
 	DWORD LastTimeAttacked; // thời điểm bị tấn công cuối cùng
-	int objectHealth;
-	int objectId;
+	int Health;
+	int id;
 
 	int direction;	// hướng -1 : trái, 1: phải
-	objectType oType; // Loại Object
+	objectType type; // Loại Object
 
 	float x;
 	float y;
@@ -55,8 +58,8 @@ protected:
 
 	DWORD dt;
 
-	GTexture* objectTexture;
-	GSprite* objectSprite;
+	GTexture* texture;
+	GSprite* sprite;
 
 
 
@@ -69,31 +72,30 @@ public:
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects = NULL);
 	virtual void Render(Camera* camera) = 0;
 
-	void SetObjectPosition(float x, float y);
-	void SetObjectSpeed(float vx, float vy);
-	void GetObjectPosition(float& x, float& y);
-	void GetObjectSpeed(float& vx, float& vy);
+	int GetHealth();
+	void SetHealth(int h);
+	void SubHealth(int th);
+	void SetDirection(int d);
+	int GetDirection();
+	void SetId(int ID);
+	int GetId();
 
-	int GetObjectHealth();
-	void SetObjectHealth(int h);
-	void SubObjectHealth(int th);
-	void SetObjectDirection(int d);
-	int GetObjectDirection();
-	void SetObjectId(int ID);
-	int GetObjectId();
+	void SetPosition(float x, float y);
+	void SetSpeed(float vx, float vy);
+	void GetPosition(float& x, float& y);
+	void GetSpeed(float& vx, float& vy);
 
-	// Position, kích thước của object và get loại object
-	float GetObjectCoordinateX();
-	float GetObjectCoordinateY();
-	float GetObjectVx();
-	float GetObjectVy();
-	void SetObjectCoordinateX(float X);
-	void SetObjectCoordinateY(float Y);
-	void SetObjectVx(float VX);
-	void SetObjectVy(float VY);
-	int GetObjectHeight();
-	int GetObjectWidth();
-	objectType GetObjectType();
+	float GetX();
+	float GetY();
+	float GetVx();
+	float GetVy();
+	void SetX(float X);
+	void SetY(float Y);
+	void SetVx(float VX);
+	void SetVy(float VY);
+	int GetHeight();
+	int GetWidth();
+	objectType GetType();
 
 	void RenderBoundingBox(Camera* camera);
 	LPCOLLISIONEVENT SweptAABBEx(GameObject* coO);
@@ -116,4 +118,5 @@ public:
 	GSprite* GetSprite();
 };
 
-#endif
+
+#endif 

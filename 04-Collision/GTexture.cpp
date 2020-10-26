@@ -1,30 +1,30 @@
 #include "GTexture.h"
 
-int GTexture::GetFrameHeight()
-{
-	return frameHeight;
-}
-
 int GTexture::GetFrameWidth()
 {
 	return frameWidth;
 }
 
-int GTexture::GetTextureColumn()
+int GTexture::GetFrameHeight()
 {
-	return textureColumns;
+	return frameHeight;
 }
 
-int GTexture::GetTextureRow()
+int GTexture::GetColumn()
 {
-	return textureRows;
+	return column;
+}
+
+int GTexture::GetRow()
+{
+	return row;
 }
 
 GTexture::GTexture(char* filePath, int column, int row, int totalframes, int R, int G, int B)
 {
-	textureColumns = column;
-	textureRows = row;
-	textureTotalFrames = totalframes;
+	this->column = column;
+	this->row = row;
+	totalFrames = totalframes;
 
 	D3DXIMAGE_INFO info;
 	HRESULT result = D3DXGetImageInfoFromFileA(filePath, &info);
@@ -34,8 +34,8 @@ GTexture::GTexture(char* filePath, int column, int row, int totalframes, int R, 
 		return;
 	}
 
-	this->frameWidth = info.Width / textureColumns;
-	this->frameHeight = info.Height / textureRows;
+	this->frameWidth = info.Width / column;
+	this->frameHeight = info.Height / row;
 
 	LPDIRECT3DDEVICE9 d3ddv = Game::GetInstance()->GetDirect3DDevice();
 
@@ -53,7 +53,7 @@ GTexture::GTexture(char* filePath, int column, int row, int totalframes, int R, 
 		D3DCOLOR_XRGB(R, G, B),
 		&info,
 		NULL,
-		&textureInfo);								// Created texture pointer
+		&texture);								// Created texture pointer
 
 	if (result != D3D_OK)
 	{
@@ -64,6 +64,6 @@ GTexture::GTexture(char* filePath, int column, int row, int totalframes, int R, 
 
 GTexture::~GTexture()
 {
-	if (this->textureInfo != NULL)
-		this->textureInfo->Release();
+	if (this->texture != NULL)
+		this->texture->Release();
 }

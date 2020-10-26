@@ -1,130 +1,90 @@
 ﻿#include "Camera.h"
 
-Camera::Camera(int width, int height)
+Camera::Camera(int w, int h)
 {
-	_camWidth = width;
-	_camHeight = height;
-	IsFollowingSimon = true;
-	IsSimonAutoGoX = false;
+	_width = w;
+	_height = h;
+	isAllowFollowSimon = true;
 
-	// Biên mặc định ban đầu là kích thước của map
+
+	// Biên mặc định ban đầu là kích thước MAP
 	_boundaryLeft = 0;
-	_boundaryRight = 0;
-	_xCamBackup = _yCamBackup = 0;
-	SetBoundaryBackUp(_boundaryLeft, _boundaryRight); // Lưu trữ toạ độ mặc định ban đầu
+	_boundaryRight = 0;// (float)(MapWidth - SCREEN_WIDTH);
+
 	vx = 0;
 }
 
-Camera::~Camera() {}
+Camera::~Camera()
+{
+}
 
 void Camera::Update(DWORD dt)
 {
 	this->dt = dt;
 
-	// Nếu Simon đang tự đi
-	if (IsSimonAutoGoX)
-	{
-		// Cập nhật đoạn đường và vị trí của Cam
-		float dx = vx * dt;
-		_camCoordinateX += dx;
 
-		if (abs(_camCoordinateX - AutoGoX_Backup_X) >= AutoGoX_Distance)
-		{
-			_camCoordinateX -= (abs(_camCoordinateX - AutoGoX_Backup_X) - AutoGoX_Distance);
-			IsSimonAutoGoX = false;
-		}
-	}
+	if (_xCam < _boundaryLeft)
+		_xCam = _boundaryLeft;
 
-	// Nếu đi tới 2 biên
-	if (_camCoordinateX < _boundaryLeft)
-		_camCoordinateX = _boundaryLeft;
+	if (_xCam > _boundaryRight)
+		_xCam = _boundaryRight;
 
-	if (_camCoordinateX > _boundaryRight)
-		_camCoordinateX = _boundaryRight;
 }
-
 D3DXVECTOR2 Camera::Transform(float xWorld, float yWorld)
 {
-	return D3DXVECTOR2(xWorld - _camCoordinateX, yWorld - _camCoordinateY);
+	return D3DXVECTOR2(xWorld - _xCam, yWorld - _yCam);
 }
 
-void Camera::SetCameraPosition(float x, float y)
+void Camera::SetPosition(float x, float y)
 {
-	_camCoordinateX = x;
-	_camCoordinateY = y;
+	_xCam = x;
+	_yCam = y;
 }
 
-float Camera::GetCamCoordinateX()
+float Camera::GetXCam()
 {
-	return _camCoordinateX;
+	return _xCam;
 }
 
-float Camera::GetCamCoordinateY()
+float Camera::GetYCam()
 {
-	return _camCoordinateY;
+	return _yCam;
 }
 
-int Camera::GetCamWidth()
+
+int Camera::GetWidth()
 {
-	return _camWidth;
+	return _width;
 }
 
-int Camera::GeCamtHeight()
+int Camera::GetHeight()
 {
-	return _camHeight;
+	return _height;
 }
 
-bool Camera::CheckIsObjectInCamera(float x, float y, int width, int height) // Toạ độ và kích thước của object
+bool Camera::checkObjectInCamera(float x, float y, float w, float h)
 {
-	// Nếu object nằm ngài theo chiều ngang
-	if (x + width < _camCoordinateX || _camCoordinateX + _camWidth < x)
+	if (x + w < _xCam || _xCam + _width < x)
 		return false;
-	// Nếu object nằm ngoài theo chiều dọc
-	if (y + height < _camCoordinateY || _camCoordinateY + _camHeight < y)
+	if (y + h < _yCam || _yCam + _height < y)
 		return false;
 	return true;
 }
 
-bool Camera::GetIsFollowingSimon()
+bool Camera::AllowFollowSimon()
 {
-	return IsFollowingSimon;
+	return isAllowFollowSimon;
 }
 
-void Camera::SetIsFollowingSimon(bool IsFollowingSimon)
+void Camera::SetAllowFollowSimon(bool b)
 {
-	this->IsFollowingSimon = IsFollowingSimon;
+	isAllowFollowSimon = b;
 }
 
-void Camera::SetAutoGoX(float Distance, float Speed)
+void Camera::SetBoundary(float left, float right)
 {
-	if (IsSimonAutoGoX)
-		return;
-	vx = Speed;
-	AutoGoX_Backup_X = _camCoordinateX;
-	AutoGoX_Distance = Distance;
-	IsSimonAutoGoX = true;
-	IsFollowingSimon = false;
-}
-
-void Camera::StopAutoGoX()
-{
-	IsSimonAutoGoX = false;
-}
-
-bool Camera::GetIsAutoGoX()
-{
-	return IsSimonAutoGoX;
-}
-
-void Camera::SetCameraBoundary(float boundaryLeft, float boundaryRight)
-{
-	_boundaryLeft = boundaryLeft;
-	_boundaryRight = boundaryRight;
-}
-
-float Camera::GetBoundaryLeft()
-{
-	return _boundaryLeft;
+	_boundaryLeft = left;
+	_boundaryRight = right;
 }
 
 float Camera::GetBoundaryRight()
@@ -132,27 +92,8 @@ float Camera::GetBoundaryRight()
 	return _boundaryRight;
 }
 
-// Back up lại các giá trị vị trí của Camera
-void Camera::SetPositionBackUp(float X, float Y)
+float Camera::GetBoundaryLeft()
 {
-	_xCamBackup = X;
-	_yCamBackup = Y;
-}
-
-// Back up lại các giá trị biên
-void Camera::SetBoundaryBackUp(float boundaryBackUpLeft, float boundaryBackUpRight)
-{
-	_boundaryLeftBackup = boundaryBackUpLeft;
-	_boundaryRightBackup = boundaryBackUpRight;
-}
-
-// Reset lại các giá trị theo giá trị dc backup trc đó
-void Camera::RestoreBoundary()
-{
-	_camCoordinateX = _xCamBackup;
-	_camCoordinateY = _yCamBackup;
-
-	_boundaryLeft = _boundaryLeftBackup;
-	_boundaryRight = _boundaryRightBackup;
+	return _boundaryLeft;
 }
 

@@ -1,28 +1,36 @@
 ﻿#include "Brick.h"
 
-Brick::Brick(float X, float Y, int bWidth, int bHeight, int bModel)
-{
-	brickModel = bModel;
 
-	switch (bModel)
+
+
+Brick::Brick(float X, float Y, int W, int H, int Model)
+{
+	model = Model;
+	switch (Model)
 	{
-	case BRICK_MODEL_1:
-		objectTexture = TextureManager::GetInstance()->GetTexture(objectType::TEX_BRICK_MODEL_1);
+	case BRICK_MODEL_2:
+		texture = TextureManager::GetInstance()->GetTexture(objectType::TEX_BRICK_MAP_2); // loại màn 2
 		break;
 	case BRICK_MODEL_TRANSPARENT:
-		objectTexture = TextureManager::GetInstance()->GetTexture(objectType::TEX_BRICK_TRANSPARENT);
+		texture = TextureManager::GetInstance()->GetTexture(objectType::TRANSPARENT_BRICK);// loại trong suốt 
+		break;
+	case BRICK_MODEL_3_3_32:
+		texture = TextureManager::GetInstance()->GetTexture(objectType::TEX_BRICK_3_32);// loại 3 ô nhỏ - 32px 
+		break;
+	case BRICK_MODEL_3_4_32:
+		texture = TextureManager::GetInstance()->GetTexture(objectType::TEX_BRICK_4_32);// loại đủ 4 ô nhỏ - 32px
 		break;
 	default:
-		DebugOut(L"[BRICK] Get Texture thất bại! Không thể nhận dạng Brick Model!\n");
+		DebugOut(L"[BRICK] Get Texture that bai! Ko nhan dang duoc Model!\n");
 		break;
 	}
 
-	oType = objectType::BRICK;
-	objectSprite = new GSprite(objectTexture, 1000);
+	type = objectType::BRICK;
+	sprite = new GSprite(texture, 1000);
 	this->x = X;
 	this->y = Y;
-	this->brickWidth = bWidth;
-	this->brickHeight = bHeight;
+	this->width = W;
+	this->height = H;
 }
 
 void Brick::Render(Camera* camera)
@@ -30,26 +38,26 @@ void Brick::Render(Camera* camera)
 	if (IS_DEBUG_RENDER_BBOX)
 		RenderBoundingBox(camera);
 
-	if (brickModel == BRICK_MODEL_TRANSPARENT) return;
+	if (model == BRICK_MODEL_TRANSPARENT)
+		return;
 
-	D3DXVECTOR2 mapPosition = camera->Transform(x, y);
 
-	// Lấy kích thước gạch chia cho kích thước của map rồi nhân cho kích thước viên gạch để render
-	for (int i = 0; i < (int)ceil(brickWidth / objectTexture->GetFrameWidth()); i++)
-		for (int j = 0; j < (int)ceil(brickHeight / objectTexture->GetFrameHeight()); j++)
-			objectSprite->Draw(mapPosition.x + i * objectTexture->GetFrameWidth(), mapPosition.y + j * objectTexture->GetFrameHeight());
+	D3DXVECTOR2 pos = camera->Transform(x, y);
+
+	for (int i = 0; i < (int)ceil(width / texture->GetFrameWidth()); i++)
+		for (int j = 0; j < (int)ceil(height / texture->GetFrameHeight()); j++)
+			sprite->Draw(pos.x + i * texture->GetFrameWidth(), pos.y + j * texture->GetFrameHeight());
 }
 
-void Brick::GetBoundingBox(float& left, float& top, float& right, float& bottom)
+void Brick::GetBoundingBox(float& l, float& t, float& r, float& b)
 {
-	left = x;
-	top = y;
-	// Lấy kích thước 1 viên chia cho chiều dài hoặc chiều cao của nó sau đó nhân cho kích thước 1 viên rồi cộng với toạ độ hiện tại để lấy 
-	right = x + (float)ceil(brickWidth / objectTexture->GetFrameWidth()) * objectTexture->GetFrameWidth();
-	bottom = y + (float)ceil(brickHeight / objectTexture->GetFrameHeight()) * objectTexture->GetFrameHeight();
+	l = x;
+	t = y;
+	r = x + (float)ceil(width / texture->GetFrameWidth()) * texture->GetFrameWidth();
+	b = y + (float)ceil(height / texture->GetFrameHeight()) * texture->GetFrameHeight();
 }
 
-int Brick::GetBrickModel()
+int Brick::GetModel()
 {
-	return brickModel;
+	return model;
 }

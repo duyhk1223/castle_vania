@@ -9,25 +9,24 @@
 class Map
 {
 private:
-	GTexture* mapTexture;
-	GSprite* mapSprite;
+	GTexture* _texture;
+	GSprite* _sprite;
 
-	int TilesetColumns, TilesetRows, TilesetTotalTiles; // Số hàng, cột, tổng các tile set cần cho map đó
+	int columnTile, rowTile, totalTiles;
 
-	int MapColumns, MapRows; // Số hàng và cột của map
+	int columnMap, rowMap;
 
-	int BoardHeight; // Chiều cao của bảng điểm
+	int heightBoard; // chiều cao board
 
-	int TileMapMatrix[500][500]; // Ma trận chứa các giá trị vị trí tile set
+	int tileMap[500][500];
 
 public:
 	Map();
 	~Map();
-
-	void LoadMapFromResource(objectType mapType);
-	void ReadMapFromTXTFile(char *fileName);
+	void LoadMap(objectType mapType);
+	void ReadMapTXT(char* filename);
 	void DrawMap(Camera* camera);
-	
+
 	int GetMapWidth();
 	int GetMapHeight();
 };

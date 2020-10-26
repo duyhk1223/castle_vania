@@ -9,7 +9,7 @@ GameObject::GameObject()
 	x = y = 0;
 	vx = vy = 0;
 	direction = 1;
-	objectHealth = 1;
+	Health = 1;
 
 	LastTimeAttacked = 0;
 }
@@ -18,8 +18,8 @@ void GameObject::GetBoundingBox(float& left, float& top, float& right, float& bo
 {
 	left = x;
 	top = y;
-	right = left + objectTexture->GetFrameWidth();
-	bottom = top + objectTexture->GetFrameHeight();
+	right = left + texture->GetFrameWidth();
+	bottom = top + texture->GetFrameHeight();
 }
 
 void GameObject::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
@@ -29,119 +29,119 @@ void GameObject::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	dy = vy * dt;
 }
 
-int GameObject::GetObjectHealth()
+int GameObject::GetHealth()
 {
-	return objectHealth;
+	return Health;
 }
 
-void GameObject::SetObjectHealth(int h)
+void GameObject::SetHealth(int h)
 {
-	objectHealth = h;
+	Health = h;
 }
 
-void GameObject::SubObjectHealth(int th)
+void GameObject::SubHealth(int th)
 {
-	objectHealth -= th;
-	if (objectHealth < 0)
-		objectHealth = 0;
+	Health -= th;
+	if (Health < 0)
+		Health = 0;
 }
 
-void GameObject::SetObjectDirection(int d)
+void GameObject::SetDirection(int d)
 {
 	direction = d;
 }
 
-int GameObject::GetObjectDirection()
+int GameObject::GetDirection()
 {
 	return direction;
 }
 
-void GameObject::SetObjectId(int ID)
+void GameObject::SetId(int ID)
 {
-	this->objectId = ID;
+	this->id = ID;
+}
+int GameObject::GetId()
+{
+	return id;
 }
 
-int GameObject::GetObjectId()
-{
-	return objectId;
-}
-
-void GameObject::SetObjectPosition(float x, float y)
+void GameObject::SetPosition(float x, float y)
 {
 	this->x = x;
 	this->y = y;
 }
 
-void GameObject::SetObjectSpeed(float vx, float vy)
+void GameObject::SetSpeed(float vx, float vy)
 {
 	this->vx = vx;
 	this->vy = vy;
 }
 
-void GameObject::GetObjectPosition(float& x, float& y)
+void GameObject::GetPosition(float& x, float& y)
 {
 	x = this->x; y = this->y;
 }
 
-void GameObject::GetObjectSpeed(float& vx, float& vy)
+void GameObject::GetSpeed(float& vx, float& vy)
 {
 	vx = this->vx;
 	vy = this->vy;
 }
 
-float GameObject::GetObjectCoordinateX()
+float GameObject::GetX()
 {
 	return x;
 }
 
-float GameObject::GetObjectCoordinateY()
+float GameObject::GetY()
 {
 	return y;
 }
 
-float GameObject::GetObjectVx()
+float GameObject::GetVx()
 {
 	return vx;
 }
 
-float GameObject::GetObjectVy()
+float GameObject::GetVy()
 {
 	return vy;
 }
 
-void GameObject::SetObjectCoordinateX(float X)
+void GameObject::SetX(float X)
 {
 	x = X;
 }
 
-void GameObject::SetObjectCoordinateY(float Y)
+void GameObject::SetY(float Y)
 {
 	y = Y;
 }
 
-void GameObject::SetObjectVx(float VX)
+void GameObject::SetVx(float VX)
 {
 	vx = VX;
 }
 
-void GameObject::SetObjectVy(float VY)
+void GameObject::SetVy(float VY)
 {
 	vy = VY;
 }
 
-int GameObject::GetObjectHeight()
+
+int GameObject::GetHeight()
 {
-	return objectTexture->GetFrameHeight();
+	return texture->GetFrameHeight();
 }
 
-int GameObject::GetObjectWidth()
+int GameObject::GetWidth()
 {
-	return objectTexture->GetFrameWidth();
+	return texture->GetFrameWidth();
 }
 
-objectType GameObject::GetObjectType()
+objectType GameObject::GetType()
 {
-	return oType;
+	return type;
 }
 
 
@@ -160,7 +160,7 @@ void GameObject::RenderBoundingBox(Camera* camera)
 	Game::GetInstance()->Draw(
 		pos.x,
 		pos.y,
-		TextureManager::GetInstance()->GetTexture(objectType::RENDERBBOX)->textureInfo,
+		TextureManager::GetInstance()->GetTexture(objectType::BBOX)->texture,
 		rect.left,
 		rect.top,
 		rect.right,
@@ -178,7 +178,7 @@ LPCOLLISIONEVENT GameObject::SweptAABBEx(GameObject* coO)
 
 	// deal with moving object: m speed = original m speed - collide object speed
 	float svx, svy;
-	coO->GetObjectSpeed(svx, svy);
+	coO->GetSpeed(svx, svy);
 
 	float sdx = svx * dt;
 	float sdy = svy * dt;
@@ -288,20 +288,20 @@ void GameObject::SetLastTimeAttacked(DWORD t)
 
 void GameObject::SetTexture(GTexture* tex)
 {
-	objectTexture = tex;
-	objectSprite->textureInfo = tex;
+	texture = tex;
+	sprite->texture = tex;
 }
 
 GSprite* GameObject::GetSprite()
 {
-	return objectSprite;
+	return sprite;
 }
 
 GameObject::~GameObject()
 {
 	/*SAFE_DELETE(texture);*/
 	// ko xóa texture vì đây là texture dùng chung được quản lí bởi TextureManager
-	SAFE_DELETE(objectSprite);
+	SAFE_DELETE(sprite);
 }
 
 

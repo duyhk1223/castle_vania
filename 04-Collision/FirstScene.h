@@ -4,28 +4,26 @@
 #include "Scene.h"
 #include "Camera.h"
 #include "GSprite.h"
-#include "Map.h"
+
 #include "Simon.h"
+
+#include "Map.h"
 #include "Grid.h"
+
 #include "TextureManager.h"
 #include "GameObject.h"
+
+#include "Brick.h"
 
 class FirstScene : public Scene
 {
 private:
-	Map* firstSceneTileMap;
-	Camera* firstSceneCamera; 
-	Grid* mapGrid;
+	Map* tileMap;
+	Camera* camera;
+	Grid* gridGame;
 
-	vector<GameObject*> mapObjectsList;
-	vector<GameObject*> enemyList;
-
-	/* Xử lí gameover*/
-	bool isGameOver;
-
-	int currentState; // Màn hiện tại
-
-	objectType currentMap; // Biến lưu trữ giá trị biểu thị map hiện tại
+	objectType mapCurrent;
+	vector<GameObject*> listObj;
 
 public:
 	FirstScene();
@@ -36,13 +34,15 @@ public:
 	void OnKeyUp(int KeyCode);
 	void LoadResources();
 
+	void InitGame(); // Khởi tạo lại như chơi từ đầu
+	void ResetResource(); // Reset lại resource khi Simon mất 1 mạng
+
 	void Update(DWORD dt);
 	void Render();
 
-	void InitGamePlayForFirstScene(); // Hàm khổi tạo game để chơi từ đầu
-	void ResetGameResources(); // Reset game resource khi Simon mất 1 mạng
 
-	void LoadFirstSceneMap(objectType mapType);
+	void LoadMap(objectType mapType);
+	int StageCurrent;
 };
 
 #endif

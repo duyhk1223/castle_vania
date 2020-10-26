@@ -6,64 +6,46 @@
 class Camera
 {
 protected:
-	// Toạ độ của Camera
-	float _camCoordinateX;
-	float _camCoordinateY;
+protected:
+	// Toạ độ cũa camera
+	float _xCam;
+	float _yCam;
 
-	// Các biến lưu trữ lại toạ độ trc đói của Simon để khi dead thì restart từ chỗ này
-	float _xCamBackup;
-	float _yCamBackup;
-	// Vị trí Simon trc khi vào chế độ tự đi
-	float _boundaryLeftBackup;
-	float _boundaryRightBackup;
+	// kích thước camera
+	int _width;
+	int _height;
 
-	// Kích thước hiển thị của Camera
-	int _camWidth, _camHeight;
-	float _boundaryLeft; // Biên giới hạn bên trái
-	float _boundaryRight; // Biên giới hạn bên phải, không bao gồm đoạn Simon ko đi dc ở cuối - SCREEN_WIDTH
+	float _boundaryLeft; // biên giới hạn bên trái 
+	float _boundaryRight; // biên giới hạn bên phải, không bao gồm đoạn simon đi được ở cuối - SCREEN_WIDTH 
 
-	float vx; // Speed của Camera
-	DWORD dt; // Cập nhật time trong Update
+	float vx; // vận tốc di chuyển camera
+	DWORD dt;
 
-	bool IsSimonAutoGoX; // Biến check Simon có đang trong chế độ tự đi hay không
-	float AutoGoX_Distance; // Khoảng cách Simon tự đi
-	float AutoGoX_Backup_X; // Vị trí Camera trc khi vào chế độ tự đi
-
-	bool IsFollowingSimon; // Biến check xem Camera có đăng follow Simon ko
+	bool isAllowFollowSimon;
 
 public:
-	Camera(int width, int height);
+	Camera(int w, int h);
 	~Camera();
 
 	void Update(DWORD dt);
 
-	D3DXVECTOR2 Transform(float, float); // Hàm để di chuyển Camera
+	D3DXVECTOR2 Transform(float, float);
 
-	void SetCameraPosition(float x, float y);
+	void SetPosition(float x, float y);
 
-	float GetCamCoordinateX();
-	float GetCamCoordinateY();
-	int GetCamWidth();
-	int GeCamtHeight();
+	float GetXCam();
+	float GetYCam();
+	int GetWidth();
+	int GetHeight();
 
-	bool CheckIsObjectInCamera(float x, float y, int width, int height);
+	bool checkObjectInCamera(float x, float y, float w, float h);
 
-	bool GetIsFollowingSimon();
-	void SetIsFollowingSimon(bool IsFollowing);
+	bool AllowFollowSimon();
+	void SetAllowFollowSimon(bool b);
 
-	void SetAutoGoX(float Distance, float Speed); // Hàm để set các thông số khi Simon tự đi
-	void StopAutoGoX(); // Dừng chế độ tự đi
-	bool GetIsAutoGoX();
-
-	void SetCameraBoundary(float left, float right); // Set các biên giới hạn Camera
-	float GetBoundaryLeft(); // Lấy các biên giới hạn của Camera
+	void SetBoundary(float left, float right); // set biên giới hạn cho camera
 	float GetBoundaryRight();
-
-	void SetPositionBackUp(float X, float Y); // Hàm để set vị trí theo vị trí đã backup trc đó
-	void RestorePosition(); // Trả về vị trí cũ
-
-	void SetBoundaryBackUp(float left, float right); // Set 2 biên theo giá trị đã lưu lại trc đó
-	void RestoreBoundary();
+	float GetBoundaryLeft();
 };
 
 #endif
