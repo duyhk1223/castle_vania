@@ -11,11 +11,35 @@ FirstScene::~FirstScene()
 
 void FirstScene::KeyState(BYTE* state)
 {
-	//=========================================
+	
+
+	if (Game::GetInstance()->IsKeyDown(DIK_DOWN))
+	{
+		simon->Sit();
+		if (Game::GetInstance()->IsKeyDown(DIK_RIGHT))
+			simon->Right();
+
+		if (Game::GetInstance()->IsKeyDown(DIK_LEFT))
+			simon->Left();
+		return;
+	}
+	
 	if (Game::GetInstance()->IsKeyDown(DIK_RIGHT))
-		camera->SetPosition(camera->GetXCam() + 2, camera->GetYCam());
-	if (Game::GetInstance()->IsKeyDown(DIK_LEFT))
-		camera->SetPosition(camera->GetXCam() - 2, camera->GetYCam());
+	{
+		simon->Right();
+		simon->Go();
+	}
+	else
+		if (Game::GetInstance()->IsKeyDown(DIK_LEFT))
+		{
+			simon->Left();
+			simon->Go();
+		}
+		else
+		{
+			simon->Stop();
+		}
+
 }
 
 void FirstScene::OnKeyDown(int KeyCode)
@@ -43,13 +67,15 @@ void FirstScene::LoadResources()
 	tileMap = new Map();
 	gridGame = new Grid();
 	camera = new Camera(SCREEN_WIDTH, SCREEN_HEIGHT);
+	simon = new Simon(camera);
 
 	InitGame();
 }
 
 void FirstScene::InitGame()
 {
-	LoadMap(objectType::MAP1);
+	LoadMap(TAG::MAP1);
+	simon->Init();
 }
 
 void FirstScene::ResetResource()
@@ -61,12 +87,18 @@ void FirstScene::Update(DWORD dt)
 {
 	gridGame->GetListObject(listObj, camera);
 
+
+	simon->Update(dt, &listObj);
+
+	if (camera->AllowFollowSimon())
+		camera->SetPosition(simon->GetX() - SCREEN_WIDTH / 2 + 30, camera->GetYCam()); // cho camera chạy theo simon
+
 	camera->Update(dt);
+
+
 
 	for (UINT i = 0; i < listObj.size(); i++)
 		listObj[i]->Update(dt, &listObj);
-
-
 
 }
 
@@ -77,6 +109,7 @@ void FirstScene::Render()
 	for (UINT i = 0; i < listObj.size(); i++)
 		listObj[i]->Render(camera);
 
+	simon->Render(camera);
 	//if (!isGameOver)
 	//{
 	//	
@@ -101,26 +134,28 @@ void FirstScene::Render()
 	// Vẽ boss (nếu có)
 }
 
-void FirstScene::LoadMap(objectType x)
+void FirstScene::LoadMap(TAG x)
 {
 	mapCurrent = x;
 
 	switch (x)
 	{
-	case objectType::MAP1:
+	case TAG::MAP1:
 		gridGame->SetFilePath("Resources/map/file_gameobject_map1.txt");
 
-		tileMap->LoadMap(objectType::MAP1);
+		tileMap->LoadMap(TAG::MAP1);
 
 		camera->SetAllowFollowSimon(true);
 
 		camera->SetBoundary(0.0f, (float)(tileMap->GetMapWidth() - camera->GetWidth())); // set biên camera dựa vào kích thước map
-		//camera->SetBoundaryBackup(camera->GetBoundaryLeft(), camera->GetBoundaryRight()); // backup lại biên
+		
 
 		camera->SetPosition(0, 0);
 
+		camera->SetAllowFollowSimon(true);
 
-		StageCurrent = 1;
+		simon->SetPosition(SIMON_POSITION_DEFAULT);
+		
 		break;
 	}
 

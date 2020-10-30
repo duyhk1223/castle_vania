@@ -134,8 +134,8 @@
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
-    <ClCompile Include="GSprite.cpp" />
-    <ClCompile Include="GTexture.cpp" />
+    <ClCompile Include="Sprite.cpp" />
+    <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Simon.cpp" />
     <ClCompile Include="TextureManager.cpp" />
   </ItemGroup>
@@ -151,8 +151,8 @@
     <ClInclude Include="Map.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneManager.h" />
-    <ClInclude Include="GSprite.h" />
-    <ClInclude Include="GTexture.h" />
+    <ClInclude Include="Sprite.h" />
+    <ClInclude Include="Texture.h" />
     <ClInclude Include="Simon.h" />
     <ClInclude Include="TextureManager.h" />
   </ItemGroup>

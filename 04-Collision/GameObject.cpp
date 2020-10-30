@@ -139,7 +139,7 @@ int GameObject::GetWidth()
 	return texture->GetFrameWidth();
 }
 
-objectType GameObject::GetType()
+TAG GameObject::GetType()
 {
 	return type;
 }
@@ -160,7 +160,7 @@ void GameObject::RenderBoundingBox(Camera* camera)
 	Game::GetInstance()->Draw(
 		pos.x,
 		pos.y,
-		TextureManager::GetInstance()->GetTexture(objectType::BBOX)->texture,
+		TextureManager::GetInstance()->GetTexture(TAG::BBOX)->texture,
 		rect.left,
 		rect.top,
 		rect.right,
@@ -168,6 +168,10 @@ void GameObject::RenderBoundingBox(Camera* camera)
 		100);
 }
 
+
+/*
+	Extension of original SweptAABB to deal with two moving objects
+*/
 LPCOLLISIONEVENT GameObject::SweptAABBEx(GameObject* coO)
 {
 	float sl, st, sr, sb;		// static object bbox
@@ -199,7 +203,16 @@ LPCOLLISIONEVENT GameObject::SweptAABBEx(GameObject* coO)
 	return e;
 }
 
-void GameObject::CalcPotentialCollisions(vector<GameObject*>* coObjects, vector<LPCOLLISIONEVENT>& coEvents)
+
+/*
+	Calculate potential collisions with the list of colliable objects
+
+	coObjects: the list of colliable objects
+	coEvents: list of potential collisions
+
+	tính toán các va chạm (coEvents) từ list các Obj có khả năng va chạm (coObjs)
+*/
+void GameObject::CalcPotentialCollisions(vector<GameObject*>* coObjects, vector<LPCOLLISIONEVENT>& coEvents) 
 {
 	for (UINT i = 0; i < coObjects->size(); i++)
 	{
@@ -214,6 +227,8 @@ void GameObject::CalcPotentialCollisions(vector<GameObject*>* coObjects, vector<
 	std::sort(coEvents.begin(), coEvents.end(), CollisionEvent::compare);
 
 }
+
+
 
 void GameObject::FilterCollision(vector<LPCOLLISIONEVENT>& coEvents, vector<LPCOLLISIONEVENT>& coEventsResult, float& min_tx, float& min_ty, float& nx, float& ny)
 {
@@ -286,21 +301,20 @@ void GameObject::SetLastTimeAttacked(DWORD t)
 	LastTimeAttacked = t;
 }
 
-void GameObject::SetTexture(GTexture* tex)
+void GameObject::SetTexture(Texture* tex)
 {
 	texture = tex;
 	sprite->texture = tex;
 }
 
-GSprite* GameObject::GetSprite()
+Sprite* GameObject::GetSprite()
 {
 	return sprite;
 }
 
 GameObject::~GameObject()
 {
-	/*SAFE_DELETE(texture);*/
-	// ko xóa texture vì đây là texture dùng chung được quản lí bởi TextureManager
+	
 	SAFE_DELETE(sprite);
 }
 

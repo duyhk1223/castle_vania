@@ -33,7 +33,7 @@ extern int isDebug_RenderBBox;
 extern int isDebug_Untouchable;
 
 // ID của Sprite, object
-enum objectType
+enum TAG
 {
 	SIMON = 01,
 	SIMON_TRANS = 02,

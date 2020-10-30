@@ -1,6 +1,6 @@
-﻿#include "GSprite.h"
+﻿#include "Sprite.h"
 
-RECT GSprite::GetRectFrame(int idFrame)
+RECT Sprite::GetRectFrame(int idFrame)
 {
 	RECT res;
 	res.left = (idFrame % texture->GetColumn()) * texture->GetFrameWidth();
@@ -10,7 +10,7 @@ RECT GSprite::GetRectFrame(int idFrame)
 	return res;
 }
 
-GSprite::GSprite(GTexture* Texture, DWORD TimeAnimation)
+Sprite::Sprite(Texture* Texture, DWORD TimeAnimation)
 {
 	texture = Texture;
 	currentFrame = 0;
@@ -19,57 +19,53 @@ GSprite::GSprite(GTexture* Texture, DWORD TimeAnimation)
 	spriteHandler = Game::GetInstance()->GetSpriteHandler();
 }
 
-GSprite::~GSprite()
+Sprite::~Sprite()
 {
 
 }
 
-void GSprite::MoveToNextFrame()
+void Sprite::MoveToNextFrame()
 {
 	currentFrame++;
-	if (currentFrame > totalFrames)
+	if (currentFrame > totalFrames) // Điều kiện cho texture có 1 animation
 		currentFrame = 0;
 }
 
-void GSprite::ResetTime()
-{
-	timeAccumulated = 0;
-}
 
-void GSprite::SelectFrame(int idFrame)
+
+void Sprite::SelectFrame(int idFrame)
 {
 	currentFrame = idFrame;
-	//timeAccumulated = 0;
 }
 
-void GSprite::Update(DWORD dt)
+void Sprite::Update(DWORD dt)
 {
 	timeAccumulated += dt;
 	if (timeAccumulated >= timeAnimation)
 	{
-		timeAccumulated -= timeAnimation;
+		timeAccumulated -= timeAnimation; // reset time
 		this->MoveToNextFrame();
 	}
 }
 
-void GSprite::Draw(float X, float Y, int alpha, int R, int G, int B)
+void Sprite::Draw(float X, float Y, int alpha, int R, int G, int B)
 {
 	DrawFrame(currentFrame, X, Y, alpha, R, G, B);
 }
 
-void GSprite::DrawFrame(int idFrame, float X, float Y, int alpha, int R, int G, int B)
+void Sprite::DrawFrame(int idFrame, float X, float Y, int alpha, int R, int G, int B)
 {
 	RECT r = GetRectFrame(idFrame);
 	D3DXVECTOR3 p(trunc(X), trunc(Y), 0);
 	spriteHandler->Draw(texture->texture, &r, NULL, &p, D3DCOLOR_ARGB(alpha, R, G, B));
 }
 
-void GSprite::DrawFlipX(float X, float Y, int alpha, int R, int G, int B)
+void Sprite::DrawFlipX(float X, float Y, int alpha, int R, int G, int B)
 {
 	this->DrawFrameFlipX(currentFrame, X, Y, alpha, R, G, B);
 }
 
-void GSprite::DrawFrameFlipX(int idFrame, float X, float Y, int alpha, int R, int G, int B)
+void Sprite::DrawFrameFlipX(int idFrame, float X, float Y, int alpha, int R, int G, int B)
 {
 	RECT r = GetRectFrame(idFrame);
 
@@ -85,12 +81,12 @@ void GSprite::DrawFrameFlipX(int idFrame, float X, float Y, int alpha, int R, in
 }
 
 
-int GSprite::GetCurrentFrame()
+int Sprite::GetCurrentFrame()
 {
 	return currentFrame;
 }
 
-int GSprite::GetTotalFrames()
+int Sprite::GetTotalFrames()
 {
 	return totalFrames;
 }

@@ -3,8 +3,8 @@
 
 
 #include "define.h"
-#include "GSprite.h"
-#include "GTexture.h"
+#include "Sprite.h"
+#include "Texture.h"
 #include "Camera.h" 
 #include "define.h"
 #include "TextureManager.h"
@@ -45,7 +45,7 @@ protected:
 	int id;
 
 	int direction;	// hướng -1 : trái, 1: phải
-	objectType type; // Loại Object
+	TAG type; // Loại Object
 
 	float x;
 	float y;
@@ -58,8 +58,8 @@ protected:
 
 	DWORD dt;
 
-	GTexture* texture;
-	GSprite* sprite;
+	Texture* texture;
+	Sprite* sprite;
 
 
 
@@ -95,7 +95,7 @@ public:
 	void SetVy(float VY);
 	int GetHeight();
 	int GetWidth();
-	objectType GetType();
+	TAG GetType();
 
 	void RenderBoundingBox(Camera* camera);
 	LPCOLLISIONEVENT SweptAABBEx(GameObject* coO);
@@ -114,8 +114,8 @@ public:
 	DWORD GetLastTimeAttacked();
 	void SetLastTimeAttacked(DWORD t);
 
-	void SetTexture(GTexture* tex);
-	GSprite* GetSprite();
+	void SetTexture(Texture* tex);
+	Sprite* GetSprite();
 };
 
 

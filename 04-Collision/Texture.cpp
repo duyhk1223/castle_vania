@@ -1,26 +1,26 @@
-#include "GTexture.h"
+#include "Texture.h"
 
-int GTexture::GetFrameWidth()
+int Texture::GetFrameWidth()
 {
 	return frameWidth;
 }
 
-int GTexture::GetFrameHeight()
+int Texture::GetFrameHeight()
 {
 	return frameHeight;
 }
 
-int GTexture::GetColumn()
+int Texture::GetColumn()
 {
 	return column;
 }
 
-int GTexture::GetRow()
+int Texture::GetRow()
 {
 	return row;
 }
 
-GTexture::GTexture(char* filePath, int column, int row, int totalframes, int R, int G, int B)
+Texture::Texture(char* filePath, int column, int row, int totalframes, int R, int G, int B)
 {
 	this->column = column;
 	this->row = row;
@@ -50,10 +50,10 @@ GTexture::GTexture(char* filePath, int column, int row, int totalframes, int R, 
 		D3DPOOL_DEFAULT,
 		D3DX_DEFAULT,
 		D3DX_DEFAULT,
-		D3DCOLOR_XRGB(R, G, B),
+		D3DCOLOR_XRGB(R, G, B),             // Transparent color
 		&info,
 		NULL,
-		&texture);								// Created texture pointer
+		&texture);							// Created texture pointer
 
 	if (result != D3D_OK)
 	{
@@ -62,7 +62,7 @@ GTexture::GTexture(char* filePath, int column, int row, int totalframes, int R, 
 	}
 }
 
-GTexture::~GTexture()
+Texture::~Texture()
 {
 	if (this->texture != NULL)
 		this->texture->Release();

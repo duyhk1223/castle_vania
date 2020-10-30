@@ -2,15 +2,15 @@
 #define __MAP_H__
 
 #include "TextureManager.h"
-#include "GSprite.h"
+#include "Sprite.h"
 #include "define.h"
 #include "Camera.h"
 
 class Map
 {
 private:
-	GTexture* _texture;
-	GSprite* _sprite;
+	Texture* _texture;
+	Sprite* _sprite;
 
 	int columnTile, rowTile, totalTiles;
 
@@ -23,7 +23,7 @@ private:
 public:
 	Map();
 	~Map();
-	void LoadMap(objectType mapType);
+	void LoadMap(TAG mapType);
 	void ReadMapTXT(char* filename);
 	void DrawMap(Camera* camera);
 

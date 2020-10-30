@@ -1,9 +1,9 @@
-﻿#ifndef __GSPRITE_H__
-#define __GSPRITE_H__
+﻿#ifndef __SPRITE_H__
+#define __SPRITE_H__
 
-#include "GTexture.h"
+#include "Texture.h"
 
-class GSprite
+class Sprite
 {
 private:
 	LPD3DXSPRITE spriteHandler;
@@ -11,21 +11,12 @@ private:
 	int totalFrames;
 
 public:
-	GSprite(GTexture* Texture, DWORD TimeAnimation);
-	virtual ~GSprite();
+	Sprite(Texture* Texture, DWORD TimeAnimation);
+	virtual ~Sprite();
 
-	GTexture* texture;
-
-	DWORD timeAccumulated;	 // thời gian chờ đã tích lũy
-	DWORD timeAnimation; // thời gian phải chờ giữa các frame
+	Texture* texture;
 
 	RECT GetRectFrame(int idFrame);
-	void MoveToNextFrame();
-	void ResetTime();
-
-	void SelectFrame(int idFrame);
-
-	void Update(DWORD dt);
 
 	void Draw(float X, float Y, int alpha = 255, int R = 255, int G = 255, int B = 255);
 	void DrawFrame(int idFrame, float X, float Y, int alpha = 255, int R = 255, int G = 255, int B = 255);
@@ -35,6 +26,19 @@ public:
 
 	int GetCurrentFrame();
 	int GetTotalFrames();
+
+	//===================== Animation =========================
+
+	DWORD timeAccumulated;            // thời gian từ khi chuyển frame
+	DWORD timeAnimation;              // thời gian tối đa của 1 frame
+
+
+	void MoveToNextFrame();
+
+
+	void SelectFrame(int idFrame);
+
+	void Update(DWORD dt);
 };
 
 #endif

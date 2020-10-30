@@ -2,7 +2,7 @@
 #define	__GRID_H__
 
 #include "Game.h"
-#include "GSprite.h"
+#include "Sprite.h"
 #include "define.h"
 #include "GameObject.h"
 #include "Brick.h"
@@ -12,8 +12,8 @@ using namespace std;
 #define GRID_CELL_WIDTH (SCREEN_WIDTH / 4.0f)
 #define GRID_CELL_HEIGHT (SCREEN_HEIGHT / 4.0f)
 
-#define GRID_CELL_MAX_ROW 10 // số dòng tối đa chứa các object
-#define GRID_CELL_MAX_COLUMN 50 // số cột tối đa chứa các object
+#define GRID_CELL_MAX_ROW 10 // số dòng tối đa của grid
+#define GRID_CELL_MAX_COLUMN 50 // số cột tối đa của grid
 
 
 class Grid
@@ -26,7 +26,7 @@ public:
 	Grid();
 	~Grid();
 
-	void SetFilePath(char* str); // Đọc các object từ file
+	void SetFilePath(char* str); // Set đường dẫn file Object
 	void ReloadGrid();
 
 

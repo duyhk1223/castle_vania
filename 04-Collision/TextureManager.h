@@ -3,18 +3,18 @@
 
 #include <unordered_map>
 #include "define.h"
-#include "GTexture.h"
+#include "Texture.h"
 
 class TextureManager
 {
-	unordered_map<objectType, GTexture*> _ArrTextures;
+	unordered_map<TAG, Texture*> _ArrTextures;
 
 public:
 	static TextureManager* __Instance;
 	static TextureManager* GetInstance();
 
-	void AddTexture(objectType oType, GTexture* texture);
-	GTexture* GetTexture(objectType oType);
+	void AddTexture(TAG oType, Texture* texture);
+	Texture* GetTexture(TAG oType);
 
 	void LoadResource();
 

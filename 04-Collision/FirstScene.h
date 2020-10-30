@@ -3,7 +3,7 @@
 
 #include "Scene.h"
 #include "Camera.h"
-#include "GSprite.h"
+#include "Sprite.h"
 
 #include "Simon.h"
 
@@ -12,7 +12,7 @@
 
 #include "TextureManager.h"
 #include "GameObject.h"
-
+#include "Simon.h"
 #include "Brick.h"
 
 class FirstScene : public Scene
@@ -22,7 +22,9 @@ private:
 	Camera* camera;
 	Grid* gridGame;
 
-	objectType mapCurrent;
+	Simon* simon;
+
+	TAG mapCurrent;
 	vector<GameObject*> listObj;
 
 public:
@@ -41,7 +43,7 @@ public:
 	void Render();
 
 
-	void LoadMap(objectType mapType);
+	void LoadMap(TAG mapType);
 	int StageCurrent;
 };
 

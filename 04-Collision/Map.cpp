@@ -11,14 +11,14 @@ Map::~Map()
 	SAFE_DELETE(_sprite);
 }
 
-void Map::LoadMap(objectType mapType)
+void Map::LoadMap(TAG mapType)
 {
 	switch (mapType)
 	{
-	case objectType::MAP1:
+	case TAG::MAP1:
 		ReadMapTXT("Resources/map/readfile_map_1.txt");
 		break;
-	case objectType::MAP2:
+	case TAG::MAP2:
 		ReadMapTXT("Resources/map/readfile_map_2.txt");
 		break;
 	default:
@@ -28,7 +28,7 @@ void Map::LoadMap(objectType mapType)
 	}
 
 	_texture = TextureManager::GetInstance()->GetTexture(mapType);
-	_sprite = new GSprite(_texture, 100);
+	_sprite = new Sprite(_texture, 100);
 
 }
 
