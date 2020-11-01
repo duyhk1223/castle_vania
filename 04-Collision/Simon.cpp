@@ -5,19 +5,39 @@ Simon::Simon(Camera* camera)
 {
 	texture = TextureManager::GetInstance()->GetTexture(TAG::SIMON);
 	sprite = new Sprite(texture, 250);
-	//_sprite_deadth = new Sprite(TextureManager::GetInstance()->GetTexture(TAG::SIMON_DEADTH), 250);
+	// _sprite_deadth = new Sprite(TextureManager::GetInstance()->GetTexture(TAG::SIMON_DEADTH), 250);
 	type = TAG::SIMON;
 
 
 	this->camera = camera;
-	//this->sound = Sound::GetInstance();
-	//mapWeapon[TAG::MORNINGSTAR] = new MorningStar();
+	// this->sound = Sound::GetInstance();
+	mapWeapon[TAG::MORNINGSTAR] = new MorningStar();
 
 	Init();
 }
 
 Simon::~Simon()
 {
+}
+
+void Simon::Init()
+{
+	Reset();
+}
+
+void Simon::Reset()
+{
+	direction = 1;
+
+	isSitting = 0;
+
+	isJumping = 0;
+	isWalking = 0;
+	isAttacking = 0;
+
+
+	vx = 0;
+	vy = 0;
 }
 
 void Simon::GetBoundingBox(float& left, float& top, float& right, float& bottom)
@@ -47,22 +67,21 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		x = camera->GetBoundaryLeft() - 16;
 	if (x + SIMON_BBOX_WIDTH > camera->GetBoundaryRight() + SCREEN_WIDTH)
 		x = (float)(camera->GetBoundaryRight() + SCREEN_WIDTH - SIMON_BBOX_WIDTH);
-	/* Không cho lọt khỏi camera */
+	/* Không cho Simon lọt khỏi camera */
 
 
 #pragma region Update sprite
 
 	int index = sprite->GetCurrentFrame();
 
-	
 	if (isSitting == true)
 	{
-		if (isAttacking == true) // tấn công
+		if (isAttacking == true) // Nếu Simon đang ở trạng thái tấn công
 		{
 			/* Xử lí ani ngồi đánh */
-			if (index < SIMON_ANI_SITTING_ATTACKING_BEGIN) // nếu ani chưa đúng
+			if (index < SIMON_ANI_SITTING_ATTACKING_BEGIN) // Nếu ani chưa đúng
 			{
-				sprite->SelectFrame(SIMON_ANI_SITTING_ATTACKING_BEGIN); // set lại ani bắt đầu
+				sprite->SelectFrame(SIMON_ANI_SITTING_ATTACKING_BEGIN); // Set lại ani bắt đầu
 				sprite->timeAccumulated = dt;
 			}
 			else
@@ -145,7 +164,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			}
 			else
 			{
-				if (isJumping == true) // nếu ko đi mà chỉ nhảy
+				if (isJumping) // nếu ko đi mà chỉ nhảy
 				{
 					sprite->SelectFrame(SIMON_ANI_JUMPING);
 				}
@@ -171,10 +190,27 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 	vy += SIMON_GRAVITY * dt;// Simple fall down
 
+	for (auto& objWeapon : mapWeapon)
+	{
+		if (objWeapon.second->GetFinish() == false) // Vũ khi chưa kết thúc thì update
+		{
+			if (objWeapon.second->GetType() == TAG::MORNINGSTAR)
+			{
+				objWeapon.second->SetPosition(this->x, this->y);
+				objWeapon.second->SetSpeed(vx, vy); // set vận tốc để kt va chạm
+				objWeapon.second->UpdatePositionFitSimon();
+			}
+
+			objWeapon.second->Update(dt, coObjects);
+		}
+	}
+
 	// xét va chạm với brick
 	CollisionWithBrick(coObjects); // check Collision and update x, y for simon
 
 }
+
+#pragma region Các hàm xử lý va chạm
 
 void Simon::CollisionWithBrick(const vector<LPGAMEOBJECT>* coObjects)
 {
@@ -247,6 +283,8 @@ void Simon::CollisionWithBrick(const vector<LPGAMEOBJECT>* coObjects)
 		delete coEvents[i];
 }
 
+#pragma endregion
+
 void Simon::Render(Camera* camera)
 {
 	if (IS_DEBUG_RENDER_BBOX)
@@ -260,6 +298,14 @@ void Simon::Render(Camera* camera)
 		sprite->Draw(pos.x, pos.y, alpha);
 	else
 		sprite->DrawFlipX(pos.x, pos.y, alpha);
+
+	for (auto& objWeapon : mapWeapon)
+	{
+		if (objWeapon.second->GetFinish() == false) // vũ khi này chưa kết thúc thì render
+		{
+			objWeapon.second->Render(camera);
+		}
+	}
 }
 
 void Simon::Sit()
@@ -287,7 +333,6 @@ void Simon::ResetSit()
 
 void Simon::Left()
 {
-	
 	direction = -1;
 }
 
@@ -298,8 +343,6 @@ void Simon::Right()
 
 void Simon::Go()
 {
-	
-
 	if (isAttacking == true)
 		return;
 
@@ -310,16 +353,16 @@ void Simon::Go()
 
 void Simon::Jump()
 {
-	if (isJumping)
+	if (isJumping == true)
 		return;
 
 	/*if (isOnStair == true)
 		return;*/
 
-	if (isSitting)
+	if (isSitting == true)
 		return;
 
-	if (isAttacking)
+	if (isAttacking == true)
 		return;
 
 	/*if (isHurting)
@@ -353,25 +396,21 @@ void Simon::Stop()
 
 }
 
-void Simon::Init()
+void Simon::Attack(TAG weaponType)
 {
-	Reset();
-}
+	switch (weaponType)
+	{
+	case MORNINGSTAR:
+	{
+		if (isAttacking) // Nếu đang tấn công thì ko xét
+		{
+			return;
+		}
+		break;
+	}
+	}
 
-void Simon::Reset()
-{
+	isAttacking = true;
 
-	direction = 1;
-
-	isSitting = 0;
-	
-	isJumping = 0;
-	isWalking = 0;
-	isAttacking = 0;
-
-	
-
-	vx = 0;
-	vy = 0;
-	
+	mapWeapon[weaponType]->Attack(this->x, this->y, this->direction); // Render vũ khí của Simon đang sở hữu
 }

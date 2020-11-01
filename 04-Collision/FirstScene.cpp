@@ -11,9 +11,8 @@ FirstScene::~FirstScene()
 
 void FirstScene::KeyState(BYTE* state)
 {
-	
-
-	if (Game::GetInstance()->IsKeyDown(DIK_DOWN))
+	// Nếu đang ko tấn công thì mới ngồi dc
+	if (Game::GetInstance()->IsKeyDown(DIK_DOWN) && simon->isAttacking == false)
 	{
 		simon->Sit();
 		if (Game::GetInstance()->IsKeyDown(DIK_RIGHT))
@@ -53,7 +52,33 @@ void FirstScene::OnKeyDown(int KeyCode)
 	}
 
 
+	if (!(Game::GetInstance()->IsKeyDown(DIK_UP) && Game::GetInstance()->IsKeyDown(DIK_A) /*&& simon->isProcessingOnStair == 0*/ && simon->isAttacking == true))
+		if (KeyCode == DIK_A /*&& simon->isProcessingOnStair == 0*/) // Không phải đang xử lí việc đi trên thang thì đc đánh
+		{
+			simon->SetSpeed(0, 0);
+			simon->Attack(TAG::MORNINGSTAR);
+		}
 
+	if (simon->isJumping && simon->isWalking)
+	{
+		return;
+	}
+
+
+	if (KeyCode == DIK_S /*&& simon->isOnStair == false*/)
+	{
+		if (Game::GetInstance()->IsKeyDown(DIK_LEFT) || Game::GetInstance()->IsKeyDown(DIK_RIGHT))
+		{
+			simon->Stop();
+			simon->SetSpeed(SIMON_WALKING_SPEED * simon->GetDirection(), -SIMON_VJUMP);
+			simon->isJumping = 1;
+			simon->isWalking = 1;
+		}
+		else
+		{
+			simon->Jump();
+		}
+	}
 }
 
 void FirstScene::OnKeyUp(int KeyCode)
@@ -134,11 +159,11 @@ void FirstScene::Render()
 	// Vẽ boss (nếu có)
 }
 
-void FirstScene::LoadMap(TAG x)
+void FirstScene::LoadMap(TAG mapType)
 {
-	mapCurrent = x;
+	mapCurrent = mapType;
 
-	switch (x)
+	switch (mapType)
 	{
 	case TAG::MAP1:
 		gridGame->SetFilePath("Resources/map/file_gameobject_map1.txt");
@@ -152,9 +177,7 @@ void FirstScene::LoadMap(TAG x)
 
 		camera->SetPosition(0, 0);
 
-		camera->SetAllowFollowSimon(true);
-
-		simon->SetPosition(SIMON_POSITION_DEFAULT);
+		simon->SetPosition(SIMON_DEFAULT_POSITION);
 		
 		break;
 	}

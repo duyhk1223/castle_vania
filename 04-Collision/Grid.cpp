@@ -47,6 +47,8 @@ GameObject* Grid::CreateNewObject(int type, float x, float y, int w, int h, int 
 	{
 	case TAG::BRICK:
 		return new Brick(x, y, w, h, Model);
+	case TAG::TORCH:
+		return new Torch(x, y);
 	}
 	return NULL;
 }

@@ -27,6 +27,8 @@ public:
 	int GetCurrentFrame();
 	int GetTotalFrames();
 
+	void ResetAccumulatedTime();
+
 	//===================== Animation =========================
 
 	DWORD timeAccumulated;            // thời gian từ khi chuyển frame

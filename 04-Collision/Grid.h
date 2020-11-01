@@ -6,6 +6,7 @@
 #include "define.h"
 #include "GameObject.h"
 #include "Brick.h"
+#include "Torch.h"
 
 using namespace std;
 

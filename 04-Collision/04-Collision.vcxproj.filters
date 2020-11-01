@@ -44,6 +44,9 @@
     <Filter Include="Object\Ground">
       <UniqueIdentifier>{115f64c0-79d4-43cc-8282-6876ead46072}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Object\Weapon">
+      <UniqueIdentifier>{469d615e-bd64-4075-a3b4-801480420e22}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -94,6 +97,15 @@
     <ClCompile Include="Texture.cpp">
       <Filter>Framework\Animation</Filter>
     </ClCompile>
+    <ClCompile Include="Torch.cpp">
+      <Filter>Object\Ground</Filter>
+    </ClCompile>
+    <ClCompile Include="MorningStar.cpp">
+      <Filter>Object\Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="Weapon.cpp">
+      <Filter>Object\Weapon</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="debug.h">
@@ -140,6 +152,15 @@
     </ClInclude>
     <ClInclude Include="Texture.h">
       <Filter>Framework\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Torch.h">
+      <Filter>Object\Ground</Filter>
+    </ClInclude>
+    <ClInclude Include="MorningStar.h">
+      <Filter>Object\Weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="Weapon.h">
+      <Filter>Object\Weapon</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

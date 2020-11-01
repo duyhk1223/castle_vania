@@ -32,6 +32,11 @@ void Sprite::MoveToNextFrame()
 }
 
 
+void Sprite::ResetAccumulatedTime()
+{
+	timeAccumulated = 0;
+}
+
 
 void Sprite::SelectFrame(int idFrame)
 {

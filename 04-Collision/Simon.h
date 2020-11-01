@@ -3,9 +3,11 @@
 
 
 #include "GameObject.h"
+#include "Weapon.h"
+#include "MorningStar.h"
 
 
-#define SIMON_POSITION_DEFAULT  50.0f, 300.0f
+#define SIMON_DEFAULT_POSITION  50.0f, 300.0f
 
 #define SIMON_BBOX_WIDTH 60
 #define SIMON_BBOX_HEIGHT 63
@@ -27,7 +29,8 @@
 #define SIMON_STATE_WALKING 1
 
 
-// id frame animation =================================
+// id frame animation =================================//
+
 #define SIMON_ANI_WALKING_BEGIN 1
 #define SIMON_ANI_WALKING_END 3
 
@@ -38,17 +41,17 @@
 
 #define SIMON_ANI_SITTING 4
 
-
+// Animaition của phần ngồi đánh
 #define SIMON_ANI_SITTING_ATTACKING_BEGIN 15
 #define SIMON_ANI_SITTING_ATTACKING_END 17
 
+// Animation cho phần đứng đánh
 #define SIMON_ANI_STANDING_ATTACKING_BEGIN 5
 #define SIMON_ANI_STANDING_ATTACKING_END 7
 
+//====================================================//
 
 #define SIMON_TIME_WAIT_ANI_ATTACKING 120// thời gian thời của mỗi frame khi tấn công
-
-
 
 
 class Simon : public GameObject
@@ -60,12 +63,13 @@ private:
 public:
 
 	bool isAttacking;
-	
 	bool isWalking;
 	bool isJumping;
 	bool isSitting;
 
 	bool isCollisionAxisYWithBrick = false; // Đang va chạm với đất theo trục y
+
+	unordered_map<TAG, Weapon*> mapWeapon;
 
 
 	Simon(Camera* camera);
@@ -75,15 +79,18 @@ public:
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects = NULL);
 	virtual void Render(Camera* camera);
 
-	void Sit();
 
 	void Stop(); // idle
+
+	void Sit();
 	void ResetSit();
 
 	void Go(); // walk
 	void Jump();
 	void Right();
 	void Left();
+
+	void Attack(TAG weaponType);
 
 	void CollisionWithBrick(const vector<LPGAMEOBJECT>* coObjects = NULL);
 
