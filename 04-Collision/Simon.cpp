@@ -181,6 +181,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 	GameObject::Update(dt);
 
+	// Xét xem Simon đang trong trạng thái nhảy hay mới vô game
 	if (isJumping)
 	{
 		dx = vx * dt;
@@ -188,7 +189,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		vy += SIMON_GRAVITY_JUMPING * dt;
 	}
 
-	vy += SIMON_GRAVITY * dt;// Simple fall down
+	else vy += SIMON_GRAVITY * dt; // Simple fall down
 
 	for (auto& objWeapon : mapWeapon)
 	{
