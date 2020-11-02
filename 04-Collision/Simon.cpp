@@ -411,7 +411,7 @@ void Simon::Attack(TAG weaponType)
 	}
 	}
 
-	isAttacking = true;
+	isAttacking = 1;
 
 	mapWeapon[weaponType]->Attack(this->x, this->y, this->direction); // Render vũ khí của Simon đang sở hữu
 }

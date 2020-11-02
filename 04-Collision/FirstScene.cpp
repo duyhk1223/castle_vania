@@ -23,13 +23,14 @@ void FirstScene::KeyState(BYTE* state)
 		return;
 	}
 	
-	if (Game::GetInstance()->IsKeyDown(DIK_RIGHT) && simon->isAttacking == false && simon->isSitting == false)
+	// Simon đang tấn công thì ko thể đi dc
+	if (Game::GetInstance()->IsKeyDown(DIK_RIGHT) && !Game::GetInstance()->IsKeyDown(DIK_A))
 	{
 		simon->Right();
 		simon->Go();
 	}
 	else
-		if (Game::GetInstance()->IsKeyDown(DIK_LEFT) && simon->isAttacking == false && simon->isSitting == false)
+		if (Game::GetInstance()->IsKeyDown(DIK_LEFT) && !Game::GetInstance()->IsKeyDown(DIK_A))
 		{
 			simon->Left();
 			simon->Go();
