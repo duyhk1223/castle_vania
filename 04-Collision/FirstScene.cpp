@@ -55,7 +55,6 @@ void FirstScene::OnKeyDown(int KeyCode)
 	if (!(Game::GetInstance()->IsKeyDown(DIK_UP) && Game::GetInstance()->IsKeyDown(DIK_A) /*&& simon->isProcessingOnStair == 0*/ && simon->isAttacking == true))
 		if (KeyCode == DIK_A /*&& simon->isProcessingOnStair == 0*/) // Không phải đang xử lí việc đi trên thang thì đc đánh
 		{
-			simon->SetSpeed(0, 0);
 			simon->Attack(TAG::MORNINGSTAR);
 		}
 
