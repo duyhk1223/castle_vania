@@ -4,16 +4,18 @@
 #include "Scene.h"
 #include "Camera.h"
 #include "Sprite.h"
-
+#include "Brick.h"
 #include "Simon.h"
-
 #include "Map.h"
 #include "Grid.h"
-
-#include "TextureManager.h"
+#include "Item.h"
+#include "Board.h"
 #include "GameObject.h"
-#include "Simon.h"
-#include "Brick.h"
+#include "Dagger.h"
+#include "TextureManager.h"
+#include "Bonus.h"
+
+
 
 class FirstScene : public Scene
 {
@@ -21,11 +23,14 @@ private:
 	Map* tileMap;
 	Camera* camera;
 	Grid* gridGame;
+	Board* board;
 
 	Simon* simon;
 
 	TAG mapCurrent;
 	vector<GameObject*> listObj;
+
+	Sprite* _spriteLagerHeart;
 
 public:
 	FirstScene();

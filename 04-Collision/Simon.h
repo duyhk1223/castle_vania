@@ -53,6 +53,10 @@
 
 #define SIMON_TIME_WAIT_ANI_ATTACKING 120// thời gian thời của mỗi frame khi tấn công
 
+#define SIMON_DEFAULT_HEALTH 16
+#define SIMON_DEFAULT_HEARTCOLLECT 5
+#define SIMON_DEFAULT_SCORE 0
+#define SIMON_DEFAULT_LIVES 3
 
 class Simon : public GameObject
 {
@@ -61,6 +65,9 @@ private:
 	Camera* camera;
 
 public:
+	int HeartCollect; // Số lượng item heart người chơi nhặt được
+	int Lives; // số mạng của Simon
+	int Score; // Số điểm người chơi kiếm được
 
 	bool isAttacking;
 	bool isWalking;
@@ -96,6 +103,14 @@ public:
 
 	void Init(); // khởi tạo lại các trạng thái, HeartCollect, Heath, Lives, Score
 	void Reset(); // khởi tạo lại các trạng thái.
+
+	// Điểm và mạng
+	int GetLives();
+	void SetLives(int lives);
+	int GetScore();
+	void SetScore(int score);
+	int GetHeartCollect();
+	void SetHeartCollect(int collectedHeart);
 };
 
 

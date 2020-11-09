@@ -59,11 +59,16 @@ void TextureManager::LoadResource()
 	AddTexture(TAG::ITEMDAGGER, new Texture("Resources/item/4.png"));
 	AddTexture(TAG::LARGEHEART, new Texture("Resources/item/1.png"));
 	AddTexture(TAG::UPGRADEMORNINGSTAR, new Texture("Resources/item/3.png"));
-	//AddTexture(objectType::BONUS, new Texture("Resources/item/2.png", 3, 1, 3));
+	AddTexture(TAG::BONUS, new Texture("Resources/item/2.png", 3, 1, 3));
 
 	// Weapon
 	AddTexture(TAG::DAGGER, new Texture("Resources/weapon/1.png"));
 	AddTexture(TAG::MORNINGSTAR, new Texture("Resources/weapon/morningstar.png", 4, 3, 12));
+
+	// Board
+	AddTexture(TAG::FONT, new Texture("Resources/font/1.png", 13, 3, 37));
+	AddTexture(TAG::BOARD, new Texture("Resources/blackboard.png", 1, 1, 1));
+	AddTexture(TAG::BOARDHEALTH, new Texture("Resources/heal.png", 3, 1, 3));
 
 	// Effect
 	/*AddTexture(objectType::FIRE, new Texture("Resources/other/1.png", 4, 1, 4));

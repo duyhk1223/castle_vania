@@ -22,6 +22,11 @@ Simon::~Simon()
 
 void Simon::Init()
 {
+	Health = SIMON_DEFAULT_HEALTH; // Simon dính 16 phát là chết
+	Lives = SIMON_DEFAULT_LIVES; // Simon có 3 mạng
+	HeartCollect = SIMON_DEFAULT_HEARTCOLLECT; // Simon có 5 tim ban đầu
+	Score = SIMON_DEFAULT_SCORE; // Ban đầu chưa có điểm
+
 	Reset();
 }
 
@@ -415,3 +420,37 @@ void Simon::Attack(TAG weaponType)
 
 	mapWeapon[weaponType]->Attack(this->x, this->y, this->direction); // Render vũ khí của Simon đang sở hữu
 }
+
+#pragma region Phần get set cho mạng, điểm và tim
+
+int Simon::GetLives()
+{
+	return Lives;
+}
+
+void Simon::SetLives(int lives)
+{
+	Lives = lives;
+}
+
+int Simon::GetScore()
+{
+	return Score;
+}
+
+void Simon::SetScore(int score)
+{
+	Score = score;
+}
+
+void Simon::SetHeartCollect(int h)
+{
+	HeartCollect = h;
+}
+
+int Simon::GetHeartCollect()
+{
+	return HeartCollect;
+}
+
+#pragma endregion

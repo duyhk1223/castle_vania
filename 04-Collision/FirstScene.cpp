@@ -12,7 +12,7 @@ FirstScene::~FirstScene()
 void FirstScene::KeyState(BYTE* state)
 {
 	// Nếu đang ko tấn công thì mới ngồi dc
-	if (Game::GetInstance()->IsKeyDown(DIK_DOWN) && simon->isAttacking == false)
+	if (Game::GetInstance()->IsKeyDown(DIK_DOWN) && simon->isAttacking == false && simon->isJumping == false)
 	{
 		simon->Sit();
 		if (Game::GetInstance()->IsKeyDown(DIK_RIGHT))
@@ -23,14 +23,26 @@ void FirstScene::KeyState(BYTE* state)
 		return;
 	}
 	
+	if (simon->isAttacking && simon->isJumping)
+		return;
+
+	if (simon->isAttacking) // Nếu Simon đang attack thì dừng phương di chuyển ngang và nếu đang nhảy thì sẽ để lại vy
+	{
+		float vx, vy;
+		simon->GetSpeed(vx, vy);
+		simon->SetSpeed(0, vy);
+
+		return;
+	}
+
 	// Simon đang tấn công thì ko thể đi dc
-	if (Game::GetInstance()->IsKeyDown(DIK_RIGHT) && !Game::GetInstance()->IsKeyDown(DIK_A))
+	if (Game::GetInstance()->IsKeyDown(DIK_RIGHT) && simon->isSitting == false)
 	{
 		simon->Right();
 		simon->Go();
 	}
 	else
-		if (Game::GetInstance()->IsKeyDown(DIK_LEFT) && !Game::GetInstance()->IsKeyDown(DIK_A))
+		if (Game::GetInstance()->IsKeyDown(DIK_LEFT) && simon->isSitting == false)
 		{
 			simon->Left();
 			simon->Go();
@@ -93,6 +105,9 @@ void FirstScene::LoadResources()
 	gridGame = new Grid();
 	camera = new Camera(SCREEN_WIDTH, SCREEN_HEIGHT);
 	simon = new Simon(camera);
+	board = new Board(BOARD_DEFAULT_POSITION_X, BOARD_DEFAULT_POSITION_Y);
+
+	_spriteLagerHeart = new Sprite(TextureManager::GetInstance()->GetTexture(TAG::LARGEHEART), 100);
 
 	InitGame();
 }
@@ -135,6 +150,8 @@ void FirstScene::Render()
 		listObj[i]->Render(camera);
 
 	simon->Render(camera);
+
+	board->Render(simon, 1, 300, NULL); // Vẽ tạm
 	//if (!isGameOver)
 	//{
 	//	
