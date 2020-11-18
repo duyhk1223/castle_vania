@@ -26,7 +26,7 @@ void Weapon::Attack(float X, float Y, int Direction)
 	this->direction = Direction;
 	isFinish = false; // Mới tấn công
 
-	LastTimeAttacked = GetTickCount(); // Lưu lại thời điểm tấn công
+	LastTimeAttack = GetTickCount(); // Lưu lại thời điểm tấn công, làm đánh dấu tránh 1 hit đánh nhiều lần cho các object, có health >1.
 }
 
 void Weapon::Render(Camera* camera)
@@ -49,6 +49,17 @@ void Weapon::UpdatePositionFitSimon()
 {
 }
 
+bool Weapon::isCollision(GameObject* obj)
+{
+	if (isFinish == true)
+		return false;
+
+	// dt, dx, dy đã update 
+	if (obj->GetHealth() <= 0) // đã chết
+		return false;
+	return isCollitionObjectWithObject(obj);
+}
+
 bool Weapon::GetFinish()
 {
 	return isFinish;
@@ -59,7 +70,7 @@ void Weapon::SetFinish(bool IsFinish)
 	this->isFinish = IsFinish;
 }
 
-DWORD Weapon::GetLastTimeAttacked()
+DWORD Weapon::GetLastTimeAttack()
 {
-	return LastTimeAttacked;
+	return LastTimeAttack;
 }

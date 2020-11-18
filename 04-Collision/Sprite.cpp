@@ -27,7 +27,7 @@ Sprite::~Sprite()
 void Sprite::MoveToNextFrame()
 {
 	currentFrame++;
-	if (currentFrame > totalFrames) // Điều kiện cho texture có 1 animation
+	if (currentFrame > totalFrames)
 		currentFrame = 0;
 }
 
@@ -48,7 +48,7 @@ void Sprite::Update(DWORD dt)
 	timeAccumulated += dt;
 	if (timeAccumulated >= timeAnimation)
 	{
-		timeAccumulated -= timeAnimation; // reset time
+		ResetAccumulatedTime();
 		this->MoveToNextFrame();
 	}
 }

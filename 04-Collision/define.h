@@ -73,6 +73,10 @@ enum TAG
 	MONEY_RED_BAG = 94,
 	MONEY_WHITE_BAG = 95,
 	MONEY_PURPLE_BAG = 96,
+
+	// Effect
+	HIT = 122,
+	FIRE = 123
 };
 
 #ifndef CHECK_OBJECT_IN_CAMERA 

@@ -38,7 +38,6 @@ struct CollisionEvent
 
 class GameObject
 {
-
 protected:
 	DWORD LastTimeAttacked; // thời điểm bị tấn công cuối cùng
 	int Health;

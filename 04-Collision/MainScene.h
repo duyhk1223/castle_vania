@@ -9,15 +9,23 @@
 #include "Map.h"
 #include "Grid.h"
 #include "Item.h"
+#include "Effect.h"
 #include "Board.h"
 #include "GameObject.h"
 #include "Dagger.h"
 #include "TextureManager.h"
 #include "Bonus.h"
+#include "UpgradeMorningStar.h"
+#include "ItemDagger.h"
+#include "LargeHeart.h"
+#include "Hit.h"
+#include "Fire.h"
 
 
+#define GAME_TIME_MAX 300
 
-class FirstScene : public Scene
+
+class MainScene : public Scene
 {
 private:
 	Map* tileMap;
@@ -29,12 +37,14 @@ private:
 
 	TAG mapCurrent;
 	vector<GameObject*> listObj;
+	vector<Item*> listItem;
+	vector<Effect*> listEffect;
 
 	Sprite* _spriteLagerHeart;
 
 public:
-	FirstScene();
-	~FirstScene();
+	MainScene();
+	~MainScene();
 
 	void KeyState(BYTE* state);
 	void OnKeyDown(int KeyCode);
@@ -47,8 +57,18 @@ public:
 	void Update(DWORD dt);
 	void Render();
 
-
 	void LoadMap(TAG mapType);
+
+	
+
+	void CheckCollisionWeapon(vector<GameObject*> listObj);
+
+	void CheckCollisionSimonItem();
+
+	Item* DropItem(int Id, TAG Type, float X, float Y);
+
+	void CheckCollision();
+
 	int StageCurrent;
 };
 

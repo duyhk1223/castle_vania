@@ -7,6 +7,12 @@
 #define MORNINGSTAR_ANI_LEVEL0_START 0
 #define MORNINGSTAR_ANI_LEVEL0_END 3
 
+#define MORNINGSTAR_ANI_LEVEL1_START 4
+#define MORNINGSTAR_ANI_LEVEL1_END 7
+
+#define MORNINGSTAR_ANI_LEVEL2_START 8
+#define MORNINGSTAR_ANI_LEVEL2_END 11
+
 #include "Weapon.h"
 #include "GameObject.h"
 #include "TextureManager.h"
@@ -25,14 +31,17 @@ public:
 
 	void Attack(float X, float Y, int Direction);
 
-	void UpdatePositionFitSimon(); // Update vị trí cho vũ khí theo vị trí của Simon
+	void UpdatePositionFitSimon(); 
 	void RenderIcon(float X, float Y); // Hàm render icon lên bảng hiển thị
 	void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 
+	bool isCollision(GameObject* obj); // Kiểm tra va chạm của roi
+
 	void UpgradeLevel();
 
+
 	int GetLevel();
-	//void isCollisionWithAnotherObject(GameObject* object); // Hàm kiểm tra xem vũ khí có va chạm với object khác hay không
+	
 };
 
 #endif

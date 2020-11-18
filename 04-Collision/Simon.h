@@ -5,6 +5,7 @@
 #include "GameObject.h"
 #include "Weapon.h"
 #include "MorningStar.h"
+#include "Item.h"
 
 
 #define SIMON_DEFAULT_POSITION  50.0f, 300.0f
@@ -58,6 +59,10 @@
 #define SIMON_DEFAULT_SCORE 0
 #define SIMON_DEFAULT_LIVES 3
 
+
+#define TIME_FREEZE_MAX 500
+
+
 class Simon : public GameObject
 {
 private:
@@ -68,6 +73,9 @@ public:
 	int HeartCollect; // Số lượng item heart người chơi nhặt được
 	int Lives; // số mạng của Simon
 	int Score; // Số điểm người chơi kiếm được
+
+	bool isFreeze; // đứng im khi nhặt item nâng cấp
+	DWORD TimeFreeze; // thời gian đã đóng băng
 
 	bool isAttacking;
 	bool isWalking;
@@ -99,7 +107,14 @@ public:
 
 	void Attack(TAG weaponType);
 
+	bool GetFreeze();
+	void SetFreeze(int f);
+	void UpdateFreeze(DWORD dt);
+
 	void CollisionWithBrick(const vector<LPGAMEOBJECT>* coObjects = NULL);
+
+	bool isCollisionWithItem(Item* objItem);
+
 
 	void Init(); // khởi tạo lại các trạng thái, HeartCollect, Heath, Lives, Score
 	void Reset(); // khởi tạo lại các trạng thái.

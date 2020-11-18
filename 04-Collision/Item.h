@@ -21,7 +21,7 @@ protected:
 public:
 	Item();
 	virtual ~Item();
-	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* listObjects = NULL);
+	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* listObjects = NULL); // chỉ kiểm tra va chạm với đất
 	virtual void Render(Camera* camera);
 	virtual bool IsWaitingToDisplay(); // Hàm check nếu đang chờ item hiển thị thì Simon không được nhặt item
 

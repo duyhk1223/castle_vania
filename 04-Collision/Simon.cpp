@@ -4,7 +4,7 @@
 Simon::Simon(Camera* camera)
 {
 	texture = TextureManager::GetInstance()->GetTexture(TAG::SIMON);
-	sprite = new Sprite(texture, 250);
+	sprite = new Sprite(texture, 150);
 	// _sprite_deadth = new Sprite(TextureManager::GetInstance()->GetTexture(TAG::SIMON_DEADTH), 250);
 	type = TAG::SIMON;
 
@@ -186,6 +186,8 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 	GameObject::Update(dt);
 
+	
+
 	// Xét xem Simon đang trong trạng thái nhảy hay mới vô game
 	if (isJumping)
 	{
@@ -289,6 +291,25 @@ void Simon::CollisionWithBrick(const vector<LPGAMEOBJECT>* coObjects)
 		delete coEvents[i];
 }
 
+bool Simon::isCollisionWithItem(Item* objItem)
+{
+	if (objItem->GetFinish() == true)
+		return false;
+
+	float l, t, r, b;
+	float l1, t1, r1, b1;
+	this->GetBoundingBox(l, t, r, b);  // lấy BBOX của simon
+
+	objItem->GetBoundingBox(l1, t1, r1, b1);
+	if (Game::GetInstance()->checkAABB(l, t, r, b, l1, t1, r1, b1) == true)
+	{
+		return true; // check with AABB
+	}
+
+	return false;
+	//return isCollitionObjectWithObject(objItem);
+}
+
 #pragma endregion
 
 void Simon::Render(Camera* camera)
@@ -300,10 +321,21 @@ void Simon::Render(Camera* camera)
 
 	D3DXVECTOR2 pos = camera->Transform(x, y);
 
-	if (direction == -1)
-		sprite->Draw(pos.x, pos.y, alpha);
+	if (this->GetFreeze() == true)
+	{
+		if (direction == -1)
+			sprite->Draw(pos.x, pos.y, alpha, rand() % 256, rand() % 256, rand() % 256);
+		else
+			sprite->DrawFlipX(pos.x, pos.y, alpha, rand() % 256, rand() % 256, rand() % 256);
+
+	}
 	else
-		sprite->DrawFlipX(pos.x, pos.y, alpha);
+	{
+		if (direction == -1)
+			sprite->Draw(pos.x, pos.y, alpha);
+		else
+			sprite->DrawFlipX(pos.x, pos.y, alpha);
+	}
 
 	for (auto& objWeapon : mapWeapon)
 	{
@@ -419,6 +451,27 @@ void Simon::Attack(TAG weaponType)
 	isAttacking = 1;
 
 	mapWeapon[weaponType]->Attack(this->x, this->y, this->direction); // Render vũ khí của Simon đang sở hữu
+}
+
+bool Simon::GetFreeze()
+{
+	return isFreeze;
+}
+
+void Simon::SetFreeze(int f)
+{
+	isFreeze = f;
+	TimeFreeze = 0; // thời gian đã đóng băng
+}
+
+void Simon::UpdateFreeze(DWORD dt)
+{
+	if (TimeFreeze + dt >= TIME_FREEZE_MAX)
+	{
+		SetFreeze(false); // kết thúc đóng băng
+	}
+	else
+		TimeFreeze += dt;
 }
 
 #pragma region Phần get set cho mạng, điểm và tim

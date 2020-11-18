@@ -10,6 +10,7 @@
 
 class UpgradeMorningStar : public Item
 {
+public:
 	UpgradeMorningStar(float X = 0, float Y = 0);
 	~UpgradeMorningStar();
 };

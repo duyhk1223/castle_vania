@@ -12,7 +12,7 @@ class Weapon : public GameObject
 {
 protected:
 	bool isFinish; // Biến check xem animation của vũ khí đã hoàn tất hay chưa
-	DWORD LastTimeAttacked; // Lưu lại thời điểm lúc vừa tấn công, làm đánh dấu tránh 1 hit đánh nhiều lần cho các object, có health > 1
+	DWORD LastTimeAttack; // Lưu lại thời điểm lúc vừa tấn công, làm đánh dấu tránh 1 hit đánh nhiều lần cho các object, có health > 1
 
 public:
 	Weapon();
@@ -25,13 +25,16 @@ public:
 
 	virtual void Render(Camera* camera);
 	virtual void UpdatePositionFitSimon(); // Update vị trí cho vũ khí theo vị trí của Simon
-	//virtual void isCollisionWithAnotherObject(GameObject* object); // Hàm kiểm tra xem vũ khí có va chạm với object khác hay không
-	virtual void RenderIcon(float X, float Y) = 0; // Hàm render icon lên bảng hiển thị
+
+	virtual bool isCollision(GameObject* object); 
+
+	virtual void RenderIcon(float X, float Y) = 0; // Trên bảng điểm
 	
-	bool GetFinish(); // Get giá trị biến check xem weapon đã hoàn thành attack hay chưa
+
+	bool GetFinish();
 	void SetFinish(bool IsFinish);
 
-	DWORD GetLastTimeAttacked();
+	DWORD GetLastTimeAttack();
 };
 
 #endif
