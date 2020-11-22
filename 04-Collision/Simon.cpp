@@ -40,9 +40,13 @@ void Simon::Reset()
 	isWalking = 0;
 	isAttacking = 0;
 
+	isFreeze = 0;
+	TimeFreeze = 0;
 
 	vx = 0;
 	vy = 0;
+
+	SubWeaponType = TAG::NO_SUBWEAPON;
 }
 
 void Simon::GetBoundingBox(float& left, float& top, float& right, float& bottom)
@@ -342,6 +346,7 @@ void Simon::Render(Camera* camera)
 		if (objWeapon.second->GetFinish() == false) // vũ khi này chưa kết thúc thì render
 		{
 			objWeapon.second->Render(camera);
+			//DebugOut(L"%d", objWeapon.first);
 		}
 	}
 }
@@ -436,21 +441,67 @@ void Simon::Stop()
 
 void Simon::Attack(TAG weaponType)
 {
-	switch (weaponType)
+	
+	if (weaponType == TAG::NO_SUBWEAPON) // không có vũ khí phụ thì không thực hiện
 	{
-	case MORNINGSTAR:
-	{
-		if (isAttacking) // Nếu đang tấn công thì ko xét
-		{
-			return;
+		return;
+	}
+
+	//switch (weaponType)
+	//{
+	//case MORNINGSTAR:
+	//{
+	//	if (isAttacking) // Nếu đang tấn công thì ko cần xét nữa
+	//	{
+	//		return;
+	//	}
+	//	
+	//	break;
+	//}
+	//
+	//default: // các vũ khí còn lại
+	//{
+	//	if (HeartCollect >= 1)
+	//	{
+	//		
+	//	}
+	//	else
+	//		return;// ko đủ HeartCollect thì ko attack
+	//	break;
+	//}
+	//}
+	if (mapWeapon[weaponType]->GetFinish()) { // vũ khí đã kết thúc thì mới đc tấn công tiếp
+
+		isAttacking = 1;
+		sprite->SelectFrame(0);
+		sprite->ResetAccumulatedTime();
+			
+		mapWeapon[weaponType]->Attack(this->x, this->y, this->direction);
+	} 
+
+	
+}
+
+TAG Simon::GetTypeSubWeapon()
+{
+	return SubWeaponType;
+}
+
+void Simon::SetTypeSubWeapon(TAG t)
+{
+	SubWeaponType = t;
+}
+
+void Simon::PickUpSubWeapon(TAG t)
+{
+	switch (t) {
+	case DAGGER:
+		if (mapWeapon[t] == NULL) { // chưa có thì thêm vào map
+			mapWeapon[t] = new Dagger(camera);
 		}
 		break;
 	}
-	}
-
-	isAttacking = 1;
-
-	mapWeapon[weaponType]->Attack(this->x, this->y, this->direction); // Render vũ khí của Simon đang sở hữu
+	SetTypeSubWeapon(t); // set loại vũ khí phụ hiện tại
 }
 
 bool Simon::GetFreeze()

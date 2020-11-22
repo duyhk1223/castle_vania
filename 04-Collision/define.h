@@ -64,6 +64,7 @@ enum TAG
 	// Weapon
 	MORNINGSTAR = 61,
 	DAGGER = 62,
+	NO_SUBWEAPON = 70,
 
 	// Item
 	LARGEHEART = 81,

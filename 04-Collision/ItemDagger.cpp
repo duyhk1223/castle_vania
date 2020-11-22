@@ -18,4 +18,5 @@ ItemDagger::ItemDagger(float X, float Y)
 
 ItemDagger::~ItemDagger()
 {
+
 }

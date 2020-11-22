@@ -11,10 +11,22 @@ MainScene::~MainScene()
 
 void MainScene::KeyState(BYTE* state)
 {
-	// Nếu đang ko tấn công thì mới ngồi dc
-	if (Game::GetInstance()->IsKeyDown(DIK_DOWN) && simon->isAttacking == false && simon->isJumping == false)
+
+	if (simon->GetFreeze() == true) // disable control
+	{
+		return;
+	}
+
+	if (Game::GetInstance()->IsKeyDown(DIK_UP) && Game::GetInstance()->IsKeyDown(DIK_A) && !simon->isAttacking)
+	{
+		simon->Attack(simon->GetTypeSubWeapon()); // attack với vũ khí phụ đang nhặt
+	}
+
+	//ngồi
+	if (Game::GetInstance()->IsKeyDown(DIK_DOWN) && simon->isAttacking == false && simon->isJumping == false )
 	{
 		simon->Sit();
+		
 		if (Game::GetInstance()->IsKeyDown(DIK_RIGHT))
 			simon->Right();
 
@@ -22,41 +34,44 @@ void MainScene::KeyState(BYTE* state)
 			simon->Left();
 		return;
 	}
-	
-	if (simon->isAttacking && simon->isJumping)
-		return;
 
-	if (simon->isAttacking) // Nếu Simon đang attack thì dừng phương di chuyển ngang và nếu đang nhảy thì sẽ để lại vy
+	if (simon->isJumping && simon->isWalking)
+	{
+		return;
+	}
+
+	if (simon->isAttacking) // đang attack
 	{
 		float vx, vy;
 		simon->GetSpeed(vx, vy);
-		simon->SetSpeed(0, vy);
+		simon->SetSpeed(0, vy); // thì không thể đi
 
 		return;
 	}
 
-	// Simon đang tấn công thì ko thể đi dc
-	if (Game::GetInstance()->IsKeyDown(DIK_RIGHT) && simon->isSitting == false)
-	{
-		simon->Right();
-		simon->Go();
-	}
-	else
-		if (Game::GetInstance()->IsKeyDown(DIK_LEFT) && simon->isSitting == false)
+	if (simon->isJumping == 0) {
+		if (Game::GetInstance()->IsKeyDown(DIK_RIGHT) && simon->isSitting == 0)
 		{
-			simon->Left();
+			simon->Right();
 			simon->Go();
 		}
 		else
-		{
-			simon->Stop();
-		}
-
+			if (Game::GetInstance()->IsKeyDown(DIK_LEFT) && simon->isSitting == 0)
+			{
+				simon->Left();
+				simon->Go();
+			}
+			else
+			{
+				simon->Stop();
+			}
+		
+	}
 }
 
 void MainScene::OnKeyDown(int KeyCode)
 {
-	if (KeyCode == DIK_R) // render bbox debug
+	if (KeyCode == DIK_R) // render bbox
 	{
 		if (isDebug_RenderBBox == 0)
 			isDebug_RenderBBox = 1;
@@ -65,21 +80,22 @@ void MainScene::OnKeyDown(int KeyCode)
 	}
 
 
-	if (!(Game::GetInstance()->IsKeyDown(DIK_UP) && Game::GetInstance()->IsKeyDown(DIK_A) && simon->isAttacking == true))
-		if (KeyCode == DIK_A)
+	if (!(Game::GetInstance()->IsKeyDown(DIK_UP) && Game::GetInstance()->IsKeyDown(DIK_A) && simon->isAttacking == true)) {
+		if (KeyCode == DIK_A) // tấn công bằng roi
 		{
 			simon->Attack(TAG::MORNINGSTAR);
 		}
-
+	}
+		
 	if (simon->isJumping && simon->isWalking)
 	{
 		return;
 	}
 
 
-	if (KeyCode == DIK_S /*&& simon->isOnStair == false*/)
+	if (KeyCode == DIK_S && simon->isJumping == 0) // nhảy
 	{
-		if (Game::GetInstance()->IsKeyDown(DIK_LEFT) || Game::GetInstance()->IsKeyDown(DIK_RIGHT))
+		if (Game::GetInstance()->IsKeyDown(DIK_LEFT) || Game::GetInstance()->IsKeyDown(DIK_RIGHT)) // đang đi khi nhảy sẽ nhảy hết hình cung
 		{
 			simon->Stop();
 			simon->SetSpeed(SIMON_WALKING_SPEED * simon->GetDirection(), -SIMON_VJUMP);
@@ -95,6 +111,7 @@ void MainScene::OnKeyDown(int KeyCode)
 
 void MainScene::OnKeyUp(int KeyCode)
 {
+	//DebugOut(L"[INFO] KeyUp: %d\n", KeyCode);
 }
 
 void MainScene::LoadResources()
@@ -239,7 +256,7 @@ void MainScene::CheckCollisionWeapon(vector<GameObject*> listObj) // kt va chạ
 							listEffect.push_back(new Fire(gameObj->GetX() - 5, gameObj->GetY() + 8)); // hiệu ứng lửa
 
 							
-
+							// DAGGER chạm obj sẽ mất
 							if (objWeapon.second->GetType() == TAG::DAGGER)
 							{
 								objWeapon.second->SetFinish(true);
@@ -269,14 +286,30 @@ void MainScene::CheckCollisionSimonItem()
 					listItem[i]->SetFinish(true);
 
 					break;
+
+
+
 				case TAG::UPGRADEMORNINGSTAR:
+				{
 					MorningStar* objMorningStar = dynamic_cast<MorningStar*>(simon->mapWeapon[TAG::MORNINGSTAR]);
-					objMorningStar->UpgradeLevel(); // Nâng cấp vũ khí roi
+					objMorningStar->UpgradeLevel(); // Nâng cấp roi
 
 					listItem[i]->SetFinish(true);
-					simon->SetFreeze(true); // bật trạng thái đóng băng
-					
+					simon->SetFreeze(true); // bật trạng thái đóng băng 
+
 					break;
+				}
+					
+
+
+				//Sub weapon item
+				case TAG::ITEMDAGGER:
+				{
+					simon->PickUpSubWeapon(TAG::DAGGER);
+					listItem[i]->SetFinish(true);
+					break;
+				}
+					
 				}
 				
 			}
@@ -298,13 +331,13 @@ Item* MainScene::DropItem(int Id, TAG Type, float X, float Y) // xử lí rơ�
 	{
 		if (Type == TAG::TORCH)
 		{
-			if (Id == 1 || Id == 4)
+			if (Id == 5 || Id == 4)
 				return new LargeHeart(X, Y);
 
 			if (Id == 2 || Id == 3)
 				return new UpgradeMorningStar(X, Y);
 
-			if (Id == 5)
+			if (Id == 1)
 				return new ItemDagger(X, Y);
 		}
 

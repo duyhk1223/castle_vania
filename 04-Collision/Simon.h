@@ -6,7 +6,7 @@
 #include "Weapon.h"
 #include "MorningStar.h"
 #include "Item.h"
-
+#include "Dagger.h"
 
 #define SIMON_DEFAULT_POSITION  50.0f, 300.0f
 
@@ -68,8 +68,8 @@ class Simon : public GameObject
 private:
 
 	Camera* camera;
+	TAG SubWeaponType; // loại vũ khí phụ đang giữ
 
-public:
 	int HeartCollect; // Số lượng item heart người chơi nhặt được
 	int Lives; // số mạng của Simon
 	int Score; // Số điểm người chơi kiếm được
@@ -77,12 +77,16 @@ public:
 	bool isFreeze; // đứng im khi nhặt item nâng cấp
 	DWORD TimeFreeze; // thời gian đã đóng băng
 
+	bool isCollisionAxisYWithBrick = false; // Đang va chạm với đất theo trục y
+
+public:
+	
 	bool isAttacking;
 	bool isWalking;
 	bool isJumping;
 	bool isSitting;
 
-	bool isCollisionAxisYWithBrick = false; // Đang va chạm với đất theo trục y
+	
 
 	unordered_map<TAG, Weapon*> mapWeapon;
 
@@ -112,8 +116,12 @@ public:
 	void UpdateFreeze(DWORD dt);
 
 	void CollisionWithBrick(const vector<LPGAMEOBJECT>* coObjects = NULL);
-
 	bool isCollisionWithItem(Item* objItem);
+
+
+	TAG GetTypeSubWeapon();
+	void SetTypeSubWeapon(TAG t);
+	void PickUpSubWeapon(TAG t);
 
 
 	void Init(); // khởi tạo lại các trạng thái, HeartCollect, Heath, Lives, Score

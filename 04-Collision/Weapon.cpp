@@ -36,7 +36,7 @@ void Weapon::Render(Camera* camera)
 		return;
 
 	D3DXVECTOR2 position = camera->Transform(x, y);
-	if (direction == 1)
+	if (direction == -1)
 		sprite->Draw(position.x, position.y);
 	else
 		sprite->DrawFlipX(position.x, position.y);
