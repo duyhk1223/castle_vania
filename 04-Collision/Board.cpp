@@ -31,6 +31,14 @@ void Board::Render(Simon* simon, int stage, int RemainingTime, GameObject* boss)
 
 	int BossBlood = 16;
 	_boardHealth->Draw(simon->GetHealth(), BossBlood);
+
+	TAG SubWeaponType = simon->GetTypeSubWeapon();
+	switch (SubWeaponType)
+	{
+	case TAG::DAGGER:
+		simon->mapWeapon[SubWeaponType]->RenderIcon(x + 310.0f, y + 40.0f);
+		break;
+	}
 }
 
 Board::~Board()

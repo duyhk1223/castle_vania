@@ -11,6 +11,11 @@ MainScene::~MainScene()
 
 void MainScene::KeyState(BYTE* state)
 {
+	if (Game::GetInstance()->IsKeyDown(DIK_UP) && Game::GetInstance()->IsKeyDown(DIK_A) /*&& simon->isProcessingOnStair == 0*/ && !simon->isAttacking)
+	{
+		simon->Attack(simon->GetTypeSubWeapon()); // attack với vũ khí phụ đang nhặt
+	}
+
 	// Nếu đang ko tấn công thì mới ngồi dc
 	if (Game::GetInstance()->IsKeyDown(DIK_DOWN) && simon->isAttacking == false && simon->isJumping == false)
 	{
@@ -34,6 +39,10 @@ void MainScene::KeyState(BYTE* state)
 
 		return;
 	}
+
+	// Nếu đang nhảy thì ko thể đổi chiều Simon
+	if (simon->isJumping)
+		return;
 
 	// Simon đang tấn công thì ko thể đi dc
 	if (Game::GetInstance()->IsKeyDown(DIK_RIGHT) && simon->isSitting == false)
@@ -125,8 +134,6 @@ void MainScene::ResetResource()
 
 void MainScene::Update(DWORD dt)
 {
-	
-
 	// xử lí freeze
 	if (simon->GetFreeze() == true)
 	{
@@ -189,29 +196,36 @@ void MainScene::LoadMap(TAG mapType)
 	{
 	case TAG::MAP1:
 		gridGame->SetFilePath("Resources/map/file_gameobject_map1.txt");
-
 		tileMap->LoadMap(TAG::MAP1);
 
 		camera->SetAllowFollowSimon(true);
-
 		camera->SetBoundary(0.0f, (float)(tileMap->GetMapWidth() - camera->GetWidth())); // set biên camera dựa vào kích thước map
-		
-
+	
 		camera->SetPosition(0, 0);
-
 		simon->SetPosition(SIMON_DEFAULT_POSITION);
 
 		StageCurrent = 1;
-		
 		break;
+
+	case TAG::MAP2:
+			gridGame->SetFilePath("Resources/map/file_gameobject_map2.txt");
+			tileMap->LoadMap(TAG::MAP2);
+
+			camera->SetAllowFollowSimon(true);
+			camera->SetPosition(0, 0);
+			camera->SetBoundary(0, CAMERA_BOUNDARY_BEFORE_GO_GATE1_RIGHT); // biên camera khi chưa qua cửa
+			
+			simon->SetPosition(SIMON_DEFAULT_POSITION);
+			break;
 	}
 
 	ResetResource();
 }
 
+#pragma region Các hàm check va chạm
+
 void MainScene::CheckCollisionWeapon(vector<GameObject*> listObj) // kt va chạm của vũ khí 
 {
-	
 	for (auto& objWeapon : simon->mapWeapon)
 	{
 		if (objWeapon.second->GetFinish() == false) // Vũ khí đang hoạt động
@@ -222,7 +236,6 @@ void MainScene::CheckCollisionWeapon(vector<GameObject*> listObj) // kt va chạ
 				{
 					if (objWeapon.second->isCollision(listObj[i]) == true) // nếu có va chạm
 					{
-						
 						bool RunEffectHit = false;
 						GameObject* gameObj = listObj[i];
 						switch (gameObj->GetType()) {
@@ -231,6 +244,16 @@ void MainScene::CheckCollisionWeapon(vector<GameObject*> listObj) // kt va chạ
 							listItem.push_back(DropItem(gameObj->GetId(), gameObj->GetType(), gameObj->GetX() + 5, gameObj->GetY()));
 							RunEffectHit = true;
 							break;
+
+						/* Vũ khí phụ của simon */
+						case TAG::ITEMDAGGER:
+						{
+							simon->PickUpSubWeapon(TAG::DAGGER);
+							listItem[i]->SetFinish(true);
+							break;
+						}
+
+
 						}
 
 						if (RunEffectHit)
@@ -239,7 +262,7 @@ void MainScene::CheckCollisionWeapon(vector<GameObject*> listObj) // kt va chạ
 							listEffect.push_back(new Fire(gameObj->GetX() - 5, gameObj->GetY() + 8)); // hiệu ứng lửa
 
 							
-
+							// Nếu dao va chạm với object thì sẽ finish luôn
 							if (objWeapon.second->GetType() == TAG::DAGGER)
 							{
 								objWeapon.second->SetFinish(true);
@@ -269,16 +292,59 @@ void MainScene::CheckCollisionSimonItem()
 					listItem[i]->SetFinish(true);
 
 					break;
+
 				case TAG::UPGRADEMORNINGSTAR:
+				{
 					MorningStar* objMorningStar = dynamic_cast<MorningStar*>(simon->mapWeapon[TAG::MORNINGSTAR]);
-					objMorningStar->UpgradeLevel(); // Nâng cấp vũ khí roi
+					objMorningStar->UpgradeLevel(); // Nâng cấp roi
 
 					listItem[i]->SetFinish(true);
-					simon->SetFreeze(true); // bật trạng thái đóng băng
-					
+					simon->SetFreeze(true); // bật trạng thái đóng băng 
+
 					break;
 				}
-				
+
+				//Sub weapon item
+				case TAG::ITEMDAGGER:
+				{
+					simon->PickUpSubWeapon(TAG::DAGGER);
+					listItem[i]->SetFinish(true);
+					break;
+				}
+
+				}
+			}
+		}
+	}
+}
+
+void MainScene::CheckCollisionSimonAndHiddenObject()
+{
+	for (UINT i = 0; i < listObj.size(); i++)
+	{
+		if (listObj[i]->GetType() == TAG::OBJECT_HIDDEN)
+		{
+			GameObject* object = listObj[i];
+
+			if (object->GetHealth() > 0)
+			{
+				if (simon->isCollitionObjectWithObject(object)) // Có va chạm với object xảy ra
+				{
+					if (mapCurrent == TAG::MAP1)
+					{
+						switch (object->GetId())
+						{
+						case 7: // Hiden object ở cửa
+							LoadMap(TAG::MAP2);
+
+							return;
+						case 8: // Hiden object của bonus
+							listItem.push_back(DropItem(object->GetId(), object->GetType(), simon->GetX(), simon->GetY()));
+							break;
+						}
+						object->SubHealth(1);
+					}
+				}
 			}
 		}
 	}
@@ -288,9 +354,8 @@ void MainScene::CheckCollision()
 {
 	CheckCollisionWeapon(listObj); 
 	CheckCollisionSimonItem();
+	CheckCollisionSimonAndHiddenObject();
 }
-
-
 
 Item* MainScene::DropItem(int Id, TAG Type, float X, float Y) // xử lí rớt item
 {
@@ -315,4 +380,6 @@ Item* MainScene::DropItem(int Id, TAG Type, float X, float Y) // xử lí rơ�
 		}
 	}
 }
+
+#pragma endregion
 

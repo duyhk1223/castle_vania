@@ -154,6 +154,21 @@
     <ClCompile Include="MainScene.cpp">
       <Filter>Framework\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="HiddenObject.cpp">
+      <Filter>Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Candle.cpp">
+      <Filter>Object\Ground</Filter>
+    </ClCompile>
+    <ClCompile Include="StairTop.cpp">
+      <Filter>Object\Ground</Filter>
+    </ClCompile>
+    <ClCompile Include="StairBottom.cpp">
+      <Filter>Object\Ground</Filter>
+    </ClCompile>
+    <ClCompile Include="Gate.cpp">
+      <Filter>Object\Ground</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="debug.h">
@@ -248,6 +263,21 @@
     </ClInclude>
     <ClInclude Include="MainScene.h">
       <Filter>Framework\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="HiddenObject.h">
+      <Filter>Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Candle.h">
+      <Filter>Object\Ground</Filter>
+    </ClInclude>
+    <ClInclude Include="StairTop.h">
+      <Filter>Object\Ground</Filter>
+    </ClInclude>
+    <ClInclude Include="StairBottom.h">
+      <Filter>Object\Ground</Filter>
+    </ClInclude>
+    <ClInclude Include="Gate.h">
+      <Filter>Object\Ground</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

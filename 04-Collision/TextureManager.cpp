@@ -39,16 +39,22 @@ void TextureManager::LoadResource()
 	AddTexture(TAG::SIMON_TRANS, new Texture("Resources/simon_trans.png", 8, 3, 24));
 	AddTexture(TAG::SIMON_DEADTH, new Texture("Resources/simondeath.png"));
 
+	// Bounding Box
 	AddTexture(TAG::BBOX, new Texture("Resources/bbox.png"));
 	
 
 	// Map
 	AddTexture(TAG::MAP1, new Texture("Resources/map/tileset_map1.png", 8, 4, 32));
+	AddTexture(TAG::MAP2, new Texture("Resources/map/tileset_map2.png", 22, 4, 88));
 
 	// Game object ground
 	AddTexture(TAG::TRANSPARENT_BRICK, new Texture("Resources/ground/brick_transparent.png"));
 	AddTexture(TAG::TEX_BRICK_MAP_2, new Texture("Resources/ground/2-2.png"));
+
 	AddTexture(TAG::TORCH, new Texture("Resources/ground/0.png", 2, 1, 2));
+	AddTexture(TAG::CANDLE, new Texture("Resources/ground/1.png", 2, 1, 2));
+
+	AddTexture(TAG::GATE, new Texture("Resources/ground/Gate1.png", 4, 1, 4));
 
 	// Game items
 	AddTexture(TAG::ITEMDAGGER, new Texture("Resources/item/4.png"));
@@ -67,9 +73,5 @@ void TextureManager::LoadResource()
 	// Board
 	AddTexture(TAG::FONT, new Texture("Resources/font/1.png", 13, 3, 37));
 	AddTexture(TAG::BOARD, new Texture("Resources/blackboard.png", 1, 1, 1));
-	AddTexture(TAG::BOARDHEALTH, new Texture("Resources/heal.png", 3, 1, 3));
-
-	
-	
-	
+	AddTexture(TAG::BOARDHEALTH, new Texture("Resources/heal.png", 3, 1, 3));	
 }

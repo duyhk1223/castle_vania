@@ -127,11 +127,14 @@
     <ClCompile Include="Bonus.cpp" />
     <ClCompile Include="Brick.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Candle.cpp" />
     <ClCompile Include="Dagger.cpp" />
     <ClCompile Include="debug.cpp" />
     <ClCompile Include="define.cpp" />
     <ClCompile Include="Effect.cpp" />
     <ClCompile Include="Fire.cpp" />
+    <ClCompile Include="Gate.cpp" />
+    <ClCompile Include="HiddenObject.cpp" />
     <ClCompile Include="MainScene.cpp" />
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="Game.cpp" />
@@ -148,6 +151,8 @@
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="Sprite.cpp" />
+    <ClCompile Include="StairBottom.cpp" />
+    <ClCompile Include="StairTop.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Simon.cpp" />
     <ClCompile Include="TextureManager.cpp" />
@@ -161,11 +166,14 @@
     <ClInclude Include="Bonus.h" />
     <ClInclude Include="Brick.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Candle.h" />
     <ClInclude Include="Dagger.h" />
     <ClInclude Include="debug.h" />
     <ClInclude Include="define.h" />
     <ClInclude Include="Effect.h" />
     <ClInclude Include="Fire.h" />
+    <ClInclude Include="Gate.h" />
+    <ClInclude Include="HiddenObject.h" />
     <ClInclude Include="MainScene.h" />
     <ClInclude Include="Font.h" />
     <ClInclude Include="Game.h" />
@@ -181,6 +189,8 @@
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="Sprite.h" />
+    <ClInclude Include="StairBottom.h" />
+    <ClInclude Include="StairTop.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Simon.h" />
     <ClInclude Include="TextureManager.h" />

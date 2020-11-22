@@ -24,6 +24,8 @@
 
 #define GAME_TIME_MAX 300
 
+#define CAMERA_BOUNDARY_BEFORE_GO_GATE1_RIGHT (2576.0f-15.0f) // Biên phải camera trước khi qua cửa 1
+
 
 class MainScene : public Scene
 {
@@ -62,8 +64,8 @@ public:
 	
 
 	void CheckCollisionWeapon(vector<GameObject*> listObj);
-
 	void CheckCollisionSimonItem();
+	void CheckCollisionSimonAndHiddenObject();
 
 	Item* DropItem(int Id, TAG Type, float X, float Y);
 

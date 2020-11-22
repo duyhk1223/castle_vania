@@ -7,6 +7,11 @@
 #include "GameObject.h"
 #include "Brick.h"
 #include "Torch.h"
+#include "HiddenObject.h"
+#include "Candle.h"
+#include "StairTop.h"
+#include "StairBottom.h"
+#include "Gate.h"
 
 using namespace std;
 
@@ -34,7 +39,6 @@ public:
 	GameObject* CreateNewObject(int type, float x, float y, int w, int h, int Model);
 	void Insert(int id, int type, int direction, float x, float y, int w, int h, int Model); //Thêm object vào grid
 	void GetListObject(vector<GameObject*>& ListObj, Camera* camera);
-
 };
 
 #endif

@@ -26,7 +26,7 @@ void Weapon::Attack(float X, float Y, int Direction)
 	this->direction = Direction;
 	isFinish = false; // Mới tấn công
 
-	LastTimeAttack = GetTickCount(); // Lưu lại thời điểm tấn công, làm đánh dấu tránh 1 hit đánh nhiều lần cho các object, có health >1.
+	LastTimeAttack = GetTickCount(); // Lưu lại thời điểm tấn công, làm đánh dấu tránh 1 hit đánh nhiều lần cho các object, có health > 1.
 }
 
 void Weapon::Render(Camera* camera)
@@ -35,11 +35,11 @@ void Weapon::Render(Camera* camera)
 	if (isFinish)
 		return;
 
-	D3DXVECTOR2 position = camera->Transform(x, y);
-	if (direction == 1)
-		sprite->Draw(position.x, position.y);
+	D3DXVECTOR2 pos = camera->Transform(x, y);
+	if (direction == -1)
+		sprite->Draw(pos.x, pos.y);
 	else
-		sprite->DrawFlipX(position.x, position.y);
+		sprite->DrawFlipX(pos.x, pos.y);
 
 	if (IS_DEBUG_RENDER_BBOX)
 		RenderBoundingBox(camera);

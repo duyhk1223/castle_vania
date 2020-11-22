@@ -43,6 +43,8 @@ void Simon::Reset()
 
 	vx = 0;
 	vy = 0;
+
+	SubWeaponType = TAG::NO_SUBWEAPON;
 }
 
 void Simon::GetBoundingBox(float& left, float& top, float& right, float& bottom)
@@ -186,8 +188,6 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 	GameObject::Update(dt);
 
-	
-
 	// Xét xem Simon đang trong trạng thái nhảy hay mới vô game
 	if (isJumping)
 	{
@@ -214,7 +214,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	}
 
 	// xét va chạm với brick
-	CollisionWithBrick(coObjects); // check Collision and update x, y for simon
+	CollisionWithBrick(coObjects); // check Collision và update x, y cho simon
 
 }
 
@@ -436,6 +436,10 @@ void Simon::Stop()
 
 void Simon::Attack(TAG weaponType)
 {
+	if (weaponType == TAG::NO_SUBWEAPON) // không có vũ khí phụ thì không thực hiện
+		return;
+	
+
 	switch (weaponType)
 	{
 	case MORNINGSTAR:
@@ -448,9 +452,14 @@ void Simon::Attack(TAG weaponType)
 	}
 	}
 
-	isAttacking = 1;
+	if (mapWeapon[weaponType]->GetFinish()) { // vũ khí đã kết thúc thì mới đc tấn công tiếp
 
-	mapWeapon[weaponType]->Attack(this->x, this->y, this->direction); // Render vũ khí của Simon đang sở hữu
+		isAttacking = 1;
+		sprite->SelectFrame(0);
+		sprite->ResetAccumulatedTime();
+
+		mapWeapon[weaponType]->Attack(this->x, this->y, this->direction); // Render vũ khí của Simon đang sở hữu
+	}
 }
 
 bool Simon::GetFreeze()
@@ -504,6 +513,33 @@ void Simon::SetHeartCollect(int h)
 int Simon::GetHeartCollect()
 {
 	return HeartCollect;
+}
+
+#pragma endregion
+
+#pragma region Các hàm xử lý nhặt vũ khí
+
+void Simon::PickUpSubWeapon(TAG t)
+{
+	switch (t) {
+	case DAGGER:
+		if (mapWeapon[t] == NULL) { // chưa có thì thêm vào map
+			mapWeapon[t] = new Dagger(camera);
+		}
+		break;
+	}
+
+	SetTypeSubWeapon(t); // set loại vũ khí phụ hiện tại
+}
+
+TAG Simon::GetTypeSubWeapon()
+{
+	return SubWeaponType;
+}
+
+void Simon::SetTypeSubWeapon(TAG t)
+{
+	SubWeaponType = t;
 }
 
 #pragma endregion

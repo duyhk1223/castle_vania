@@ -5,7 +5,7 @@
 #include "GameObject.h" 
 #include "TextureManager.h"
 
-#define BRICK_MODEL_2 2 // gạch màn 2,32px
+#define BRICK_MODEL_2 2 // gạch màn 2, 32px
 #define BRICK_MODEL_TRANSPARENT 4 // gạch trong suốt
 #define BRICK_MODEL_3_3_32 5 // gạch loại 3, 3 ô nhỏ - 32px 
 #define BRICK_MODEL_3_4_32 6 // gạch loại 3, đủ 4 ô nhỏ - 32px 

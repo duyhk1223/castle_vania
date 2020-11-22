@@ -3,7 +3,7 @@
 Dagger::Dagger(Camera* camera)
 {
 	type = TAG::DAGGER;
-	texture = TextureManager::GetInstance()->GetTexture(TAG::DAGGER);
+	texture = TextureManager::GetInstance()->GetTexture(type);
 	sprite = new Sprite(texture, 0);
 	this->camera = camera;
 }

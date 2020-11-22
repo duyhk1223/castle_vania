@@ -6,6 +6,7 @@
 #include "Weapon.h"
 #include "MorningStar.h"
 #include "Item.h"
+#include "Dagger.h"
 
 
 #define SIMON_DEFAULT_POSITION  50.0f, 300.0f
@@ -77,6 +78,8 @@ public:
 	bool isFreeze; // đứng im khi nhặt item nâng cấp
 	DWORD TimeFreeze; // thời gian đã đóng băng
 
+	TAG SubWeaponType; // loại vũ khí phụ đang giữ
+
 	bool isAttacking;
 	bool isWalking;
 	bool isJumping;
@@ -116,8 +119,14 @@ public:
 	bool isCollisionWithItem(Item* objItem);
 
 
+
 	void Init(); // khởi tạo lại các trạng thái, HeartCollect, Heath, Lives, Score
 	void Reset(); // khởi tạo lại các trạng thái.
+
+	// Các hàm xử lý nhặt cũ khí
+	TAG GetTypeSubWeapon();
+	void SetTypeSubWeapon(TAG t);
+	void PickUpSubWeapon(TAG t);
 
 	// Điểm và mạng
 	int GetLives();

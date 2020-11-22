@@ -47,9 +47,27 @@ GameObject* Grid::CreateNewObject(int type, float x, float y, int w, int h, int 
 	{
 	case TAG::BRICK:
 		return new Brick(x, y, w, h, Model);
+
 	case TAG::TORCH:
 		return new Torch(x, y);
+
+	case TAG::OBJECT_HIDDEN:
+		return new HiddenObject(x, y, w, h);
+		break;
+
+	case TAG::CANDLE:
+		return new Candle(x, y);
+
+	case TAG::STAIR_TOP:
+		return new StairTop(x, y);
+
+	case TAG::STAIR_BOTTOM:
+		return new StairBottom(x, y);
+
+	case TAG::GATE:
+		return new Gate(x, y);
 	}
+	
 	return NULL;
 }
 

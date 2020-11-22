@@ -51,7 +51,8 @@ enum TAG
 	BRICK = 21, // id object
 
 	TRANSPARENT_BRICK = 25,
-	TEX_BRICK_MAP_2 = 26,
+	TEX_BRICK_MAP_2 = 23,
+	GATE = 26,
 	TEX_BRICK_3_32 = 27,
 	TEX_BRICK_4_32 = 28,
 
@@ -59,11 +60,14 @@ enum TAG
 	TORCH = 41,
 	OBJECT_HIDDEN = 42,
 	CANDLE = 43,
+	STAIR_BOTTOM = 47,
+	STAIR_TOP = 48,
 
 
 	// Weapon
 	MORNINGSTAR = 61,
 	DAGGER = 62,
+	NO_SUBWEAPON = 70,
 
 	// Item
 	LARGEHEART = 81,
