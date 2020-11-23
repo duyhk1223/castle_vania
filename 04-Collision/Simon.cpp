@@ -40,6 +40,8 @@ void Simon::Reset()
 	isWalking = 0;
 	isAttacking = 0;
 
+	isFreeze = 0;
+	TimeFreeze = 0;
 
 	vx = 0;
 	vy = 0;

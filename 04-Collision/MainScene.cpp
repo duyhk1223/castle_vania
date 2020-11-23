@@ -11,6 +11,11 @@ MainScene::~MainScene()
 
 void MainScene::KeyState(BYTE* state)
 {
+	if (simon->GetFreeze() == true) // disable control
+	{
+		return;
+	}
+
 	if (Game::GetInstance()->IsKeyDown(DIK_UP) && Game::GetInstance()->IsKeyDown(DIK_A) /*&& simon->isProcessingOnStair == 0*/ && !simon->isAttacking)
 	{
 		simon->Attack(simon->GetTypeSubWeapon()); // attack với vũ khí phụ đang nhặt
@@ -31,7 +36,7 @@ void MainScene::KeyState(BYTE* state)
 	if (simon->isAttacking && simon->isJumping)
 		return;
 
-	if (simon->isAttacking) // Nếu Simon đang attack thì dừng phương di chuyển ngang và nếu đang nhảy thì sẽ để lại vy
+	if (simon->isAttacking) // Nếu Simon đang attack thì không thể đi tiếp
 	{
 		float vx, vy;
 		simon->GetSpeed(vx, vy);
@@ -262,7 +267,7 @@ void MainScene::CheckCollisionWeapon(vector<GameObject*> listObj) // kt va chạ
 							listEffect.push_back(new Fire(gameObj->GetX() - 5, gameObj->GetY() + 8)); // hiệu ứng lửa
 
 							
-							// Nếu dao va chạm với object thì sẽ finish luôn
+							// Nếu Dagger va chạm với object thì sẽ mất
 							if (objWeapon.second->GetType() == TAG::DAGGER)
 							{
 								objWeapon.second->SetFinish(true);
