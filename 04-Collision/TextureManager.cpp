@@ -67,6 +67,7 @@ void TextureManager::LoadResource()
 	AddTexture(TAG::FIRE, new Texture("Resources/other/1.png", 4, 1, 4));
 
 	// Weapon
+	
 	AddTexture(TAG::DAGGER, new Texture("Resources/weapon/1.png"));
 	AddTexture(TAG::MORNINGSTAR, new Texture("Resources/weapon/morningstar.png", 4, 3, 12));
 

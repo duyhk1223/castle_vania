@@ -14,19 +14,19 @@ Dagger::~Dagger()
 
 void Dagger::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
-	if (!camera->checkObjectInCamera(x, y, (float)GetWidth(), (float)GetHeight())) // xử lí ra khỏi cam thì kết thúc 
+	if (!camera->checkObjectInCamera(x, y, (float)GetWidth(), (float)GetHeight())) // ra khỏi cam thì kết thúc 
 	{
 		isFinish = true;
 		return;
 	}
 
 	GameObject::Update(dt); // update dt,dx,dy 
-	x += dx; // Cập nhật tạo độ khi dao đang bay
+	x += dx; //dao bay theo phương X
 }
 
 void Dagger::Attack(float X, float Y, int Direction)
 {
-	Weapon::Attack(X, Y, Direction);
+	Weapon::Attack(X, Y + 10, Direction);
 	vx = DAGGER_SPEED * direction;
 }
 
