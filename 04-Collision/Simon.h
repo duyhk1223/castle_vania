@@ -51,6 +51,31 @@
 #define SIMON_ANI_STANDING_ATTACKING_BEGIN 5
 #define SIMON_ANI_STANDING_ATTACKING_END 7
 
+// Animation cầu thang
+#pragma region Animation trên cầu thang
+
+#define SIMON_SPEED_ONSTAIR 0.09f 
+
+#define SIMON_ANI_STAIR_STANDING_UP 12
+#define SIMON_ANI_STAIR_STANDING_DOWN 10
+
+/*Ani đang đi xuống cầu thang đánh*/
+#define SIMON_ANI_STAIR_DOWN_ATTACKING_BEGIN 18
+#define SIMON_ANI_STAIR_DOWN_ATTACKING_END 20
+
+/*Ani đang đi lên cầu thang đánh*/
+#define SIMON_ANI_STAIR_UP_ATTACKING_BEGIN 21
+#define SIMON_ANI_STAIR_UP_ATTACKING_END 23
+
+// Id cho frame bắt đầu và kết thúc của frame đi lên và xuống cầu thang
+#define SIMON_ANI_STAIR_GO_DOWN_BEGIN 10
+#define SIMON_ANI_STAIR_GO_DOWN_END 11
+
+#define SIMON_ANI_STAIR_GO_UP_BEGIN 12
+#define SIMON_ANI_STAIR_GO_UP_END 13
+
+#pragma endregion
+
 //====================================================//
 
 #define SIMON_TIME_WAIT_ANI_ATTACKING 120// thời gian thời của mỗi frame khi tấn công
@@ -85,11 +110,27 @@ public:
 	bool isJumping;
 	bool isSitting;
 
+	bool isOnStair;
+	int isProcessingOnStair;  // Có 2 giai đoạn lên thang
+	int directionStair; // Hướng của cầu thang đang đi, -1 đi qua trái, 1 đi qua phải
+	int directionY; // Hướng đi theo trục y của Simon
+
+	int directionAfterGo; // Khoảng cách sau khi đi
+
+	float AutoGoX_Distance; // khoảng cách simon cần tự đi
+	float AutoGoX_Speed; // vận tốc đi tự động
+	float AutoGoX_GoDirection; // hướng tự động đi
+
+	float passedDistance = 0; // Độ cao cầu thang Simon đã đi dc
+
 	bool isCollisionAxisYWithBrick = false; // Đang va chạm với đất theo trục y
+
+	bool isAutoGoX = 0; // Biến xét xem Simon có đang ở chế độ auto go không
 
 	unordered_map<TAG, Weapon*> mapWeapon;
 
 
+public:
 	Simon(Camera* camera);
 	~Simon();
 
@@ -114,9 +155,15 @@ public:
 	void SetFreeze(int f);
 	void UpdateFreeze(DWORD dt);
 
+	// Các hàm va chạm
 	void CollisionWithBrick(const vector<LPGAMEOBJECT>* coObjects = NULL);
-
+	void CollisionWithStair(vector<LPGAMEOBJECT>* coObjects);
 	bool isCollisionWithItem(Item* objItem);
+	//--------------------------------------------------------------------//
+
+
+	void SetAutoGoX(int GoDirection, int DirectionAfterGo, float Distance, float WalkSpeed); // set các thông số auto và backup các trạng thái hiện tại
+	bool GetIsAutoGoX(); // kiểm tra có đang ở chế độ auto go?
 
 
 

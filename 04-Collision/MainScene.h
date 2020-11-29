@@ -20,6 +20,7 @@
 #include "LargeHeart.h"
 #include "Hit.h"
 #include "Fire.h"
+#include "MoneyEffect.h"
 
 
 #define GAME_TIME_MAX 300

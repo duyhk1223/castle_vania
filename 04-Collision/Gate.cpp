@@ -20,7 +20,7 @@ void Gate::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 	left = x;
 	top = y;
 	right = x + texture->GetFrameWidth() - 40;
-	bottom = x + texture->GetFrameHeight();
+	bottom = y + texture->GetFrameHeight();
 }
 
 void Gate::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
@@ -30,11 +30,11 @@ void Gate::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 void Gate::Render(Camera* camera)
 {
-	switch (isStart)
+	/*switch (isStart)
 	{
 	case GATE_CLOSE:
 		return;
-	}
+	}*/
 
 	D3DXVECTOR2 position = camera->Transform(x, y);
 	sprite->Draw(position.x, position.y);

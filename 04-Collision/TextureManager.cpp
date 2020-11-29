@@ -66,8 +66,12 @@ void TextureManager::LoadResource()
 	AddTexture(TAG::HIT, new Texture("Resources/other/0.png", 2, 1, 2));
 	AddTexture(TAG::FIRE, new Texture("Resources/other/1.png", 4, 1, 4));
 
+	AddTexture(TAG::EFFECT_MONEY_700, new Texture("Resources/other/effect700.png", 2, 1, 2));
+	AddTexture(TAG::EFFECT_MONEY_100, new Texture("Resources/other/effect100.png", 2, 1, 2));
+	AddTexture(TAG::EFFECT_MONEY_1000, new Texture("Resources/other/effect1000.png", 2, 1, 2));
+	AddTexture(TAG::EFFECT_MONEY_400, new Texture("Resources/other/effect400.png", 2, 1, 2));
+
 	// Weapon
-	
 	AddTexture(TAG::DAGGER, new Texture("Resources/weapon/1.png"));
 	AddTexture(TAG::MORNINGSTAR, new Texture("Resources/weapon/morningstar.png", 4, 3, 12));
 

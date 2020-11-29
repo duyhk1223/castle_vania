@@ -35,10 +35,13 @@ void Simon::Reset()
 	direction = 1;
 
 	isSitting = 0;
-
 	isJumping = 0;
 	isWalking = 0;
 	isAttacking = 0;
+	isOnStair = 0;
+
+	isAutoGoX = 0;
+	passedDistance = 0;
 
 	isFreeze = 0;
 	TimeFreeze = 0;
@@ -83,6 +86,143 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 	int index = sprite->GetCurrentFrame();
 
+#pragma region Xử lý khi Simon ở trên cầu thang
+
+	if (isOnStair)
+	{
+		if (isAttacking == true) // Simon tấn công khi lên thang
+		{
+			if (directionY == -1) // đang đi lên
+			{
+				/* Xử lí ani đánh khi đang đi lên thang*/
+
+				if (index < SIMON_ANI_STAIR_UP_ATTACKING_BEGIN) // Nếu ani chưa đúng
+				{
+					sprite->SelectFrame(SIMON_ANI_STAIR_UP_ATTACKING_BEGIN); // Set lại ani bắt đầu
+					sprite->timeAccumulated = dt;
+				}
+				else
+				{
+					/* Update ani bình thường */
+					sprite->timeAccumulated += dt;
+					if (sprite->timeAccumulated >= SIMON_TIME_WAIT_ANI_ATTACKING)
+					{
+						sprite->timeAccumulated -= SIMON_TIME_WAIT_ANI_ATTACKING;
+						sprite->SelectFrame(sprite->GetCurrentFrame() + 1);
+					}
+					/* Update ani bình thường */
+
+					if (sprite->GetCurrentFrame() > SIMON_ANI_STAIR_UP_ATTACKING_END) // đã đi vượt qua frame cuối
+					{
+						isAttacking = false;
+						sprite->SelectFrame(SIMON_ANI_STAIR_STANDING_UP);
+					}
+				}
+
+				/* Xử lí ani đánh khi đang đi lên thang*/
+			}
+			else
+			{
+				/* Xử lí ani đánh khi đang đi xuống thang*/
+				if (index < SIMON_ANI_STAIR_DOWN_ATTACKING_BEGIN) // Nếu ani chưa đúng
+				{
+					sprite->SelectFrame(SIMON_ANI_STAIR_DOWN_ATTACKING_BEGIN); // Set lại ani bắt đầu
+					sprite->timeAccumulated = dt;
+				}
+				else
+				{
+					/* Update ani bình thường */
+					sprite->timeAccumulated += dt;
+					if (sprite->timeAccumulated >= SIMON_TIME_WAIT_ANI_ATTACKING)
+					{
+						sprite->timeAccumulated -= SIMON_TIME_WAIT_ANI_ATTACKING;
+						sprite->SelectFrame(sprite->GetCurrentFrame() + 1);
+					}
+					/* Update ani bình thường */
+
+					if (sprite->GetCurrentFrame() > SIMON_ANI_STAIR_DOWN_ATTACKING_END) // đã đi vượt qua frame cuối
+					{
+
+						isAttacking = false;
+						sprite->SelectFrame(SIMON_ANI_STAIR_STANDING_DOWN);
+					}
+				}
+				/* Xử lí ani đánh khi đang đi xuống thang*/
+
+			}
+		}
+		else
+		{
+			if (isWalking == true)
+			{
+				if (isProcessingOnStair == 1) // nếu ở giai đoạn bước chân thì set frame 12
+				{
+					if (vy < 0) // ddi len
+						sprite->SelectFrame(SIMON_ANI_STAIR_GO_UP_BEGIN);
+					else
+						sprite->SelectFrame(SIMON_ANI_STAIR_GO_DOWN_BEGIN);
+				}
+
+
+				if (isProcessingOnStair == 2) // nếu ở giai đoạn bước chân trụ thì set frame 13
+				{
+					if (vy < 0) // ddi len
+						sprite->SelectFrame(SIMON_ANI_STAIR_GO_UP_END);
+					else
+						sprite->SelectFrame(SIMON_ANI_STAIR_GO_DOWN_END);
+				}
+
+				passedDistance = passedDistance + abs(vy) * 16.0f;
+
+				if (passedDistance >= 8.0f && isProcessingOnStair == 1)
+					isProcessingOnStair++;
+
+				if (passedDistance >= 16)
+				{
+					isProcessingOnStair++;
+
+					/* fix lỗi mỗi lần đi vượt quá 16px */
+					if (direction == 1 && directionY == -1) // đi lên bên phải
+					{
+						x -= (passedDistance - 16.0f);
+						y += (passedDistance - 16.0f);
+					}
+					if (direction == -1 && directionY == -1) // đi lên bên trái
+					{
+						x += (passedDistance - 16.0f);
+						y += (passedDistance - 16.0f);
+					}
+
+					if (direction == 1 && directionY == 1) // đi xuống bên phải
+					{
+						x -= (passedDistance - 16.0f);
+						y -= (passedDistance - 16.0f);
+					}
+					if (direction == -1 && directionY == 1) // đi xuống bên trái
+					{
+						x += (passedDistance - 16.0f);
+						y -= (passedDistance - 16.0f);
+					}
+					passedDistance = 0;
+				}
+				//	DebugOut(L"DoCaoDiDuoc = %f . dy = %f . y = %f\n", DoCaoDiDuoc, dy, y);
+
+			}
+			else
+			{
+				if (this->directionY == -1) // ddang di len
+					sprite->SelectFrame(SIMON_ANI_STAIR_STANDING_UP);
+				else
+					sprite->SelectFrame(SIMON_ANI_STAIR_STANDING_DOWN);
+			}
+		}
+	}
+
+#pragma endregion
+
+#pragma region Xử lý khi Simon không ở trên cầu thang
+	else
+	{
 	if (isSitting == true)
 	{
 		if (isAttacking == true) // Nếu Simon đang ở trạng thái tấn công
@@ -118,7 +258,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		{
 			sprite->SelectFrame(SIMON_ANI_SITTING);
 		}
-			
+
 	}
 	else
 	{
@@ -185,20 +325,55 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			}
 		}
 	}
+ }
+	
 
 #pragma endregion
 
 	GameObject::Update(dt);
 
 	// Xét xem Simon đang trong trạng thái nhảy hay mới vô game
-	if (isJumping)
+	if (isOnStair == false) // Ko trên cầu thang thì mới có trọng lực
 	{
-		dx = vx * dt;
-		dy = vy * dt;
-		vy += SIMON_GRAVITY_JUMPING * dt;
+		if (isJumping)
+		{
+			dx = vx * dt;
+			dy = vy * dt;
+			vy += SIMON_GRAVITY_JUMPING * dt;
+		}
+		else
+		{
+			/*if (isHurting)
+			{
+				vy += SIMON_GRAVITY_HURTING * dt;
+			}
+			else*/
+			vy += SIMON_GRAVITY * dt;// Simple fall down
+		}
 	}
 
-	else vy += SIMON_GRAVITY * dt; // Simple fall down
+	// xét va chạm với brick
+	CollisionWithBrick(coObjects); // check Collision và update x, y cho simon	
+
+	// Nếu không trên cầu thang thì xét xem Simon có đang tự đi hay không, nếu có thì update x, y cho Simon, ngược lại thì xét va chạm gạch
+	/*if (isOnStair == false)
+	{
+		if (isAutoGoX == false)
+			CollisionWithBrick(coObjects);
+		else
+			x += dx;
+	}*/
+
+	if (isOnStair == true)
+		CollisionWithStair(coObjects);
+
+	if (isProcessingOnStair == 3)
+	{
+		isProcessingOnStair = 0;
+		vx = 0;
+		vy = 0;
+		isWalking = false;
+	}
 
 	for (auto& objWeapon : mapWeapon)
 	{
@@ -214,10 +389,6 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			objWeapon.second->Update(dt, coObjects);
 		}
 	}
-
-	// xét va chạm với brick
-	CollisionWithBrick(coObjects); // check Collision và update x, y cho simon
-
 }
 
 #pragma region Các hàm xử lý va chạm
@@ -309,7 +480,135 @@ bool Simon::isCollisionWithItem(Item* objItem)
 	}
 
 	return false;
-	//return isCollitionObjectWithObject(objItem);
+}
+
+void Simon::CollisionWithStair(vector<LPGAMEOBJECT>* coObjects)
+{
+	if (directionY == 1) // đang đi xuống
+	{
+		int CountCollisionBottom = 0; // Biến cờ để check Simon có va chạm với nền hay chưa
+		vector<LPGAMEOBJECT> listobj;
+		listobj.clear();
+		for (UINT i = 0; i < (*coObjects).size(); i++)
+			if ((*coObjects)[i]->GetType() == TAG::STAIR_BOTTOM) // nếu là object ở dưới
+			{
+				if (this->isCollitionObjectWithObject((*coObjects)[i]))
+				{
+					CountCollisionBottom++;
+					break;
+				}
+			}
+
+		if (CountCollisionBottom > 0) // Có va chạm với bottom
+		{
+			vector<LPCOLLISIONEVENT> coEvents;
+			vector<LPCOLLISIONEVENT> coEventsResult;
+			coEvents.clear();
+			vector<LPGAMEOBJECT> list_Brick;
+			list_Brick.clear();
+			for (UINT i = 0; i < coObjects->size(); i++)
+				if (coObjects->at(i)->GetType() == TAG::BRICK)
+					list_Brick.push_back(coObjects->at(i));
+			CalcPotentialCollisions(&list_Brick, coEvents);
+			if (coEvents.size() == 0)
+			{
+				x += dx;
+				y += dy;
+			}
+			else
+			{
+				float min_tx, min_ty, nx = 0, ny;
+
+				FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny);
+				x += min_tx * dx + nx * 0.4f;
+				y += min_ty * dy + ny * 0.4f;
+				if (nx != 0 || ny != 0)
+				{
+					vx = 0;
+					vy = 0;
+					isOnStair = false; // kết thúc việc đang trên cầu thang
+					isWalking = false;
+					isProcessingOnStair = 0;
+				}
+			}
+
+			for (UINT i = 0; i < coEvents.size(); i++)
+				delete coEvents[i];
+
+			return;
+		}
+
+	}
+
+	if (directionY == -1) // đang đi lên
+	{
+		vector<LPGAMEOBJECT> listobj;
+		int CountCollisionTop = 0;
+		listobj.clear();
+		for (UINT i = 0; i < (*coObjects).size(); i++)
+			if ((*coObjects)[i]->GetType() == TAG::STAIR_TOP) // nếu là object ở trên
+			{
+				if (this->isCollitionObjectWithObject((*coObjects)[i])) // có va chạm với top stair
+				{
+					CountCollisionTop++;
+					break;
+				}
+			}
+
+		if (CountCollisionTop > 0) // có va chạm với top, và nó đang đi lên
+		{
+			float backupVy = vy;
+
+			y = y - 50; // kéo simon lên cao, để tạo va chạm giả xuống mặt đất, tránh overlaping. tính thời gian tiếp đất
+			vy = 9999999999.0f; // vận tốc kéo xuống lớn để chạm đất ngay trong 1 frame
+			dy = vy * dt; // cập nhật lại dy
+
+			vector<LPCOLLISIONEVENT> coEvents;
+			vector<LPCOLLISIONEVENT> coEventsResult;
+			coEvents.clear();
+			vector<LPGAMEOBJECT> list_Brick;
+			list_Brick.clear();
+
+			for (UINT i = 0; i < coObjects->size(); i++)
+				if (coObjects->at(i)->GetType() == TAG::BRICK)
+					list_Brick.push_back(coObjects->at(i));
+
+			CalcPotentialCollisions(&list_Brick, coEvents);
+			if (coEvents.size() == 0)
+			{
+				x += dx;
+				y += dy;
+			}
+			else
+			{
+				float min_tx, min_ty, nx = 0, ny;
+
+				FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny);
+				x += min_tx * dx + nx * 0.4f;
+				y += min_ty * dy + ny * 0.4f;
+				if (nx != 0 || ny != 0)
+				{
+					vx = 0;
+					vy = 0;
+					isOnStair = false; // kết thúc việc đang trên cầu thang
+					isWalking = false;
+					isProcessingOnStair = 0;
+				}
+			}
+
+			for (UINT i = 0; i < coEvents.size(); i++)
+				delete coEvents[i];
+
+			vy = backupVy;
+			dy = vy * dt; // cập nhật lại dy
+
+			return; // ko cần xét tiếp
+		}
+	}
+
+	// nếu không đụng top và bot thì di chuyển bt
+	x += dx;
+	y += dy;
 }
 
 #pragma endregion
@@ -442,17 +741,27 @@ void Simon::Attack(TAG weaponType)
 		return;
 	
 
+	/* Kiểm tra còn đủ HeartCollect ko? */
 	switch (weaponType)
 	{
 	case MORNINGSTAR:
 	{
-		if (isAttacking) // Nếu đang tấn công thì ko xét
+		if (isAttacking)
 		{
 			return;
 		}
 		break;
 	}
+
+	default: // các vũ khí còn lại
+	{
+		if (HeartCollect < 1)
+			return;// ko đủ HeartCollect thì ko attack
+		break;
 	}
+	}
+
+	bool isAllowSubHeartCollect = false;
 
 	if (mapWeapon[weaponType]->GetFinish()) { // vũ khí đã kết thúc thì mới đc tấn công tiếp
 
@@ -461,6 +770,26 @@ void Simon::Attack(TAG weaponType)
 		sprite->ResetAccumulatedTime();
 
 		mapWeapon[weaponType]->Attack(this->x, this->y, this->direction); // Render vũ khí của Simon đang sở hữu
+		isAllowSubHeartCollect = true;
+	}
+
+	// Nếu vũ khí còn đủ heart để attack
+	if (isAllowSubHeartCollect)
+	{
+		switch (weaponType)
+		{
+		case MORNINGSTAR:
+		{
+			// ko trừ
+			break;
+		}
+
+		default: // các vũ khí còn lại
+		{
+			HeartCollect -= 1;
+			break;
+		}
+		}
 	}
 }
 
@@ -483,6 +812,34 @@ void Simon::UpdateFreeze(DWORD dt)
 	}
 	else
 		TimeFreeze += dt;
+}
+
+bool Simon::GetIsAutoGoX()
+{
+	return isAutoGoX;
+}
+
+void Simon::SetAutoGoX(int GoDirection, int DirectionAfterGo, float Distance, float WalkSpeed)
+{
+	// Nếu Simon đang tự đi thì ko xét
+	if (isAutoGoX)
+		return;
+
+	isAutoGoX = true;
+
+	AutoGoX_Distance = Distance;
+	AutoGoX_Speed = WalkSpeed;
+	AutoGoX_GoDirection = GoDirection;
+	directionAfterGo = DirectionAfterGo;
+
+	direction = GoDirection;
+
+	isWalking = 1;
+	isJumping = 0;
+	isSitting = 0;
+	isAttacking = 0;
+	isOnStair = 0;
+	isProcessingOnStair = 0;
 }
 
 #pragma region Phần get set cho mạng, điểm và tim

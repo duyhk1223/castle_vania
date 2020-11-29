@@ -147,6 +147,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="MoneyBag.cpp" />
+    <ClCompile Include="MoneyEffect.cpp" />
     <ClCompile Include="MorningStar.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
@@ -185,6 +186,7 @@
     <ClInclude Include="LargeHeart.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="MoneyBag.h" />
+    <ClInclude Include="MoneyEffect.h" />
     <ClInclude Include="MorningStar.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneManager.h" />

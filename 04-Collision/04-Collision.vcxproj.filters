@@ -169,6 +169,9 @@
     <ClCompile Include="Gate.cpp">
       <Filter>Object\Ground</Filter>
     </ClCompile>
+    <ClCompile Include="MoneyEffect.cpp">
+      <Filter>Object\Effect</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="debug.h">
@@ -278,6 +281,9 @@
     </ClInclude>
     <ClInclude Include="Gate.h">
       <Filter>Object\Ground</Filter>
+    </ClInclude>
+    <ClInclude Include="MoneyEffect.h">
+      <Filter>Object\Effect</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

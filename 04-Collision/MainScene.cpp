@@ -16,10 +16,135 @@ void MainScene::KeyState(BYTE* state)
 		return;
 	}
 
-	if (Game::GetInstance()->IsKeyDown(DIK_UP) && Game::GetInstance()->IsKeyDown(DIK_A) /*&& simon->isProcessingOnStair == 0*/ && !simon->isAttacking)
+	if (Game::GetInstance()->IsKeyDown(DIK_UP) && Game::GetInstance()->IsKeyDown(DIK_A) && simon->isProcessingOnStair == 0 && !simon->isAttacking)
 	{
 		simon->Attack(simon->GetTypeSubWeapon()); // attack với vũ khí phụ đang nhặt
 	}
+	else
+		if (!simon->isJumping)
+		{
+			if (Game::GetInstance()->IsKeyDown(DIK_UP) && simon->isAttacking == false)
+			{
+				if (!simon->isOnStair) // Simon chưa trên thang
+				{
+					for (UINT i = 0; i < listObj.size(); i++)
+						if (listObj[i]->GetType() == TAG::STAIR_BOTTOM)
+						{
+							if (simon->isCollisionAxisYWithBrick && simon->isCollitionObjectWithObject(listObj[i])) // nếu va chạm với trục y brick và STAIR BOTOM
+							{
+								GameObject* gameobj = dynamic_cast<GameObject*>(listObj[i]);
+								simon->directionStair = gameobj->GetDirection(); // Lưu hướng của cầu thang đang đi vào simon
+								simon->directionY = -1;// hướng đi lên
+								simon->SetDirection(simon->directionStair);// hướng của simon khi đi lên là hướng của cầu thang
+
+								simon->isOnStair = true; // set trạng thái đang trên cầu thang
+								simon->passedDistance = 0;
+
+								if (simon->GetX() < gameobj->GetX())
+								{
+									simon->SetAutoGoX(1, gameobj->GetDirection(), gameobj->GetX() - simon->GetX(), SIMON_WALKING_SPEED);
+									// hướng sau khi autogo phải là hướng của cầu thang:  gameobj->GetDirection()
+								}
+								else
+									simon->SetAutoGoX(-1, gameobj->GetDirection(), simon->GetX() - gameobj->GetX(), SIMON_WALKING_SPEED);
+								//	DebugOut(L"bat dau len cau thang!\n"); 
+								return;
+							}
+						}
+				}
+				else // Nếu Simon đã trên cầu thang
+				{
+					DebugOut(L"Da o tren cau thang!\n");
+
+					if (simon->isProcessingOnStair == 0 || simon->isProcessingOnStair == 3) // kết thúc xử lí trước đó
+					{
+						simon->isWalking = true;
+						simon->isProcessingOnStair = 1;
+						simon->directionY = -1;// hướng đi lên
+						simon->SetDirection(simon->directionStair);// hướng của simon khi đi lên là hướng của cầu thang
+						simon->SetSpeed(simon->GetDirection() * SIMON_SPEED_ONSTAIR, -1 * SIMON_SPEED_ONSTAIR);
+
+						float vvx, vvy;
+						simon->GetSpeed(vvx, vvy);
+						//DebugOut(L"vy = %f\n", vvy);
+					}
+				}
+			}
+			else
+			{
+				if (Game::GetInstance()->IsKeyDown(DIK_DOWN) && simon->isAttacking == false) // ngược lại nếu nhấn nút xuống
+				{
+					if (!simon->isOnStair) // chưa trên cầu thang
+					{
+						int CountCollisionTop = 0;
+						for (UINT i = 0; i < listObj.size(); i++)
+							if (listObj[i]->GetType() == TAG::STAIR_TOP)
+							{
+								if (simon->isCollitionObjectWithObject(listObj[i])
+									//&& simon->isCheckCollisionAxisY_WithBrickSweptAABB(&listObj)
+									&&
+									simon->isCollisionAxisYWithBrick
+									) // nếu va chạm với STAIR TOP
+								{
+									GameObject* gameobj = dynamic_cast<GameObject*>(listObj[i]);
+									simon->directionStair = gameobj->GetDirection(); // lưu hướng của cầu thang đang đi vào simon
+									simon->directionY = 1;// hướng đi xuống
+									simon->SetDirection(simon->directionStair);// hướng của simon khi đi xuống là hướng của cầu thang
+
+									simon->isOnStair = true; // set trạng thái đang trên cầu thang
+									simon->passedDistance = 0;
+
+
+									if (simon->GetX() < gameobj->GetX())
+									{
+										simon->SetAutoGoX(1, -gameobj->GetDirection(), gameobj->GetX() - simon->GetX(), SIMON_WALKING_SPEED);
+										// hướng sau khi autogo phải là hướng của cầu thang:  gameobj->GetDirection()
+									}
+									else
+										simon->SetAutoGoX(-1, -gameobj->GetDirection(), simon->GetX() - gameobj->GetX(), SIMON_WALKING_SPEED);
+
+
+
+									CountCollisionTop++;
+									return;
+								}
+							}
+
+						if (CountCollisionTop == 0) // ko đụng stair top, tức là ngồi bt
+						{
+							simon->Sit();
+							if (Game::GetInstance()->IsKeyDown(DIK_RIGHT))
+								simon->Right();
+
+							if (Game::GetInstance()->IsKeyDown(DIK_LEFT))
+								simon->Left();
+							return;
+						}
+
+					}
+					else // đã ở trên cầu thang
+					{
+						if (simon->isProcessingOnStair == 0 || simon->isProcessingOnStair == 3) // kết thúc xử lí trước đó
+						{
+							simon->isWalking = true;
+							simon->isProcessingOnStair = 1;
+							simon->directionY = 1;// hướng đi xuống
+							simon->SetDirection(simon->directionStair * -1);// hướng của simon khi đi xuóng là ngược của cầu thang
+							simon->SetSpeed(simon->GetDirection() * SIMON_SPEED_ONSTAIR, SIMON_SPEED_ONSTAIR);
+						}
+
+					}
+				}
+				else
+				{
+					simon->Stop();
+				}
+			}
+
+		}
+
+	if (simon->isOnStair) // nếu đang trên thang thì không xét loại đi trái phải bt
+		return;
 
 	// Nếu đang ko tấn công thì mới ngồi dc
 	if (Game::GetInstance()->IsKeyDown(DIK_DOWN) && simon->isAttacking == false && simon->isJumping == false)
@@ -93,6 +218,7 @@ void MainScene::OnKeyDown(int KeyCode)
 
 	if (KeyCode == DIK_S /*&& simon->isOnStair == false*/)
 	{
+		if (simon->isJumping == false) // Nếu đang nhảy thì ko cho ấn S nữa
 		if (Game::GetInstance()->IsKeyDown(DIK_LEFT) || Game::GetInstance()->IsKeyDown(DIK_RIGHT))
 		{
 			simon->Stop();
@@ -157,7 +283,11 @@ void MainScene::Update(DWORD dt)
 
 	camera->Update(dt);
 
+	// Phần xử lý map 2
+#pragma region Update các object của map 2
+#pragma endregion
 
+#pragma region Phần update các object
 
 	for (UINT i = 0; i < listObj.size(); i++)
 		listObj[i]->Update(dt, &listObj);
@@ -169,6 +299,8 @@ void MainScene::Update(DWORD dt)
 	for (UINT i = 0; i < listEffect.size(); i++)
 		if (listEffect[i]->GetFinish() == false)
 			listEffect[i]->Update(dt);
+
+#pragma endregion
 
 	CheckCollision();
 }
@@ -316,6 +448,41 @@ void MainScene::CheckCollisionSimonItem()
 					listItem[i]->SetFinish(true);
 					break;
 				}
+
+				/* Xử lí ăn tiền */
+				case TAG::MONEY_RED_BAG:
+				{
+					listItem[i]->SetFinish(true);
+					simon->SetScore(simon->GetScore() + 100);
+					listEffect.push_back(new MoneyEffect(listItem[i]->GetX(), listItem[i]->GetY(), TAG::EFFECT_MONEY_100));
+					break;
+				}
+
+				case TAG::MONEY_PURPLE_BAG:
+				{
+					listItem[i]->SetFinish(true);
+					simon->SetScore(simon->GetScore() + 400);
+					listEffect.push_back(new MoneyEffect(listItem[i]->GetX(), listItem[i]->GetY(), TAG::EFFECT_MONEY_400));
+					break;
+				}
+
+				case TAG::MONEY_WHITE_BAG:
+				{
+					listItem[i]->SetFinish(true);
+					simon->SetScore(simon->GetScore() + 700);
+					listEffect.push_back(new MoneyEffect(listItem[i]->GetX(), listItem[i]->GetY(), TAG::EFFECT_MONEY_700));
+					break;
+				}
+
+				case TAG::BONUS:
+				{
+					listItem[i]->SetFinish(true);
+					simon->SetScore(simon->GetScore() + 1000);
+					 listEffect.push_back(new MoneyEffect(listItem[i]->GetX(), listItem[i]->GetY(), TAG::EFFECT_MONEY_1000));
+
+					break;
+				}
+				/* Xử lí ăn tiền */
 
 				}
 			}

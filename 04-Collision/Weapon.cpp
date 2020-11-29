@@ -22,7 +22,7 @@ void Weapon::SetDirection(int Direction)
 void Weapon::Attack(float X, float Y, int Direction)
 {
 	this->x = X;
-	this->y = y;
+	this->y = Y;
 	this->direction = Direction;
 	isFinish = false; // Mới tấn công
 

@@ -41,9 +41,9 @@ void Brick::Render(Camera* camera)
 	if (model == BRICK_MODEL_TRANSPARENT)
 		return;
 
-
 	D3DXVECTOR2 pos = camera->Transform(x, y);
 
+	// Lấy kích thước gạch chia cho kích thước của map rồi nhân cho kích thước viên gạch để render
 	for (int i = 0; i < (int)ceil(width / texture->GetFrameWidth()); i++)
 		for (int j = 0; j < (int)ceil(height / texture->GetFrameHeight()); j++)
 			sprite->Draw(pos.x + i * texture->GetFrameWidth(), pos.y + j * texture->GetFrameHeight());
