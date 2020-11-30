@@ -5,6 +5,7 @@ Camera::Camera(int w, int h)
 	_width = w;
 	_height = h;
 	isAllowFollowSimon = true;
+	isAutoGoX = false;
 
 
 	// Biên mặc định ban đầu là kích thước MAP
@@ -22,6 +23,19 @@ void Camera::Update(DWORD dt)
 {
 	this->dt = dt;
 
+	if (isAutoGoX)
+	{
+		// Dịch chuyển camera
+		float dx = vx * dt;
+		_xCam += dx;
+
+		if (abs(_xCam - AutoGoX_Backup_X) >= AutoGoX_Distance) // Nếu đụng hoặc vượt quá biên giới hạn thì dừng lại
+		{
+			_xCam = _xCam - (abs(_xCam - AutoGoX_Backup_X) - AutoGoX_Distance);
+			isAutoGoX = false;
+		}
+	}
+
 
 	if (_xCam < _boundaryLeft)
 		_xCam = _boundaryLeft;
@@ -30,6 +44,7 @@ void Camera::Update(DWORD dt)
 		_xCam = _boundaryRight;
 
 }
+
 D3DXVECTOR2 Camera::Transform(float xWorld, float yWorld)
 {
 	return D3DXVECTOR2(xWorld - _xCam, yWorld - _yCam);
@@ -97,3 +112,30 @@ float Camera::GetBoundaryLeft()
 	return _boundaryLeft;
 }
 
+void Camera::SetAutoGoX(float Distance, float Speed)
+{
+	if (isAutoGoX == true)
+		return;
+	vx = Speed;
+
+	AutoGoX_Backup_X = _xCam;
+	AutoGoX_Distance = Distance;
+	isAutoGoX = true;
+	isAllowFollowSimon = false;
+}
+
+void Camera::StopAutoGoX()
+{
+	isAutoGoX = false;
+}
+
+bool Camera::GetIsAutoGoX()
+{
+	return isAutoGoX;
+}
+
+void Camera::SetBoundaryBackup(float l, float r)
+{
+	_boundaryLeftBackup = l;
+	_boundaryRightBackup = r;
+}

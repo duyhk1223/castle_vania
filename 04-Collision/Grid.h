@@ -21,6 +21,11 @@ using namespace std;
 #define GRID_CELL_MAX_ROW 10 // số dòng tối đa của grid
 #define GRID_CELL_MAX_COLUMN 50 // số cột tối đa của grid
 
+#define GRID_INSERT_OBJECT__GETDOWNLAKE_LEFT 41, TAG::OBJECT_HIDDEN, -1, 3190 ,423, 40, 10, 0 // object ẩn đụng vào sẽ đi xuống hồ nước, phía trái
+#define GRID_INSERT_OBJECT__GETOUTLAKE_LEFT 45, TAG::OBJECT_HIDDEN, -1, 3135, 435, 20, 20, 0 // object ẩn đụng vào sẽ đi ra khỏi hồ nước, phía trái
+
+#define GRID_INSERT_OBJECT__GETDOWLAKE_RIGHT 86, TAG::OBJECT_HIDDEN, -1, 3835, 423, 25, 10, 0 // object ẩn đụng vào sẽ đi ra khỏi hồ nước, phía phải
+#define GRID_INSERT_OBJECT__GETOUTLAKE_RIGHT 81, TAG::OBJECT_HIDDEN, -1, 3807, 460, 30, 20, 0 // object ẩn đụng vào sẽ đi ra khỏi hồ nước, phía phải
 
 class Grid
 {

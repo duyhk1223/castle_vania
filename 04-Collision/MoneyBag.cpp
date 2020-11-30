@@ -1,19 +1,22 @@
-#include "MoneyBag.h"
+﻿#include "MoneyBag.h"
 
-MoneyBag::MoneyBag(float X, float Y, TAG MoneyBagType)
+
+MoneyBag::MoneyBag(float X, float Y, TAG TypeMoneyBag)
 {
-	type = MoneyBagType;
+	type = TypeMoneyBag;
 	texture = TextureManager::GetInstance()->GetTexture(TAG::BONUS);
 	sprite = new Sprite(texture, 0);
 
 	this->x = X;
 	this->y = Y;
 
+	vx = 0;
+
 	vy = MONEYBAG_GRAVITY;
-	MaxDisplayTime = MONEYBAG_TIMEDISPLAYMAX;
+	MaxDisplayTime = MONEYBAG_TIMEDISPLAYMAX; // set time hiển thị tối đa
 	DisplayedTime = 0;
-	MaxWaitingTime = MONEYBAG_TIMEWAITMAX;
 	WaitedTime = 0;
+	MaxWaitingTime = MONEYBAG_TIMEWAITMAX;
 }
 
 void MoneyBag::Render(Camera* camera)
@@ -37,6 +40,12 @@ void MoneyBag::Render(Camera* camera)
 		sprite->SelectFrame(MONEYBAG_ANI_PURPLE_BAG);
 		break;
 	}
+
+	D3DXVECTOR2 pos = camera->Transform(x, y);
+	sprite->Draw(pos.x, pos.y);
+
+	if (IS_DEBUG_RENDER_BBOX)
+		RenderBoundingBox(camera);
 }
 
 MoneyBag::~MoneyBag()

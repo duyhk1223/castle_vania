@@ -50,6 +50,8 @@ void TextureManager::LoadResource()
 	// Game object ground
 	AddTexture(TAG::TRANSPARENT_BRICK, new Texture("Resources/ground/brick_transparent.png"));
 	AddTexture(TAG::TEX_BRICK_MAP_2, new Texture("Resources/ground/2-2.png"));
+	AddTexture(TAG::TEX_BRICK_3_32, new Texture("Resources/ground/8-2.png")); // loại nhỏ 4 ô
+	AddTexture(TAG::TEX_BRICK_4_32, new Texture("Resources/ground/8-1.png")); // loại nhỏ 4 ô
 
 	AddTexture(TAG::TORCH, new Texture("Resources/ground/0.png", 2, 1, 2));
 	AddTexture(TAG::CANDLE, new Texture("Resources/ground/1.png", 2, 1, 2));
@@ -61,10 +63,12 @@ void TextureManager::LoadResource()
 	AddTexture(TAG::LARGEHEART, new Texture("Resources/item/1.png"));
 	AddTexture(TAG::UPGRADEMORNINGSTAR, new Texture("Resources/item/3.png"));
 	AddTexture(TAG::BONUS, new Texture("Resources/item/2.png", 3, 1, 3));
+	AddTexture(TAG::SMALLHEART, new Texture("Resources/item/0.png"));
 
 	// Effect
 	AddTexture(TAG::HIT, new Texture("Resources/other/0.png", 2, 1, 2));
 	AddTexture(TAG::FIRE, new Texture("Resources/other/1.png", 4, 1, 4));
+	AddTexture(TAG::BROKENBRICK, new Texture("Resources/other/BrokenBrick.png", 2, 1, 2));
 
 	AddTexture(TAG::EFFECT_MONEY_700, new Texture("Resources/other/effect700.png", 2, 1, 2));
 	AddTexture(TAG::EFFECT_MONEY_100, new Texture("Resources/other/effect100.png", 2, 1, 2));

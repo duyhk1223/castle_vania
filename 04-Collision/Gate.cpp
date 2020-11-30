@@ -3,7 +3,7 @@
 Gate::Gate(float X, float Y)
 {
 	type = TAG::GATE;
-	texture = TextureManager::GetInstance()->GetTexture(TAG::GATE);
+	texture = TextureManager::GetInstance()->GetTexture(type);
 	sprite = new Sprite(texture, 200);
 	Health = 1;
 	isStart = GATE_CLOSE;
@@ -30,15 +30,75 @@ void Gate::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 void Gate::Render(Camera* camera)
 {
-	/*switch (isStart)
+	switch (isStart)
 	{
 	case GATE_CLOSE:
-		return;
-	}*/
+	{
+
+		break;
+	}
+	case GATE_OPEN_1:
+	{
+		sprite->timeAccumulated += dt;
+		if (sprite->timeAccumulated >= 1000)
+		{
+			sprite->timeAccumulated = 0;
+			sprite->MoveToNextFrame();
+			isStart++;
+		}
+		break;
+	}
+	case GATE_OPEN_2:
+	{
+		sprite->timeAccumulated += dt;
+		if (sprite->timeAccumulated >= 100)
+		{
+			sprite->timeAccumulated = 0;
+			sprite->MoveToNextFrame();
+			isStart++;
+		}
+		break;
+	}
+	case GATE_OPEN_3:
+	{
+		sprite->timeAccumulated += dt;
+		if (sprite->timeAccumulated >= 100)
+		{
+			sprite->timeAccumulated = 0;
+			sprite->MoveToNextFrame();
+			isStart++;
+		}
+		break;
+	}
+	case GATE_OPEN_4:
+	{
+		sprite->timeAccumulated += dt;
+		if (sprite->timeAccumulated >= 500)
+		{
+			sprite->timeAccumulated = 0;
+			sprite->MoveToNextFrame();
+			isStart++;
+		}
+		break;
+	}
+	
+	default:
+		break;
+	}
 
 	D3DXVECTOR2 position = camera->Transform(x, y);
 	sprite->Draw(position.x, position.y);
 
 	if (IS_DEBUG_RENDER_BBOX)
 		RenderBoundingBox(camera);
+}
+
+void Gate::Start()
+{
+	isStart = GATE_OPEN_1;
+}
+
+int Gate::GetStart()
+{
+	return isStart;
 }

@@ -11,17 +11,27 @@ protected:
 	float _xCam;
 	float _yCam;
 
+	// Toạ độ backup cho camera
+	float _xCamBackup;
+	float _yCamBackup;
+	float _boundaryLeftBackup;
+	float _boundaryRightBackup;
+
 	// kích thước camera
 	int _width;
 	int _height;
 
-	float _boundaryLeft; // biên giới hạn bên trái 
-	float _boundaryRight; // biên giới hạn bên phải, không bao gồm đoạn simon đi được ở cuối - SCREEN_WIDTH 
+	float _boundaryLeft; // Biên giới hạn bên trái 
+	float _boundaryRight; // Biên giới hạn bên phải, không bao gồm đoạn simon đi được ở cuối - SCREEN_WIDTH 
 
-	float vx; // vận tốc di chuyển camera
+	float vx; // Vận tốc di chuyển camera
 	DWORD dt;
 
 	bool isAllowFollowSimon;
+
+	bool isAutoGoX; // Biến check camera có đang ở chế độ tự đi không
+	float AutoGoX_Distance; // Khoảng cách cần tự động di chuyển
+	float AutoGoX_Backup_X; // Vị trí camera trước khi vào chế độ tự đi
 
 public:
 	Camera(int w, int h);
@@ -46,6 +56,12 @@ public:
 	void SetBoundary(float left, float right); // set biên giới hạn cho camera
 	float GetBoundaryRight();
 	float GetBoundaryLeft();
+
+	void SetAutoGoX(float Distance, float Speed); // Set các thông số khi trong trạng thái tự di chuyển
+	void StopAutoGoX();
+	bool GetIsAutoGoX();
+
+	void SetBoundaryBackup(float l, float r);
 };
 
 #endif

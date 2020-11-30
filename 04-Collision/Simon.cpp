@@ -39,10 +39,11 @@ void Simon::Reset()
 	isWalking = 0;
 	isAttacking = 0;
 	isOnStair = 0;
+	isProcessingOnStair = 0;// Ko phải đang xử lí lên thang
 
 	isAutoGoX = 0;
-	passedDistance = 0;
 
+	passedDistance = 0;
 	isFreeze = 0;
 	TimeFreeze = 0;
 
@@ -90,15 +91,14 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 	if (isOnStair)
 	{
-		if (isAttacking == true) // Simon tấn công khi lên thang
+		if (isAttacking == true) // tấn công
 		{
 			if (directionY == -1) // đang đi lên
 			{
 				/* Xử lí ani đánh khi đang đi lên thang*/
-
-				if (index < SIMON_ANI_STAIR_UP_ATTACKING_BEGIN) // Nếu ani chưa đúng
+				if (index < SIMON_ANI_STAIR_UP_ATTACKING_BEGIN) // nếu ani chưa đúng
 				{
-					sprite->SelectFrame(SIMON_ANI_STAIR_UP_ATTACKING_BEGIN); // Set lại ani bắt đầu
+					sprite->SelectFrame(SIMON_ANI_STAIR_UP_ATTACKING_BEGIN); // set lại ani bắt đầu
 					sprite->timeAccumulated = dt;
 				}
 				else
@@ -118,31 +118,34 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						sprite->SelectFrame(SIMON_ANI_STAIR_STANDING_UP);
 					}
 				}
-
 				/* Xử lí ani đánh khi đang đi lên thang*/
+
 			}
 			else
 			{
 				/* Xử lí ani đánh khi đang đi xuống thang*/
-				if (index < SIMON_ANI_STAIR_DOWN_ATTACKING_BEGIN) // Nếu ani chưa đúng
+				if (index < SIMON_ANI_STAIR_DOWN_ATTACKING_BEGIN) // nếu ani chưa đúng
 				{
-					sprite->SelectFrame(SIMON_ANI_STAIR_DOWN_ATTACKING_BEGIN); // Set lại ani bắt đầu
+					sprite->SelectFrame(SIMON_ANI_STAIR_DOWN_ATTACKING_BEGIN); // set lại ani bắt đầu
 					sprite->timeAccumulated = dt;
 				}
 				else
 				{
 					/* Update ani bình thường */
+
+					// Bắt đầu tấn công
 					sprite->timeAccumulated += dt;
 					if (sprite->timeAccumulated >= SIMON_TIME_WAIT_ANI_ATTACKING)
 					{
 						sprite->timeAccumulated -= SIMON_TIME_WAIT_ANI_ATTACKING;
 						sprite->SelectFrame(sprite->GetCurrentFrame() + 1);
 					}
+
 					/* Update ani bình thường */
 
+					// Đã hoàn thành ani tấn công
 					if (sprite->GetCurrentFrame() > SIMON_ANI_STAIR_DOWN_ATTACKING_END) // đã đi vượt qua frame cuối
 					{
-
 						isAttacking = false;
 						sprite->SelectFrame(SIMON_ANI_STAIR_STANDING_DOWN);
 					}
@@ -150,6 +153,9 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				/* Xử lí ani đánh khi đang đi xuống thang*/
 
 			}
+
+
+
 		}
 		else
 		{
@@ -205,7 +211,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					}
 					passedDistance = 0;
 				}
-				//	DebugOut(L"DoCaoDiDuoc = %f . dy = %f . y = %f\n", DoCaoDiDuoc, dy, y);
+				//	DebugOut(L"passedDistance = %f . dy = %f . y = %f\n", passedDistance, dy, y);
 
 			}
 			else
@@ -216,11 +222,15 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					sprite->SelectFrame(SIMON_ANI_STAIR_STANDING_DOWN);
 			}
 		}
+
+		//	DebugOut(L"sprite index = %d \n", sprite->GetCurrentFrame());
+
 	}
 
 #pragma endregion
 
 #pragma region Xử lý khi Simon không ở trên cầu thang
+
 	else
 	{
 	if (isSitting == true)
@@ -367,14 +377,6 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	if (isOnStair == true)
 		CollisionWithStair(coObjects);
 
-	if (isProcessingOnStair == 3)
-	{
-		isProcessingOnStair = 0;
-		vx = 0;
-		vy = 0;
-		isWalking = false;
-	}
-
 	for (auto& objWeapon : mapWeapon)
 	{
 		if (objWeapon.second->GetFinish() == false) // Vũ khi chưa kết thúc thì update
@@ -387,6 +389,26 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			}
 
 			objWeapon.second->Update(dt, coObjects);
+		}
+	}
+
+	if (isProcessingOnStair == 3)
+	{
+		isProcessingOnStair = 0;
+		vx = 0;
+		vy = 0;
+		isWalking = false;
+	}
+
+	if (isAutoGoX == true)
+	{
+		if (abs(x - AutoGoX_Backup_X) >= AutoGoX_Distance)
+		{
+			x = x - (abs(x - AutoGoX_Backup_X) - AutoGoX_Distance);
+			RestoreBackupAutoGoX();
+			isAutoGoX = false;
+
+			DebugOut(L"[SIMON] end auto go X\n");
 		}
 	}
 }
@@ -649,8 +671,8 @@ void Simon::Render(Camera* camera)
 
 void Simon::Sit()
 {
-	/*if (isOnStair == true)
-		return;*/
+	if (isOnStair == true)
+		return;
 
 	vx = 0;
 	isWalking = 0;
@@ -672,36 +694,44 @@ void Simon::ResetSit()
 
 void Simon::Left()
 {
+	if (isOnStair == true)
+		return;
+
 	direction = -1;
 }
 
 void Simon::Right()
 {
+	if (isOnStair == true)
+		return;
+
 	direction = 1;
 }
 
 void Simon::Go()
 {
+	if (isOnStair == true)
+		return;
+
 	if (isAttacking == true)
 		return;
 
 	vx = SIMON_WALKING_SPEED * direction;
 	isWalking = 1;
-
 }
 
 void Simon::Jump()
 {
-	if (isJumping == true)
+	if (isJumping)
 		return;
 
-	/*if (isOnStair == true)
-		return;*/
-
-	if (isSitting == true)
+	if (isOnStair)
 		return;
 
-	if (isAttacking == true)
+	if (isSitting)
+		return;
+
+	if (isAttacking)
 		return;
 
 	/*if (isHurting)
@@ -716,10 +746,10 @@ void Simon::Stop()
 	if (isAttacking == true)
 		return;
 
-	/*if (isOnStair)
+	if (isOnStair)
 		return;
 
-	if (isHurting)
+	/*if (isHurting)
 		return;*/
 
 	vx = 0;
@@ -732,7 +762,6 @@ void Simon::Stop()
 		isSitting = 0;
 		y = y - PULL_UP_SIMON_AFTER_SITTING;
 	}
-
 }
 
 void Simon::Attack(TAG weaponType)
@@ -814,6 +843,8 @@ void Simon::UpdateFreeze(DWORD dt)
 		TimeFreeze += dt;
 }
 
+#pragma region Phần tự động đi của Simon
+
 bool Simon::GetIsAutoGoX()
 {
 	return isAutoGoX;
@@ -827,13 +858,26 @@ void Simon::SetAutoGoX(int GoDirection, int DirectionAfterGo, float Distance, fl
 
 	isAutoGoX = true;
 
+	AutoGoX_Backup_X = x; // Giữ lại vị trí trước khi đi tự động
+
+	//Backup trạng thái
+	isWalking_Backup = isWalking;
+	isJumping_Backup = isJumping;
+	isSitting_Backup = isSitting;
+	isAttacking_Backup = isAttacking;
+	isOnStair_Backup = isOnStair;
+	isProcessingOnStair_Backup = isProcessingOnStair;
+	directionStair_Backup = directionStair;
+	directionY_Backup = directionY;
+	//================================================//
+
 	AutoGoX_Distance = Distance;
 	AutoGoX_Speed = WalkSpeed;
 	AutoGoX_GoDirection = GoDirection;
 	directionAfterGo = DirectionAfterGo;
 
 	direction = GoDirection;
-
+	vx = WalkSpeed * GoDirection;
 	isWalking = 1;
 	isJumping = 0;
 	isSitting = 0;
@@ -841,6 +885,29 @@ void Simon::SetAutoGoX(int GoDirection, int DirectionAfterGo, float Distance, fl
 	isOnStair = 0;
 	isProcessingOnStair = 0;
 }
+
+void Simon::RestoreBackupAutoGoX()
+{
+	isWalking = isWalking_Backup;
+	isJumping = isJumping_Backup;
+	isSitting = isSitting_Backup;
+	isAttacking = isAttacking_Backup;
+	isOnStair = isOnStair_Backup;
+	isProcessingOnStair = isProcessingOnStair_Backup;
+	directionStair = directionStair_Backup;
+	directionY = directionY_Backup;
+
+	direction = directionAfterGo; // set hướng sau khi đi
+
+	isWalking = 0; // tắt trạng thái đang đi
+	isAutoGoX = 0; // tắt trạng thái auto
+
+	vx = 0;
+	vy = 0;
+	// đi xong thì cho simon đứng yên
+}
+
+#pragma endregion
 
 #pragma region Phần get set cho mạng, điểm và tim
 

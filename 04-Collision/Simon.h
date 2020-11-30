@@ -103,6 +103,23 @@ public:
 	bool isFreeze; // đứng im khi nhặt item nâng cấp
 	DWORD TimeFreeze; // thời gian đã đóng băng
 
+
+#pragma region Các biến back up dữ liệu trc đó cho Simon
+
+	D3DXVECTOR2 PositionBackup;
+
+
+	bool isWalking_Backup;
+	bool isJumping_Backup;
+	bool isSitting_Backup;
+	bool isAttacking_Backup;
+	bool isOnStair_Backup;
+	int isProcessingOnStair_Backup;
+	int directionStair_Backup;
+	int directionY_Backup;
+
+#pragma endregion
+
 	TAG SubWeaponType; // loại vũ khí phụ đang giữ
 
 	bool isAttacking;
@@ -120,6 +137,7 @@ public:
 	float AutoGoX_Distance; // khoảng cách simon cần tự đi
 	float AutoGoX_Speed; // vận tốc đi tự động
 	float AutoGoX_GoDirection; // hướng tự động đi
+	float AutoGoX_Backup_X; // Lưu vị trí trước khi đi tự động
 
 	float passedDistance = 0; // Độ cao cầu thang Simon đã đi dc
 
@@ -164,6 +182,8 @@ public:
 
 	void SetAutoGoX(int GoDirection, int DirectionAfterGo, float Distance, float WalkSpeed); // set các thông số auto và backup các trạng thái hiện tại
 	bool GetIsAutoGoX(); // kiểm tra có đang ở chế độ auto go?
+
+	void RestoreBackupAutoGoX(); // Khôi phục trạng thái 
 
 
 

@@ -172,6 +172,12 @@
     <ClCompile Include="MoneyEffect.cpp">
       <Filter>Object\Effect</Filter>
     </ClCompile>
+    <ClCompile Include="SmallHeart.cpp">
+      <Filter>Object\Item</Filter>
+    </ClCompile>
+    <ClCompile Include="BrokenBrick.cpp">
+      <Filter>Object\Effect</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="debug.h">
@@ -283,6 +289,12 @@
       <Filter>Object\Ground</Filter>
     </ClInclude>
     <ClInclude Include="MoneyEffect.h">
+      <Filter>Object\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="SmallHeart.h">
+      <Filter>Object\Item</Filter>
+    </ClInclude>
+    <ClInclude Include="BrokenBrick.h">
       <Filter>Object\Effect</Filter>
     </ClInclude>
   </ItemGroup>
