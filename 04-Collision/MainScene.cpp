@@ -269,7 +269,7 @@ void MainScene::LoadResources()
 
 void MainScene::InitGame()
 {
-	LoadMap(TAG::MAP1);
+	LoadMap(TAG::MAP2);
 	simon->Init();
 }
 

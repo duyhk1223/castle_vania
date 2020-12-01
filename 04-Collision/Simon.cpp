@@ -362,17 +362,15 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		}
 	}
 
-	// xét va chạm với brick
-	CollisionWithBrick(coObjects); // check Collision và update x, y cho simon	
 
 	// Nếu không trên cầu thang thì xét xem Simon có đang tự đi hay không, nếu có thì update x, y cho Simon, ngược lại thì xét va chạm gạch
-	/*if (isOnStair == false)
+	if (isOnStair == false)
 	{
 		if (isAutoGoX == false)
 			CollisionWithBrick(coObjects);
 		else
 			x += dx;
-	}*/
+	}
 
 	if (isOnStair == true)
 		CollisionWithStair(coObjects);
