@@ -32,8 +32,6 @@ Texture* TextureManager::GetTexture(TAG oType)
 
 void TextureManager::LoadResource()
 {
-
-
 	// Player
 	AddTexture(TAG::SIMON, new Texture("Resources/simon.png", 8, 3, 24));
 	AddTexture(TAG::SIMON_TRANS, new Texture("Resources/simon_trans.png", 8, 3, 24));
@@ -64,6 +62,13 @@ void TextureManager::LoadResource()
 	AddTexture(TAG::UPGRADEMORNINGSTAR, new Texture("Resources/item/3.png"));
 	AddTexture(TAG::BONUS, new Texture("Resources/item/2.png", 3, 1, 3));
 	AddTexture(TAG::SMALLHEART, new Texture("Resources/item/0.png"));
+	AddTexture(TAG::POTROAST, new Texture("Resources/item/10.png"));
+	AddTexture(TAG::ITEMDOUBLESHOT, new Texture("Resources/item/11.png"));
+	AddTexture(TAG::ITEMHOLYWATER, new Texture("Resources/item/9.png"));
+	AddTexture(TAG::ITEMTHROWINGAXE, new Texture("Resources/item/7.png"));
+	AddTexture(TAG::INVISIBILITYPOTION, new Texture("Resources/item/14.png"));
+	AddTexture(TAG::CROSS, new Texture("Resources/item/6.png"));
+	AddTexture(TAG::ITEMBOOMERANG, new Texture("Resources/item/8.png"));
 
 	// Effect
 	AddTexture(TAG::HIT, new Texture("Resources/other/0.png", 2, 1, 2));
@@ -78,9 +83,14 @@ void TextureManager::LoadResource()
 	// Weapon
 	AddTexture(TAG::DAGGER, new Texture("Resources/weapon/1.png"));
 	AddTexture(TAG::MORNINGSTAR, new Texture("Resources/weapon/morningstar.png", 4, 3, 12));
+	AddTexture(TAG::HOLYWATER, new Texture("Resources/weapon/2.png", 4, 1, 4));
+	AddTexture(TAG::THROWINGAXE, new Texture("Resources/weapon/3.png", 4, 1, 4));
+	AddTexture(TAG::BOOMERANG, new Texture("Resources/weapon/4.png", 3, 1, 3));
+	AddTexture(TAG::STOPWATCH, new Texture("Resources/item/5.png"));
 
 	// Board
 	AddTexture(TAG::FONT, new Texture("Resources/font/1.png", 13, 3, 37));
 	AddTexture(TAG::BOARD, new Texture("Resources/blackboard.png", 1, 1, 1));
 	AddTexture(TAG::BOARDHEALTH, new Texture("Resources/heal.png", 3, 1, 3));	
+	AddTexture(TAG::BOARD_TRANS, new Texture("Resources/blackboard.png", 1, 1, 1, 0, 0, 0));
 }

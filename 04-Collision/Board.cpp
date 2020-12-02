@@ -38,6 +38,22 @@ void Board::Render(Simon* simon, int stage, int RemainingTime, GameObject* boss)
 	case TAG::DAGGER:
 		simon->mapWeapon[SubWeaponType]->RenderIcon(x + 310.0f, y + 40.0f);
 		break;
+
+	case TAG::HOLYWATER:
+		simon->mapWeapon[SubWeaponType]->RenderIcon(x + 312, y + 33);
+		break;
+
+	case TAG::THROWINGAXE:
+		simon->mapWeapon[SubWeaponType]->RenderIcon(x + 310, y + 35);
+		break;
+
+	case TAG::BOOMERANG:
+		simon->mapWeapon[SubWeaponType]->RenderIcon(x + 310, y + 35);
+		break;
+
+	case TAG::STOPWATCH:
+		simon->mapWeapon[SubWeaponType]->RenderIcon(x + 312, y + 31);
+		break;
 	}
 }
 

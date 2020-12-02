@@ -21,9 +21,12 @@ void MainScene::KeyState(BYTE* state)
 	if (camera->GetIsAutoGoX()) // Camera đang chế độ tự đi thì ko xét phím
 		return;
 
+
+
+
 	if (Game::GetInstance()->IsKeyDown(DIK_UP) && Game::GetInstance()->IsKeyDown(DIK_A) && simon->isProcessingOnStair == 0 && !simon->isAttacking)
 	{
-		simon->Attack(simon->GetTypeSubWeapon()); // attack với vũ khí phụ đang nhặt
+		simon->Attack(simon->GetTypeSubWeapon()); // Attack với vũ khí phụ Simon nhặt dc
 	}
 	else
 		if (!simon->isJumping)
@@ -149,24 +152,15 @@ void MainScene::KeyState(BYTE* state)
 
 		}
 
+
+	// Trạng thái nhảy theo 1 hướng thì ko thể attack hay đổi chiều Simon
 	if (simon->isJumping && simon->isWalking)
 		return;
 
 	if (simon->isOnStair) // Nếu đang trên thang thì không xét loại đi trái phải
 		return;
-
-	// Nếu đang ko tấn công thì mới ngồi dc
-	if (Game::GetInstance()->IsKeyDown(DIK_DOWN) && simon->isAttacking == false && simon->isJumping == false)
-	{
-		simon->Sit();
-		if (Game::GetInstance()->IsKeyDown(DIK_RIGHT))
-			simon->Right();
-
-		if (Game::GetInstance()->IsKeyDown(DIK_LEFT))
-			simon->Left();
-		return;
-	}
 	
+	// Simon tấn công khi đang nhảy
 	if (simon->isAttacking && simon->isJumping)
 		return;
 
@@ -213,16 +207,23 @@ void MainScene::OnKeyDown(int KeyCode)
 	}
 
 	if (simon->GetFreeze() == true) // Đang bóng băng thì không quan tâm phím
-	{
 		return;
-	}
 
-	if (!(Game::GetInstance()->IsKeyDown(DIK_UP) && Game::GetInstance()->IsKeyDown(DIK_A) && simon->isAttacking == true))
-		if (KeyCode == DIK_A)
+	if (simon->GetIsAutoGoX() == true) // đang chế độ tự đi thì ko xét phím
+		return;
+
+	if (camera->GetIsAutoGoX()) // camera đang chế độ tự đi thì ko xét phím
+		return;
+
+	if (!(Game::GetInstance()->IsKeyDown(DIK_UP) && Game::GetInstance()->IsKeyDown(DIK_A) && simon->isProcessingOnStair != 0 && simon->isAttacking == true))
+		if (KeyCode == DIK_A && simon->isProcessingOnStair == 0) // Không phải đang xử lí việc đi trên thang thì đc đánh
 		{
 			simon->Attack(TAG::MORNINGSTAR);
 		}
 
+
+
+	// Nếu Simon đang nhảy thì ko bắt lệnh nhảy
 	if (simon->isJumping && simon->isWalking)
 		return;
 
@@ -282,11 +283,14 @@ void MainScene::ResetResource()
 
 	camera->SetAllowFollowSimon(true);
 
-	isHandlingGoThroughTheDoor1 = false; // Ban đầu chưa cần xử lí qua cửa
+	isHandlingGoThroughTheDoor1 = false; // Ban đầu chưa cần xử lí qua cửa 1
 	isWentThroughTheDoor1 = false;
 
-	isHandlingGoThroughTheDoor2 = false; // ban đầu chưa cần xử lí qua cửa
+	isHandlingGoThroughTheDoor2 = false; // Ban đầu chưa cần xử lí qua cửa 2
 	isWentThroughTheDoor2 = false;
+
+	isUsingInvisibilityPotion = false; // Ban đầu thì Simon chưa tàng hình
+	isUsingCross = false; // Ban đầu Simon chưa nhắt dc thánh giá
 }
 
 void MainScene::Update(DWORD dt)
@@ -299,6 +303,7 @@ void MainScene::Update(DWORD dt)
 		if (simon->GetFreeze() == true)// dang freeze thì k update
 			return;
 	}
+//===================================================================================================//
 
 	// Phần xử lý map 2
 #pragma region Xử lý đi qua Gate 1
@@ -328,6 +333,7 @@ void MainScene::Update(DWORD dt)
 	}
 
 #pragma endregion
+//===================================================================================================//
 
 #pragma region Process Gate 2
 
@@ -356,8 +362,7 @@ void MainScene::Update(DWORD dt)
 	}
 
 #pragma endregion
-
-
+	//===================================================================================================//
 
 	gridGame->GetListObject(listObj, camera);
 
@@ -368,18 +373,22 @@ void MainScene::Update(DWORD dt)
 
 	camera->Update(dt);
 
+//===================================================================================================//
+
 
 #pragma region Update các object của map 2
 #pragma endregion
 
+//===================================================================================================//
+
 #pragma region Phần update các object
 
 	for (UINT i = 0; i < listObj.size(); i++)
-		listObj[i]->Update(dt, &listObj);
+		listObj[i]->Update(dt, &listObj);  // Đã kiểm tra "Alive" lúc lấy từ lưới ra
 
 	for (UINT i = 0; i < listItem.size(); i++)
 		if (listItem[i]->GetFinish() == false)
-			listItem[i]->Update(dt, &listObj);
+			listItem[i]->Update(dt, &listObj); // Trong các hàm update chỉ kiểm tra va chạm với đất
 
 	for (UINT i = 0; i < listEffect.size(); i++)
 		if (listEffect[i]->GetFinish() == false)
@@ -387,7 +396,15 @@ void MainScene::Update(DWORD dt)
 
 #pragma endregion
 
+//===================================================================================================//
+
+#pragma region Các update khác
+
 	CheckCollision();
+	HandleInvisibilityPotion(dt);
+	HandleCross(dt);
+
+#pragma endregion
 }
 
 void MainScene::Render()
@@ -443,6 +460,8 @@ void MainScene::LoadMap(TAG mapType)
 
 	ResetResource();
 }
+
+
 
 #pragma region Các hàm check va chạm
 
@@ -582,12 +601,14 @@ void MainScene::CheckCollisionSimonItem()
 {
 	for (UINT i = 0; i < listItem.size(); i++) 
 	{
-		if (listItem[i]->GetFinish() == false && listItem[i]->IsWaitingToDisplay() == false) // chưa kết thúc và "không phải" đang chờ để hiển thị
+		if (listItem[i]->GetFinish() == false && listItem[i]->IsWaitingToDisplay() == false) // Chưa kết thúc thời gian hiển thị và không phải đang chờ để hiển thị
 		{
-			if (simon->isCollisionWithItem(listItem[i]) == true) // có va chạm
+			if (simon->isCollisionWithItem(listItem[i]) == true) // Có va chạm với item
 			{
 				switch (listItem[i]->GetType())
 				{
+
+				// Các item khác
 				case TAG::LARGEHEART:
 					simon->SetHeartCollect(simon->GetHeartCollect() + 5);
 					listItem[i]->SetFinish(true);
@@ -605,10 +626,17 @@ void MainScene::CheckCollisionSimonItem()
 					break;
 				}
 
-				//Sub weapon item
-				case TAG::ITEMDAGGER:
+				
+				case TAG::POTROAST:
 				{
-					simon->PickUpSubWeapon(TAG::DAGGER);
+					listItem[i]->SetFinish(true);
+					simon->SetHealth(min(simon->GetHealth() + 6, SIMON_DEFAULT_HEALTH)); // Tăng 6 đơn vị máu
+					break;
+				}
+
+				case TAG::ITEMDOUBLESHOT:
+				{
+					simon->SetIsUsingDoubleShot(true); // Cho phép chế độ Double Shot
 					listItem[i]->SetFinish(true);
 					break;
 				}
@@ -619,6 +647,97 @@ void MainScene::CheckCollisionSimonItem()
 					listItem[i]->SetFinish(true);
 					break;
 				}
+
+				//====================================================================//
+
+
+				//Sub weapon item
+				case TAG::ITEMDAGGER:
+				{
+					simon->PickUpSubWeapon(TAG::DAGGER);
+					listItem[i]->SetFinish(true);
+					break;
+				}
+
+				case TAG::ITEMHOLYWATER:
+				{
+					simon->PickUpSubWeapon(TAG::HOLYWATER);
+					listItem[i]->SetFinish(true);
+
+					break;
+				}
+
+				case TAG::ITEMTHROWINGAXE:
+				{
+					simon->PickUpSubWeapon(TAG::THROWINGAXE);
+
+					listItem[i]->SetFinish(true);
+					break;
+				}
+
+				case TAG::INVISIBILITYPOTION:
+				{
+					isUsingInvisibilityPotion = true;
+					simon->SetTexture(TextureManager::GetInstance()->GetTexture(TAG::SIMON_TRANS));
+					listItem[i]->SetFinish(true);
+					break;
+				}
+
+				case TAG::ITEMBOOMERANG:
+				{
+					simon->PickUpSubWeapon(TAG::BOOMERANG);
+					listItem[i]->SetFinish(true);
+					break;
+				}
+
+				case TAG::STOPWATCH:
+				{
+					simon->PickUpSubWeapon(TAG::STOPWATCH);
+					listItem[i]->SetFinish(true);
+					break;
+				}
+
+				// Nếu Simon nhặt dc thánh giá thì sẽ xoá hết enemy trong map
+				case TAG::CROSS:
+				{
+					isUsingCross = true;
+					Cross_WaitedTime = 0;
+					Cross_ChangeColorBackground_WaitedTime = 0;
+
+					board->SetTexure(TextureManager::GetInstance()->GetTexture(TAG::BOARD_TRANS)); // đổi thành Board màu nền trong suốt
+
+					/*Xóa hết enemy*/
+					//for (UINT k = 0; k < listEnemy.size(); k++)
+					//{
+					//	GameObject* enemy = listEnemy[k];
+					//	if (enemy->GetHealth() > 0) // còn máu
+					//	{
+					//		enemy->SetHealth(0);
+					//		listEffect.push_back(new Fire(enemy->GetX() - 5, enemy->GetY() + 8)); // hiệu ứng lửa
+					//	}
+					//}
+					//CountEnemyBat = 0;
+					//TimeWaitProcessCreateGhost = GetTickCount(); // set thời điểm hiện tại
+					//isWaitProcessCreateGhost = true;
+					//isAllowCheckTimeWaitProcessCreateGhost = true;
+
+					//CountEnemyFishmen = 0;
+
+					//CountEnemyPanther = 0;
+
+					//CountEnemyGhost = 0;
+					//TimeWaitProcessCreateGhost = GetTickCount(); // set thời điểm hiện tại
+					//isWaitProcessCreateGhost = true;
+					//isAllowCheckTimeWaitProcessCreateGhost = true;
+					/*Xóa hết enemy*/
+
+					listItem[i]->SetFinish(true);
+					//sound->Play(eSound::soundHolyCross);
+					break;
+				}
+				
+
+				//=====================================================================//
 
 				/* Xử lí ăn tiền */
 				case TAG::MONEY_RED_BAG:
@@ -653,7 +772,6 @@ void MainScene::CheckCollisionSimonItem()
 					break;
 				}
 				/* Xử lí ăn tiền */
-
 				}
 			}
 		}
@@ -933,8 +1051,36 @@ Item* MainScene::DropItem(int Id, TAG Type, float X, float Y) // xử lí rơ�
 		{
 			switch (Id)
 			{
-			case 2:
+			case 2: // Ngay đầu map 2
 				return new MoneyBag(X, Y, TAG::MONEY_WHITE_BAG);
+				break;
+
+				// Temp
+			/*case 3:
+				return new ItemThrowingAxe(X, Y);
+				break;
+			case 4:
+				return new ItemDoubleShot(X, Y);
+				break;*/
+
+			case 23: case 98: // Trc 2 cửa
+				return new Cross(X, Y);
+				break;
+
+			case 71: // Nằm ở phần có báo đen
+				return new ItemHolyWater(X, Y);
+				break;
+
+			case 76:
+				return new ItemStopWatch(X, Y);
+				break;
+
+			case 109: // Nằm gần gate 2
+				return new InvisibilityPotion(X, Y);
+				break;
+
+			case 111: // Nằm gần cầu thang gate 2
+				return new ItemThrowingAxe(X, Y);
 				break;
 
 			default:
@@ -965,16 +1111,16 @@ Item* MainScene::DropItem(int Id, TAG Type, float X, float Y) // xử lí rơ�
 		{
 			switch (Id)
 			{
-			case 40:
-				//return new PotRoast(X, Y);
+			case 40: // Đùi gà
+				return new PotRoast(X, Y);
 				break;
 
-			case 72:
+			case 72: // Phần ngoài cùng của map 2
 				return new Bonus(X, Y);
 				break;
 
-			case 104: // Double shot
-				//return new ItemDoubleShot(X, Y);
+			case 104: // Double shot, trong phần đánh boss
+				return new ItemDoubleShot(X, Y);
 				break;
 
 
@@ -993,6 +1139,62 @@ Item* MainScene::DropItem(int Id, TAG Type, float X, float Y) // xử lí rơ�
 	}
 
 	return new LargeHeart(X, Y);
+}
+
+#pragma endregion
+
+
+#pragma region Các hàm xử lý khác
+
+void MainScene::HandleInvisibilityPotion(DWORD dt)
+{
+	if (isUsingInvisibilityPotion)
+	{
+		InvisibilityPotion_WaitedTime += dt;
+		// Nếu đã hết thời gian sử dụng thì sẽ ngưng
+		if (InvisibilityPotion_WaitedTime >= INVISIBILITYPOTION_LIMITTIMEWAIT)
+		{
+			isUsingInvisibilityPotion = false; // Kết thúc
+			InvisibilityPotion_WaitedTime = 0;
+			//sound->Play(eSound::soundInvisibilityPotion_End);
+
+			simon->SetTexture(TextureManager::GetInstance()->GetTexture(TAG::SIMON));
+		}
+	}
+}
+
+void MainScene::HandleCross(DWORD dt)
+{
+	if (isUsingCross)
+	{
+		/* Xử lí thời gian hoạt động, nếu hết thời gian sử dụng thì trả về bình thường*/
+		Cross_WaitedTime += dt;
+		if (Cross_WaitedTime >= CROSS_MAXUSINGTIME)
+		{
+			isUsingCross = false;
+			D3DBACKGROUND_COLOR = BACKGROUND_DEFAULT_COLOR; // Trả về màu nền mặc định
+			board->SetTexure(TextureManager::GetInstance()->GetTexture(TAG::BOARD)); // Đổi thành Board màu bt
+		}
+		else
+		{
+			/*Xử lí đổi màu nền*/
+			Cross_ChangeColorBackground_WaitedTime += dt;
+			if (Cross_ChangeColorBackground_WaitedTime >= Cross_ChangeColorBackground_MaxWaitingTime) // Xét xem đã tới thời điểm đổi màu nên hay chưa
+			{
+				Cross_ChangeColorBackground_WaitedTime = 0;
+				Cross_ChangeColorBackground_MaxWaitingTime = rand() % 100; // Giảm dần thời gian đổi màu
+				/*Đổi màu nền*/
+				if (D3DBACKGROUND_COLOR == BACKGROUND_DEFAULT_COLOR)
+				{
+					D3DBACKGROUND_COLOR = CROSS_COLOR_BACKGROUND;
+				}
+				else
+				{
+					D3DBACKGROUND_COLOR = BACKGROUND_DEFAULT_COLOR;
+				}
+			}
+		}
+	}
 }
 
 #pragma endregion

@@ -4,9 +4,15 @@
 
 #include "GameObject.h"
 #include "Weapon.h"
+
+// Weapon
 #include "MorningStar.h"
 #include "Item.h"
 #include "Dagger.h"
+#include "HolyWater.h"
+#include "ThrowingAxe.h"
+#include "Boomerang.h"
+#include "StopWatch.h"
 
 
 #define SIMON_DEFAULT_POSITION  50.0f, 300.0f
@@ -121,6 +127,7 @@ public:
 #pragma endregion
 
 	TAG SubWeaponType; // loại vũ khí phụ đang giữ
+	bool isUsingDoubleShot; // Biến check xem Simon có sử dụng double shot hay không
 
 	bool isAttacking;
 	bool isWalking;
@@ -157,12 +164,12 @@ public:
 	virtual void Render(Camera* camera);
 
 
-	void Stop(); // idle
+	void Stop(); // Idle
 
 	void Sit();
 	void ResetSit();
 
-	void Go(); // walk
+	void Go(); // Walk
 	void Jump();
 	void Right();
 	void Left();
@@ -202,6 +209,10 @@ public:
 	void SetScore(int score);
 	int GetHeartCollect();
 	void SetHeartCollect(int collectedHeart);
+
+	// Kiểm tra và cho phép dùng double shot
+	bool GetIsUsingDoubleShot();
+	void SetIsUsingDoubleShot(bool IsUsingDoubleShot);
 };
 
 

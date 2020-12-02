@@ -1,6 +1,7 @@
 ﻿#ifndef __SCENEGAME_H__
 #define __SCENEGAME_H__
 
+// Others
 #include "Scene.h"
 #include "Camera.h"
 #include "Sprite.h"
@@ -8,22 +9,36 @@
 #include "Simon.h"
 #include "Map.h"
 #include "Grid.h"
-#include "Item.h"
-#include "Effect.h"
-#include "BrokenBrick.h"
 #include "Board.h"
 #include "GameObject.h"
-#include "Dagger.h"
 #include "TextureManager.h"
-#include "Bonus.h"
-#include "UpgradeMorningStar.h"
-#include "ItemDagger.h"
-#include "LargeHeart.h"
+
+// Effect
+#include "Effect.h"
 #include "Hit.h"
 #include "Fire.h"
 #include "MoneyEffect.h"
+#include "BrokenBrick.h"
+
+ // Item
+#include "Item.h"
+#include "Bonus.h"
+#include "ItemDagger.h"
 #include "MoneyBag.h"
 #include "SmallHeart.h"
+#include "PotRoast.h"
+#include "ItemDoubleShot.h"
+#include "ItemHolyWater.h"
+#include "ItemThrowingAxe.h"
+#include "LargeHeart.h"
+#include "UpgradeMorningStar.h"
+#include "InvisibilityPotion.h"
+#include "Cross.h"
+#include "ItemBoomerang.h"
+#include "ItemStopWatch.h"
+
+// Weapon
+#include "Dagger.h"
 
 
 #define GAME_TIME_MAX 300
@@ -53,6 +68,11 @@
 #define CAMERA_BOUNDARY_BOSS_RIGHT (5648.0f - SCREEN_WIDTH) // Biên camera cho phần boss
 
 
+#define INVISIBILITYPOTION_LIMITTIMEWAIT 4000 // Thời gian sử dụng InvisibilityPotion
+
+#define CROSS_MAXUSINGTIME 1000 // Thời gian tối đa khi dùng Cross
+
+
 class MainScene : public Scene
 {
 private:
@@ -77,6 +97,16 @@ private:
 	/*Xử lí đi qua cửa 2*/
 	bool isHandlingGoThroughTheDoor2;
 	bool isWentThroughTheDoor2;
+
+	/*Xử lí liên quan InvisibilityPotion*/
+	bool isUsingInvisibilityPotion;
+	DWORD InvisibilityPotion_WaitedTime; // Đếm thòi gian Simon đã tàng hình
+
+	/*Xử lí Cross*/
+	bool isUsingCross;
+	DWORD Cross_WaitedTime; // Thời gian đã sử dụng Cross
+	DWORD Cross_ChangeColorBackground_WaitedTime; // Thời gian đã qua khi thay đổi màu nền
+	DWORD Cross_ChangeColorBackground_MaxWaitingTime; // Thời gian cần chờ để đổi màu nền
 
 public:
 	MainScene();
@@ -107,6 +137,9 @@ public:
 	void CheckCollision();
 
 	int StageCurrent;
+
+	void HandleInvisibilityPotion(DWORD dt); // Xử lý khi Simon nhặt dc thuốc tàng hình
+	void HandleCross(DWORD dt); // Xử lý khi Simon nhặt dc thánh giá 
 };
 
 #endif

@@ -178,6 +178,42 @@
     <ClCompile Include="BrokenBrick.cpp">
       <Filter>Object\Effect</Filter>
     </ClCompile>
+    <ClCompile Include="PotRoast.cpp">
+      <Filter>Object\Item</Filter>
+    </ClCompile>
+    <ClCompile Include="ItemDoubleShot.cpp">
+      <Filter>Object\Item</Filter>
+    </ClCompile>
+    <ClCompile Include="ItemHolyWater.cpp">
+      <Filter>Object\Item</Filter>
+    </ClCompile>
+    <ClCompile Include="HolyWater.cpp">
+      <Filter>Object\Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="ItemThrowingAxe.cpp">
+      <Filter>Object\Item</Filter>
+    </ClCompile>
+    <ClCompile Include="ThrowingAxe.cpp">
+      <Filter>Object\Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="InvisibilityPotion.cpp">
+      <Filter>Object\Item</Filter>
+    </ClCompile>
+    <ClCompile Include="Cross.cpp">
+      <Filter>Object\Item</Filter>
+    </ClCompile>
+    <ClCompile Include="ItemBoomerang.cpp">
+      <Filter>Object\Item</Filter>
+    </ClCompile>
+    <ClCompile Include="Boomerang.cpp">
+      <Filter>Object\Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="ItemStopWatch.cpp">
+      <Filter>Object\Item</Filter>
+    </ClCompile>
+    <ClCompile Include="StopWatch.cpp">
+      <Filter>Object\Weapon</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="debug.h">
@@ -296,6 +332,42 @@
     </ClInclude>
     <ClInclude Include="BrokenBrick.h">
       <Filter>Object\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="PotRoast.h">
+      <Filter>Object\Item</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemDoubleShot.h">
+      <Filter>Object\Item</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemHolyWater.h">
+      <Filter>Object\Item</Filter>
+    </ClInclude>
+    <ClInclude Include="HolyWater.h">
+      <Filter>Object\Weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemThrowingAxe.h">
+      <Filter>Object\Item</Filter>
+    </ClInclude>
+    <ClInclude Include="ThrowingAxe.h">
+      <Filter>Object\Weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="InvisibilityPotion.h">
+      <Filter>Object\Item</Filter>
+    </ClInclude>
+    <ClInclude Include="Cross.h">
+      <Filter>Object\Item</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemBoomerang.h">
+      <Filter>Object\Item</Filter>
+    </ClInclude>
+    <ClInclude Include="Boomerang.h">
+      <Filter>Object\Weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemStopWatch.h">
+      <Filter>Object\Item</Filter>
+    </ClInclude>
+    <ClInclude Include="StopWatch.h">
+      <Filter>Object\Weapon</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

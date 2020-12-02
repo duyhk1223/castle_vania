@@ -50,6 +50,7 @@ void Simon::Reset()
 	vx = 0;
 	vy = 0;
 
+	isUsingDoubleShot = false;
 	SubWeaponType = TAG::NO_SUBWEAPON;
 }
 
@@ -660,7 +661,7 @@ void Simon::Render(Camera* camera)
 
 	for (auto& objWeapon : mapWeapon)
 	{
-		if (objWeapon.second->GetFinish() == false) // vũ khi này chưa kết thúc thì render
+		if (objWeapon.second->GetFinish() == false) // Vũ khi này chưa kết thúc thì render
 		{
 			objWeapon.second->Render(camera);
 		}
@@ -768,7 +769,7 @@ void Simon::Attack(TAG weaponType)
 		return;
 	
 
-	/* Kiểm tra còn đủ HeartCollect ko? */
+	/* Kiểm tra còn đủ HeartCollect ko?, nếu ko đủ thì sẽ ko thể tấn công bằng vũ khí phụ */
 	switch (weaponType)
 	{
 	case MORNINGSTAR:
@@ -780,24 +781,115 @@ void Simon::Attack(TAG weaponType)
 		break;
 	}
 
-	default: // các vũ khí còn lại
+	case STOPWATCH:
+	{
+		if (HeartCollect < 5) // Ko đủ HeartCollect thì ko thể attack
+			return;
+	}
+
+	default: // Các vũ khí còn lại
 	{
 		if (HeartCollect < 1)
-			return;// ko đủ HeartCollect thì ko attack
-		break;
+			return; // Ko đủ HeartCollect thì ko thể attack
 	}
+
 	}
 
 	bool isAllowSubHeartCollect = false;
 
-	if (mapWeapon[weaponType]->GetFinish()) { // vũ khí đã kết thúc thì mới đc tấn công tiếp
+	if (mapWeapon[weaponType]->GetFinish()) { // Vũ khí đã kết thúc tấn công thì mới đc tấn công tiếp
 
 		isAttacking = 1;
 		sprite->SelectFrame(0);
 		sprite->ResetAccumulatedTime();
 
-		mapWeapon[weaponType]->Attack(this->x, this->y, this->direction); // Render vũ khí của Simon đang sở hữu
+		mapWeapon[weaponType]->Attack(this->x, this->y, this->direction); // Tấn công với vũ khí phụ Simon đang sở hữu
 		isAllowSubHeartCollect = true;
+	}
+	else // Phần xử lí Double Shot
+	{
+		// Đang ở chế độ DoubleShot và vũ khi Simon dùng ko phải là Morning Star và Stop Watch
+		if (isUsingDoubleShot && weaponType != TAG::MORNINGSTAR && weaponType != TAG::STOPWATCH)
+		{
+			// Sau 250 ms thì mới được dùng lại Double Shot, là sau khi vũ khí đầu tiên đã tấn công và chưa kết thúc do mới đầu sẽ rơi vào if ở trên và attack ra 1 vũ khí trc
+			if (GetTickCount() - mapWeapon[weaponType]->GetLastTimeAttack() >= 250) 
+			{
+				bool isMustRecreateDoubleShot = false; // Ban đầu ko cần tạo lại do chưa sử dụng
+
+
+				if (mapWeapon.find(TAG::WEAPON_DOUBLE_SHOT) == mapWeapon.end()) // Chưa khởi tạo Double Shot
+				{
+					isMustRecreateDoubleShot = true; // Chưa tạo thì phải tạo lại
+				}
+				else
+				{
+					if (mapWeapon[TAG::WEAPON_DOUBLE_SHOT]->GetFinish() == false) // Vũ khí đã tạo vẫn còn đang tấn công
+					{
+						return; // Thoát và đợi đến khi tấn công hoàn thành
+					}
+					else
+					{
+						// Vũ khí đã tạo khác với vũ khí đang dùng để tấn công, trường hợp Simon nhặt dc vũ khí khác
+						if (mapWeapon[TAG::WEAPON_DOUBLE_SHOT]->GetType() != weaponType)
+						{
+							isMustRecreateDoubleShot = true; // Tạo lại cho đúng
+						}
+					}
+				}
+
+				if (isMustRecreateDoubleShot) // Tạo vũ khí DoubleShot
+				{
+					SAFE_DELETE(mapWeapon[TAG::WEAPON_DOUBLE_SHOT]); // Xoá vũ khí hiện tại
+					TAG subWeaponType = GetTypeSubWeapon(); // Lấy loại vũ khí phụ mà Simon nhặt dc
+
+					switch (subWeaponType)
+					{
+
+					case DAGGER:
+					{
+						mapWeapon[TAG::WEAPON_DOUBLE_SHOT] = new Dagger(camera);
+						break;
+					}
+
+					case HOLYWATER:
+					{
+						mapWeapon[TAG::WEAPON_DOUBLE_SHOT] = new HolyWater(camera);
+						break;
+					}
+
+					case STOPWATCH:
+					{
+						mapWeapon[TAG::WEAPON_DOUBLE_SHOT] = new StopWatch();
+						break;
+					}
+
+					case THROWINGAXE:
+					{
+						mapWeapon[TAG::WEAPON_DOUBLE_SHOT] = new ThrowingAxe(camera);
+						break;
+					}
+
+					case BOOMERANG:
+					{
+						mapWeapon[TAG::WEAPON_DOUBLE_SHOT] = new Boomerang(camera, this);
+						break;
+					}
+					default:
+						break;
+					}
+				}
+
+
+				isAttacking = true; // Set trang thái tấn công
+				sprite->SelectFrame(0);
+				sprite->ResetAccumulatedTime();
+
+
+				mapWeapon[TAG::WEAPON_DOUBLE_SHOT]->Attack(this->x, this->y, this->direction);
+				isAllowSubHeartCollect = true;
+			}
+
+		}
 	}
 
 	// Nếu vũ khí còn đủ heart để attack
@@ -807,11 +899,17 @@ void Simon::Attack(TAG weaponType)
 		{
 		case MORNINGSTAR:
 		{
-			// ko trừ
+			// Ko trừ
 			break;
 		}
 
-		default: // các vũ khí còn lại
+		case STOPWATCH:
+		{
+			HeartCollect -= 5;
+			break;
+		}
+
+		default: // Các vũ khí còn lại
 		{
 			HeartCollect -= 1;
 			break;
@@ -819,6 +917,10 @@ void Simon::Attack(TAG weaponType)
 		}
 	}
 }
+
+
+
+#pragma region Trạng thái đóng băng
 
 bool Simon::GetFreeze()
 {
@@ -840,6 +942,10 @@ void Simon::UpdateFreeze(DWORD dt)
 	else
 		TimeFreeze += dt;
 }
+
+#pragma endregion
+
+
 
 #pragma region Phần tự động đi của Simon
 
@@ -907,6 +1013,8 @@ void Simon::RestoreBackupAutoGoX()
 
 #pragma endregion
 
+
+
 #pragma region Phần get set cho mạng, điểm và tim
 
 int Simon::GetLives()
@@ -941,16 +1049,56 @@ int Simon::GetHeartCollect()
 
 #pragma endregion
 
+
+
 #pragma region Các hàm xử lý nhặt vũ khí
 
 void Simon::PickUpSubWeapon(TAG t)
 {
 	switch (t) {
+
 	case DAGGER:
 		if (mapWeapon[t] == NULL) { // chưa có thì thêm vào map
 			mapWeapon[t] = new Dagger(camera);
 		}
 		break;
+
+	case HOLYWATER:
+	{
+		if (mapWeapon[t] == NULL)
+		{
+			mapWeapon[t] = new HolyWater(camera);
+		}
+		break;
+	}
+
+	case THROWINGAXE:
+	{
+		if (mapWeapon[t] == NULL)
+		{
+			mapWeapon[t] = new ThrowingAxe(camera);
+		}
+		break;
+	}
+
+	case BOOMERANG:
+	{
+		if (mapWeapon[t] == NULL)
+		{
+			mapWeapon[t] = new Boomerang(camera, this);
+		}
+		break;
+	}
+
+	case STOPWATCH:
+	{
+		if (mapWeapon[t] == NULL)
+		{
+			mapWeapon[t] = new StopWatch();
+		}
+		break;
+	}
+
 	}
 
 	SetTypeSubWeapon(t); // set loại vũ khí phụ hiện tại
@@ -964,6 +1112,16 @@ TAG Simon::GetTypeSubWeapon()
 void Simon::SetTypeSubWeapon(TAG t)
 {
 	SubWeaponType = t;
+}
+
+bool Simon::GetIsUsingDoubleShot()
+{
+	return isUsingDoubleShot;
+}
+
+void Simon::SetIsUsingDoubleShot(bool IsUsingDoubleShot)
+{
+	isUsingDoubleShot = IsUsingDoubleShot;
 }
 
 #pragma endregion

@@ -13,7 +13,7 @@ private:
 	int CountNeedLoop;// số lần lặp
 
 public:
-	Fire(float X = 0, float Y = 0, int CountLoop = 1);
+	Fire(float X = 0, float Y = 0, int ExplosionEffectCountLoop = 1);
 	~Fire();
 
 	void Update(DWORD dt);

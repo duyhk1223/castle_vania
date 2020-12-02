@@ -1,12 +1,12 @@
 ﻿#include "Fire.h"
 
-Fire::Fire(float X, float Y, int CountLoop)
+Fire::Fire(float X, float Y, int ExplosionEffectCountLoop)
 {
 	this->x = X;
 	this->y = Y;
 	_texture = TextureManager::GetInstance()->GetTexture(TAG::FIRE);
 	_sprite = new Sprite(_texture, 150);
-	this->CountNeedLoop = CountLoop;
+	this->CountNeedLoop = ExplosionEffectCountLoop;
 }
 
 
