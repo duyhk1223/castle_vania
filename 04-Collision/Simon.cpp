@@ -162,7 +162,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		{
 			if (isWalking == true)
 			{
-				if (isProcessingOnStair == 1) // nếu ở giai đoạn bước chân thì set frame 12
+				if (isProcessingOnStair == 1) // Nếu ở giai đoạn bước chân thì set frame 12
 				{
 					if (vy < 0) // ddi len
 						sprite->SelectFrame(SIMON_ANI_STAIR_GO_UP_BEGIN);
@@ -171,7 +171,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				}
 
 
-				if (isProcessingOnStair == 2) // nếu ở giai đoạn bước chân trụ thì set frame 13
+				if (isProcessingOnStair == 2) // Nếu ở giai đoạn bước chân trụ thì set frame 13
 				{
 					if (vy < 0) // ddi len
 						sprite->SelectFrame(SIMON_ANI_STAIR_GO_UP_END);
@@ -188,24 +188,24 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				{
 					isProcessingOnStair++;
 
-					/* fix lỗi mỗi lần đi vượt quá 16px */
-					if (direction == 1 && directionY == -1) // đi lên bên phải
+					/* Fix lỗi mỗi lần đi vượt quá 16px */
+					if (direction == 1 && directionY == -1) // Đi lên bên phải
 					{
 						x -= (passedDistance - 16.0f);
 						y += (passedDistance - 16.0f);
 					}
-					if (direction == -1 && directionY == -1) // đi lên bên trái
+					if (direction == -1 && directionY == -1) // Đi lên bên trái
 					{
 						x += (passedDistance - 16.0f);
 						y += (passedDistance - 16.0f);
 					}
 
-					if (direction == 1 && directionY == 1) // đi xuống bên phải
+					if (direction == 1 && directionY == 1) // Đi xuống bên phải
 					{
 						x -= (passedDistance - 16.0f);
 						y -= (passedDistance - 16.0f);
 					}
-					if (direction == -1 && directionY == 1) // đi xuống bên trái
+					if (direction == -1 && directionY == 1) // Đi xuống bên trái
 					{
 						x += (passedDistance - 16.0f);
 						y -= (passedDistance - 16.0f);
@@ -215,9 +215,9 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				//	DebugOut(L"passedDistance = %f . dy = %f . y = %f\n", passedDistance, dy, y);
 
 			}
-			else
+			else // Nếu Simon dừng trên cầu thang
 			{
-				if (this->directionY == -1) // ddang di len
+				if (this->directionY == -1) // Đang đi lên
 					sprite->SelectFrame(SIMON_ANI_STAIR_STANDING_UP);
 				else
 					sprite->SelectFrame(SIMON_ANI_STAIR_STANDING_DOWN);
@@ -633,6 +633,8 @@ void Simon::CollisionWithStair(vector<LPGAMEOBJECT>* coObjects)
 }
 
 #pragma endregion
+
+
 
 void Simon::Render(Camera* camera)
 {
@@ -1122,6 +1124,16 @@ bool Simon::GetIsUsingDoubleShot()
 void Simon::SetIsUsingDoubleShot(bool IsUsingDoubleShot)
 {
 	isUsingDoubleShot = IsUsingDoubleShot;
+}
+
+bool Simon::IsUsingWeapon(TAG weaponType)
+{
+	if (this->mapWeapon.find(weaponType) != this->mapWeapon.end()) // Có tồn tại trong list weapon
+	{
+		if (this->mapWeapon[weaponType]->GetFinish() == false) // Chưa kết thúc, là Simon đang tấn công với vũ khí
+			return true;
+	}
+	return false;
 }
 
 #pragma endregion

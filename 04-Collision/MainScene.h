@@ -40,11 +40,50 @@
 // Weapon
 #include "Dagger.h"
 
+// Enemy
+#include "Ghost.h"
+#include "BlackPanther.h"
+#include "Bat.h"
 
-#define GAME_TIME_MAX 300
+
+#define GAME_TIME_MAX 300 // Thời gian chơi game
+
+
+
+#pragma region Ghost
+
+#define WAIT_TIME_BETWEEN_TWO_GHOST_IS_CREATED 1000 // 1 giây - Khoảng thời gian phải chờ giữa ghost đầu và ghost sẽ được tạo tiếp theo
+#define WAIT_TIME_BEFORE_ALLOW_TO_CREATE_GHOST 2500 // 2.5 giây - Thời gian phải chờ trc khi dc tạo ghost
+
+#define GHOST_ZONE1_LEFT -16.0f
+#define GHOST_ZONE1_RIGHT 825.0f
+
+#define GHOST_ZONE2_LEFT 2200.0f
+#define GHOST_ZONE2_RIGHT 2775.0f
+
+#define GHOST_ZONE3_LEFT 4233.0f  // Biên trái vùng hoạt động
+#define GHOST_ZONE3_RIGHT 4993.0f // Biên phải vùng hoạt động
+#define GHOST_ZONE3_COLUMN1 4412.0f 
+#define GHOST_ZONE3_COLUMN2 4590.0f
+
+#pragma endregion
+
+
+
+#pragma region Black Panther
+
+// 2 biên giới hạn cho vùng tạo báo
+#define REGION_CREATE_PANTHER_BOUNDARY_LEFT 1090.0f
+#define REGION_CREATE_PANTHER_BOUNDARY_RIGHT 2305.0f
+
+#pragma endregion
+
+
+
+
+#pragma region Gate
 
 #define CAMERA_BOUNDARY_BEFORE_GO_GATE1_RIGHT (2576.0f-15.0f) // Biên phải camera trước khi qua cửa 1
-
 
 // Toạ độ camera trc và sau khi qua của 1
 #define GATE1_POSITION_CAM_BEFORE_GO 2809.0f
@@ -56,13 +95,31 @@
 
 #define DISTANCE_AUTO_WALK_AFTER_GATE 80.0f // Simon phải tự đi 80px sau khi chạm vào cửa
 
+#pragma endregion
 
+
+
+
+#pragma region Lake
 
 #define CAMERA_POSITION_Y_LAKE 374.0f // Toạ độ camera khi Simon xuống hồ nước
 
 // Biên giới hạn phần hồ nước
 #define CAMERA_BOUNDARY_LAKE_LEFT 3075.0f
-#define CAMERA_BOUNDARY_LAKE_RIGHT (4111.0f-SCREEN_WIDTH)
+#define CAMERA_BOUNDARY_LAKE_RIGHT (4111.0f - SCREEN_WIDTH)
+
+#pragma endregion
+
+
+
+#pragma region Bat
+
+#define CREATE_BAT_BOUNDARY_DIVISION_DIRECTION_X 3590.0f // Biên chia đôi vùng, bên trái thì Bat bay hướng -1, phải thì 1, trước khi qua hồ cá và chưa lên thang qua cửa 2
+#define CREATE_BAT_BOUNDARY_DIVISION_DIRECTION_Y 207.0f // Biên chia đôi vùng, trên thì bay hướng 1, dưới thì -1, trước cửa 2
+
+#pragma endregion
+
+
 
 
 #define CAMERA_BOUNDARY_BOSS_RIGHT (5648.0f - SCREEN_WIDTH) // Biên camera cho phần boss
@@ -80,15 +137,34 @@ private:
 	Camera* camera;
 	Grid* gridGame;
 	Board* board;
-
 	Simon* simon;
+
+	Sprite* _spriteLagerHeart;
 
 	TAG mapCurrent;
 	vector<GameObject*> listObj;
 	vector<Item*> listItem;
 	vector<Effect*> listEffect;
+	vector <GameObject*> listEnemy;
 
-	Sprite* _spriteLagerHeart;
+
+
+	/*Xử lí liên quan tạo ghost*/
+	int CurrentGhostEnemyCount; // Số lượng ghost hiện tại
+	DWORD CreateGhostTime; // Thời điểm bắt đầu tạo ghost
+	DWORD BeginWaitingToCreateGhostTime; // Thời điểm bắt đầu chờ xử lí việc tạo ghost
+	bool isWaitingToCreateGhost; // Chờ xử lí việc tạo ghost
+	bool isAllowCheckTimeWaitToCreateGhost = false; // Cho phép kt thời gian chờ xử lí tạo ghost
+
+	/*Xử lí liên quan tạo Panther*/
+	bool isAllowCreatePanther;
+	int CurrentPantherEnemyCount;
+
+	/*Xử lí liên quan tạo Bat*/
+	DWORD CreateBatTime; // Thời điểm bắt đầu tạo Bat
+	DWORD WaitingTimeToCreateBat; // Thời gian phải chờ để tạo bot
+	bool isAllowToCreateBat; // Biến cờ để cho phép tạo Bat hoặc ko
+	int CurrentEnemyBatCount; // Đếm số lượng dơi hiện tại
 
 	/*Xử lí đi qua cửa 1*/
 	bool isHandlingGoThroughTheDoor1;
@@ -107,6 +183,8 @@ private:
 	DWORD Cross_WaitedTime; // Thời gian đã sử dụng Cross
 	DWORD Cross_ChangeColorBackground_WaitedTime; // Thời gian đã qua khi thay đổi màu nền
 	DWORD Cross_ChangeColorBackground_MaxWaitingTime; // Thời gian cần chờ để đổi màu nền
+
+
 
 public:
 	MainScene();
@@ -131,6 +209,8 @@ public:
 	void CheckCollisionSimonItem();
 	void CheckCollisionSimonAndHiddenObject();
 	void CheckCollisionSimonWithGate();
+	void CheckCollisionWithEnemy(); // Check xem Simon có tấn công enemy hay bị thương khi va chạm ko
+
 
 	Item* DropItem(int Id, TAG Type, float X, float Y);
 

@@ -201,6 +201,7 @@ public:
 	TAG GetTypeSubWeapon();
 	void SetTypeSubWeapon(TAG t);
 	void PickUpSubWeapon(TAG t);
+	bool IsUsingWeapon(TAG weaponType);
 
 	// Điểm và mạng
 	int GetLives();

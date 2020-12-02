@@ -93,4 +93,9 @@ void TextureManager::LoadResource()
 	AddTexture(TAG::BOARD, new Texture("Resources/blackboard.png", 1, 1, 1));
 	AddTexture(TAG::BOARDHEALTH, new Texture("Resources/heal.png", 3, 1, 3));	
 	AddTexture(TAG::BOARD_TRANS, new Texture("Resources/blackboard.png", 1, 1, 1, 0, 0, 0));
+
+	// Enemy
+	AddTexture(TAG::GHOST, new Texture("Resources/enemy/1.png", 2, 1, 2));
+	AddTexture(TAG::PANTHER, new  Texture("Resources/enemy/2.png", 4, 1, 4));
+	AddTexture(TAG::BAT, new Texture("Resources/enemy/0.png", 4, 1, 4));
 }
