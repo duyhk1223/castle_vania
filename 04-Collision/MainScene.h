@@ -19,6 +19,7 @@
 #include "Fire.h"
 #include "MoneyEffect.h"
 #include "BrokenBrick.h"
+#include "Steam.h"
 
  // Item
 #include "Item.h"
@@ -44,6 +45,7 @@
 #include "Ghost.h"
 #include "BlackPanther.h"
 #include "Bat.h"
+#include "Fishmen.h"
 
 
 #define GAME_TIME_MAX 300 // Thời gian chơi game
@@ -75,6 +77,49 @@
 // 2 biên giới hạn cho vùng tạo báo
 #define REGION_CREATE_PANTHER_BOUNDARY_LEFT 1090.0f
 #define REGION_CREATE_PANTHER_BOUNDARY_RIGHT 2305.0f
+
+#pragma endregion
+
+
+
+
+#pragma region Fishmen
+
+#define FISHMEN_ZONE_1_LEFT 3065.0f
+#define FISHMEN_ZONE_1_RIGHT 3193.0f
+#define FISHMEN_POS_1 3121.0f
+
+#define FISHMEN_ZONE_2_LEFT 3193.0f
+#define FISHMEN_ZONE_2_RIGHT 3326.0f
+#define FISHMEN_POS_2 3254.0f
+
+#define FISHMEN_ZONE_3_LEFT 3326.0f
+#define FISHMEN_ZONE_3_RIGHT 3458.0f
+#define FISHMEN_POS_3 3382.0f
+
+#define FISHMEN_ZONE_4_LEFT 3458
+#define FISHMEN_ZONE_4_RIGHT 3571
+#define FISHMEN_POS_4 3505 
+
+#define FISHMEN_ZONE_5_LEFT 3571.0f
+#define FISHMEN_ZONE_5_RIGHT 3707.0f
+#define FISHMEN_POS_5 3636.0f
+
+#define FISHMEN_ZONE_6_LEFT 3707.0f
+#define FISHMEN_ZONE_6_RIGHT 3829.0f
+#define FISHMEN_POS_6 3760.0f
+
+#define FISHMEN_ZONE_7_LEFT 3829.0f
+#define FISHMEN_ZONE_7_RIGHT 3956.0f
+#define FISHMEN_POS_7 3881.0f
+
+
+#define FISHMEN_ZONE_8_LEFT 3956.0f
+#define FISHMEN_ZONE_8_RIGHT 4095.0f
+#define FISHMEN_POS_8 4017.0f
+
+#define FISHMEN_POS_Y 805.0f
+
 
 #pragma endregion
 
@@ -147,6 +192,8 @@ private:
 	vector<Effect*> listEffect;
 	vector <GameObject*> listEnemy;
 
+	vector <Weapon*> listWeaponOfEnemy; // List chứa các viên đạn của enemy
+
 
 
 	/*Xử lí liên quan tạo ghost*/
@@ -165,6 +212,12 @@ private:
 	DWORD WaitingTimeToCreateBat; // Thời gian phải chờ để tạo bot
 	bool isAllowToCreateBat; // Biến cờ để cho phép tạo Bat hoặc ko
 	int CurrentEnemyBatCount; // Đếm số lượng dơi hiện tại
+
+	/*Xử lí liên quan tạo Fishmen*/
+	bool isAllowToCreateFishmen;
+	int CurrentFishmenEnemyCount;
+	DWORD CreateFishmenTime; // Thời điểm đã tạo fishmen
+	DWORD WaitingtimeToCreateFishmen; // Thời gian cần chờ để tạo fishmen
 
 	/*Xử lí đi qua cửa 1*/
 	bool isHandlingGoThroughTheDoor1;
@@ -210,6 +263,7 @@ public:
 	void CheckCollisionSimonAndHiddenObject();
 	void CheckCollisionSimonWithGate();
 	void CheckCollisionWithEnemy(); // Check xem Simon có tấn công enemy hay bị thương khi va chạm ko
+	void CheckCollisionSimonWithEnemy(); // Check va chạm giữa Simon và enemy
 
 
 	Item* DropItem(int Id, TAG Type, float X, float Y);

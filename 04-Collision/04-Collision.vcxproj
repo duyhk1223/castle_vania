@@ -138,6 +138,7 @@
     <ClCompile Include="define.cpp" />
     <ClCompile Include="Effect.cpp" />
     <ClCompile Include="Fire.cpp" />
+    <ClCompile Include="FireBall.cpp" />
     <ClCompile Include="Fishmen.cpp" />
     <ClCompile Include="Gate.cpp" />
     <ClCompile Include="Ghost.cpp" />
@@ -170,6 +171,7 @@
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="StairBottom.cpp" />
     <ClCompile Include="StairTop.cpp" />
+    <ClCompile Include="Steam.cpp" />
     <ClCompile Include="StopWatch.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Simon.cpp" />
@@ -196,6 +198,7 @@
     <ClInclude Include="define.h" />
     <ClInclude Include="Effect.h" />
     <ClInclude Include="Fire.h" />
+    <ClInclude Include="FireBall.h" />
     <ClInclude Include="Fishmen.h" />
     <ClInclude Include="Gate.h" />
     <ClInclude Include="Ghost.h" />
@@ -227,6 +230,7 @@
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="StairBottom.h" />
     <ClInclude Include="StairTop.h" />
+    <ClInclude Include="Steam.h" />
     <ClInclude Include="StopWatch.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Simon.h" />

@@ -9,16 +9,19 @@ Brick::Brick(float X, float Y, int W, int H, int Model)
 	switch (Model)
 	{
 	case BRICK_MODEL_2:
-		texture = TextureManager::GetInstance()->GetTexture(TAG::TEX_BRICK_MAP_2); // loại màn 2
+		texture = TextureManager::GetInstance()->GetTexture(TAG::TEX_BRICK_MAP_2); // Loại màn 2
+		break;
+	case BRICK_MODEL_3:
+		texture = TextureManager::GetInstance()->GetTexture(TAG::TEX_BRICK_MODEL_3); // Loại nhỏ 16px
 		break;
 	case BRICK_MODEL_TRANSPARENT:
-		texture = TextureManager::GetInstance()->GetTexture(TAG::TRANSPARENT_BRICK);// loại trong suốt 
+		texture = TextureManager::GetInstance()->GetTexture(TAG::TRANSPARENT_BRICK);// Loại trong suốt 
 		break;
 	case BRICK_MODEL_3_3_32:
-		texture = TextureManager::GetInstance()->GetTexture(TAG::TEX_BRICK_3_32);// loại 3 ô nhỏ - 32px 
+		texture = TextureManager::GetInstance()->GetTexture(TAG::TEX_BRICK_3_32);// Loại 3 ô nhỏ - 32px 
 		break;
 	case BRICK_MODEL_3_4_32:
-		texture = TextureManager::GetInstance()->GetTexture(TAG::TEX_BRICK_4_32);// loại đủ 4 ô nhỏ - 32px
+		texture = TextureManager::GetInstance()->GetTexture(TAG::TEX_BRICK_4_32);// Loại đủ 4 ô nhỏ - 32px
 		break;
 	default:
 		DebugOut(L"[BRICK] Get Texture that bai! Ko nhan dang duoc Model!\n");

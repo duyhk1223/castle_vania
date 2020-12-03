@@ -5,10 +5,11 @@
 #include "GameObject.h" 
 #include "TextureManager.h"
 
-#define BRICK_MODEL_2 2 // gạch màn 2, 32px
-#define BRICK_MODEL_TRANSPARENT 4 // gạch trong suốt
-#define BRICK_MODEL_3_3_32 5 // gạch loại 3, 3 ô nhỏ - 32px 
-#define BRICK_MODEL_3_4_32 6 // gạch loại 3, đủ 4 ô nhỏ - 32px 
+#define BRICK_MODEL_2 2 // Gạch màn 2, 32px
+#define BRICK_MODEL_3 3 // Gạch loại 3, ô nhỏ 16px, dùng cho việc xét va chạm di chuyển trong hồ cá
+#define BRICK_MODEL_TRANSPARENT 4 // Gạch trong suốt
+#define BRICK_MODEL_3_3_32 5 // Gạch loại 3, 3 ô nhỏ - 32px 
+#define BRICK_MODEL_3_4_32 6 // Gạch loại 3, đủ 4 ô nhỏ - 32px 
 
 class Brick : public GameObject
 {

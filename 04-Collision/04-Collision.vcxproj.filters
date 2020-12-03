@@ -229,6 +229,12 @@
     <ClCompile Include="Fishmen.cpp">
       <Filter>Object\Enemy</Filter>
     </ClCompile>
+    <ClCompile Include="FireBall.cpp">
+      <Filter>Object\Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="Steam.cpp">
+      <Filter>Object\Effect</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="debug.h">
@@ -395,6 +401,12 @@
     </ClInclude>
     <ClInclude Include="Fishmen.h">
       <Filter>Object\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="FireBall.h">
+      <Filter>Object\Weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="Steam.h">
+      <Filter>Object\Effect</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

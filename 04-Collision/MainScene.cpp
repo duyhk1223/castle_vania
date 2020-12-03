@@ -21,7 +21,8 @@ void MainScene::KeyState(BYTE* state)
 	if (camera->GetIsAutoGoX()) // Camera đang chế độ tự đi thì ko xét phím
 		return;
 
-
+	if (simon->isHurting) // Simon đang bị thương thì ko quan tâm phím
+		return;
 
 
 	if (Game::GetInstance()->IsKeyDown(DIK_UP) && Game::GetInstance()->IsKeyDown(DIK_A) && simon->isProcessingOnStair == 0 && !simon->isAttacking)
@@ -209,10 +210,13 @@ void MainScene::OnKeyDown(int KeyCode)
 	if (simon->GetFreeze() == true) // Đang bóng băng thì không quan tâm phím
 		return;
 
-	if (simon->GetIsAutoGoX() == true) // đang chế độ tự đi thì ko xét phím
+	if (simon->GetIsAutoGoX()) // Simon đang ơ chế độ tự đi thì ko xét phím
 		return;
 
-	if (camera->GetIsAutoGoX()) // camera đang chế độ tự đi thì ko xét phím
+	if (camera->GetIsAutoGoX()) // Camera đang ở chế độ tự đi thì ko xét phím
+		return;
+
+	if (simon->isHurting) // Simon đang bị thương thì ko quan tâm phím
 		return;
 
 	if (!(Game::GetInstance()->IsKeyDown(DIK_UP) && Game::GetInstance()->IsKeyDown(DIK_A) && simon->isProcessingOnStair != 0 && simon->isAttacking == true))
@@ -222,11 +226,9 @@ void MainScene::OnKeyDown(int KeyCode)
 		}
 
 
-
 	// Nếu Simon đang nhảy thì ko bắt lệnh nhảy
 	if (simon->isJumping && simon->isWalking)
 		return;
-
 
 	if (KeyCode == DIK_S && simon->isOnStair == false)
 	{
@@ -243,6 +245,18 @@ void MainScene::OnKeyDown(int KeyCode)
 			simon->Jump();
 		}
 	}
+
+#pragma region Keydown Debug
+
+	if (KeyCode == DIK_U)
+	{
+		if (isDebug_Untouchable == 1)
+			isDebug_Untouchable = 0;
+		else
+			isDebug_Untouchable = 1;
+	}
+
+#pragma endregion
 }
 
 void MainScene::OnKeyUp(int KeyCode)
@@ -281,6 +295,7 @@ void MainScene::ResetResource()
 	listItem.clear();
 	listEffect.clear();
 	listEnemy.clear();
+	listWeaponOfEnemy.clear();
 
 	camera->SetAllowFollowSimon(true);
 
@@ -306,11 +321,17 @@ void MainScene::ResetResource()
 	CreateBatTime = 0;
 	WaitingTimeToCreateBat = 0;
 	isAllowToCreateBat = 0;
+
+	// Fishmen
+	isAllowToCreateFishmen = false;
+	CreateFishmenTime = 0;
+	WaitingtimeToCreateFishmen = 0;
+	CurrentFishmenEnemyCount = 0;
 }
 
 void MainScene::Update(DWORD dt)
 {
-	// xử lí freeze
+	// Xử lí freeze
 	if (simon->GetFreeze() == true)
 	{
 		simon->UpdateFreeze(dt);
@@ -318,7 +339,15 @@ void MainScene::Update(DWORD dt)
 		if (simon->GetFreeze() == true)// dang freeze thì k update
 			return;
 	}
+
 //===================================================================================================//
+
+#pragma region Debug Update
+
+	if (isDebug_Untouchable == 1)
+		simon->StartUntouchable();
+
+#pragma endregion
 
 	// Phần xử lý map 2
 #pragma region Xử lý đi qua Gate 1
@@ -393,187 +422,265 @@ void MainScene::Update(DWORD dt)
 
 					//============= Xử lý các vùng tạo enemy===========//
 
-#pragma region Vùng tạo Ghost
-
 	if (mapCurrent == TAG::MAP2)
 	{
-		DWORD now = GetTickCount(); // Biến update giá trị thời gian để dùng cho việc reset thời gian tạo ghost
+#pragma region Vùng tạo Ghost
 
-		if (isWaitingToCreateGhost == false) // Nếu không phải chờ xử lí thì vào xử lí tạo ghost
+		if (mapCurrent == TAG::MAP2)
 		{
+			DWORD now = GetTickCount(); // Biến update giá trị thời gian để dùng cho việc reset thời gian tạo ghost
+
+			if (isWaitingToCreateGhost == false) // Nếu không phải chờ xử lí thì vào xử lí tạo ghost
+			{
 
 #pragma region Vùng 1 & 2, phần trc khi qua cửa 1
 
-			// Simon nằm trong vùng ngoài cùng của map 2 hoặc phần gần cầu thang qua cửa 1
-			if ((simon->GetX() >= GHOST_ZONE1_LEFT && simon->GetX() <= GHOST_ZONE1_RIGHT) || (simon->GetX() > GHOST_ZONE2_LEFT && simon->GetX() < GHOST_ZONE2_RIGHT))
-			{
-				if (now - CreateGhostTime >= WAIT_TIME_BETWEEN_TWO_GHOST_IS_CREATED) // Nếu đã chờ >= 1s thì cho phép tạo Ghost
+				// Simon nằm trong vùng ngoài cùng của map 2 hoặc phần gần cầu thang qua cửa 1
+				if ((simon->GetX() >= GHOST_ZONE1_LEFT && simon->GetX() <= GHOST_ZONE1_RIGHT) || (simon->GetX() > GHOST_ZONE2_LEFT && simon->GetX() < GHOST_ZONE2_RIGHT))
 				{
-					if (CurrentGhostEnemyCount < 3)
+					if (now - CreateGhostTime >= WAIT_TIME_BETWEEN_TWO_GHOST_IS_CREATED) // Nếu đã chờ >= 1s thì cho phép tạo Ghost
 					{
-						if (simon->GetVx() > 0) // vx > 0 thì Simon đang đi về bên phải
+						if (CurrentGhostEnemyCount < 3)
 						{
-							// Cho ghost chạy từ bên phải qua, hướng là -1
-							listEnemy.push_back(new Ghost(camera->GetXCam() + camera->GetWidth(), 326 - 10, -1)); // 34 là framewidth của ghost
-						}
-						else
-							if (simon->GetVx() < 0) // vx < 0 thì Simon đang đi về bên trái
+							if (simon->GetVx() > 0) // vx > 0 thì Simon đang đi về bên phải
 							{
-								// Cho ghost chạy từ bên trái qua , hướng là 1
-								listEnemy.push_back(new Ghost(camera->GetXCam() - 34, 326 - 10, 1));
+								// Cho ghost chạy từ bên phải qua, hướng là -1
+								listEnemy.push_back(new Ghost(camera->GetXCam() + camera->GetWidth(), 326 - 10, -1)); // 34 là framewidth của ghost
 							}
-							else // Nếu Simon đứng yên thì random
-							{
-								int random = rand() % 2;  // Tỉ lệ 50%
-								if (random == 0) // Đi từ bên trái
+							else
+								if (simon->GetVx() < 0) // vx < 0 thì Simon đang đi về bên trái
 								{
+									// Cho ghost chạy từ bên trái qua , hướng là 1
 									listEnemy.push_back(new Ghost(camera->GetXCam() - 34, 326 - 10, 1));
 								}
-								else // Đi từ bên phải
+								else // Nếu Simon đứng yên thì random
 								{
-									listEnemy.push_back(new Ghost(camera->GetXCam() + camera->GetWidth(), 326 - 10, -1));
+									int random = rand() % 2;  // Tỉ lệ 50%
+									if (random == 0) // Đi từ bên trái
+									{
+										listEnemy.push_back(new Ghost(camera->GetXCam() - 34, 326 - 10, 1));
+									}
+									else // Đi từ bên phải
+									{
+										listEnemy.push_back(new Ghost(camera->GetXCam() + camera->GetWidth(), 326 - 10, -1));
+									}
 								}
-							}
 
-						CurrentGhostEnemyCount++;
-						if (CurrentGhostEnemyCount == 3)
-						{
-							isWaitingToCreateGhost = true; // Phải chờ đến khi cả 3 ghost bị giết thì mới dc tạo tiếp
-							isAllowCheckTimeWaitToCreateGhost = false;
+							CurrentGhostEnemyCount++;
+							if (CurrentGhostEnemyCount == 3)
+							{
+								isWaitingToCreateGhost = true; // Phải chờ đến khi cả 3 ghost bị giết thì mới dc tạo tiếp
+								isAllowCheckTimeWaitToCreateGhost = false;
+							}
+							CreateGhostTime = now; // Set lại thời điểm đã tạo ghost cuối
 						}
-						CreateGhostTime = now; // Set lại thời điểm đã tạo ghost cuối
 					}
 				}
-			}
 
 #pragma endregion
 
 #pragma region Vùng 3
 
-			if ((simon->GetX() >= GHOST_ZONE3_LEFT && simon->GetX() <= GHOST_ZONE3_RIGHT)) // Simon ở giữa 2 vùng tạo Ghost
-			{
-				if (now - CreateGhostTime >= WAIT_TIME_BETWEEN_TWO_GHOST_IS_CREATED) // Nếu chờ >= 1s thì cho phép tạo Ghost
+				if ((simon->GetX() >= GHOST_ZONE3_LEFT && simon->GetX() <= GHOST_ZONE3_RIGHT)) // Simon ở giữa 2 vùng tạo Ghost
 				{
-					if (CurrentGhostEnemyCount < 3)
+					if (now - CreateGhostTime >= WAIT_TIME_BETWEEN_TWO_GHOST_IS_CREATED) // Nếu chờ >= 1s thì cho phép tạo Ghost
 					{
+						if (CurrentGhostEnemyCount < 3)
+						{
 
-						int random = rand() % 2; // Tỉ lệ 50%
-						switch (random)
-						{
-						case 0: // Ghost ở trên, 2 vùng mỗi vùng tạo ra 1 con Ghost
-						{
-							if (simon->GetX() <= GHOST_ZONE3_COLUMN1)
+							int random = rand() % 2; // Tỉ lệ 50%
+							switch (random)
 							{
-								listEnemy.push_back(new Ghost(camera->GetXCam() + camera->GetWidth(), 185, -1)); // Bên phải chạy qua trái
-								break;
-							}
-							else
-								if (GHOST_ZONE3_COLUMN2 <= simon->GetX())
+							case 0: // Ghost ở trên, 2 vùng mỗi vùng tạo ra 1 con Ghost
+							{
+								if (simon->GetX() <= GHOST_ZONE3_COLUMN1)
 								{
-									listEnemy.push_back(new Ghost(camera->GetXCam() - 34, 185, 1)); // Bên trái qua phải
+									listEnemy.push_back(new Ghost(camera->GetXCam() + camera->GetWidth(), 185, -1)); // Bên phải chạy qua trái
 									break;
 								}
-						}
-						case 1: // Ghost ở dưới, tạo ra 1 con
-						{
-							if (simon->GetVx() > 0) // Simon đang đi qua bên phải
-								listEnemy.push_back(new Ghost(camera->GetXCam() + camera->GetWidth(), 330, -1));// Bên phải chạy qua trái
-							else
-								if (simon->GetVx() < 0) // Simon đang đi qua bên trái 
-									listEnemy.push_back(new Ghost(camera->GetXCam() - 34, 330, 1)); // Đi từ trái qua phải
-								else // Nếu Simon đứng yên thì random vị trí xuất hiện
-								{
-									if (rand() % 2 == 0)
-										listEnemy.push_back(new Ghost(camera->GetXCam() + camera->GetWidth(), 330, -1)); // Bên phải chạy qua trái
-									else
-										listEnemy.push_back(new Ghost(camera->GetXCam() - 34, 330, 1)); // đi từ trái qua phải 
-								}
-							break;
-						}
+								else
+									if (GHOST_ZONE3_COLUMN2 <= simon->GetX())
+									{
+										listEnemy.push_back(new Ghost(camera->GetXCam() - 34, 185, 1)); // Bên trái qua phải
+										break;
+									}
+							}
+							case 1: // Ghost ở dưới, tạo ra 1 con
+							{
+								if (simon->GetVx() > 0) // Simon đang đi qua bên phải
+									listEnemy.push_back(new Ghost(camera->GetXCam() + camera->GetWidth(), 330, -1));// Bên phải chạy qua trái
+								else
+									if (simon->GetVx() < 0) // Simon đang đi qua bên trái 
+										listEnemy.push_back(new Ghost(camera->GetXCam() - 34, 330, 1)); // Đi từ trái qua phải
+									else // Nếu Simon đứng yên thì random vị trí xuất hiện
+									{
+										if (rand() % 2 == 0)
+											listEnemy.push_back(new Ghost(camera->GetXCam() + camera->GetWidth(), 330, -1)); // Bên phải chạy qua trái
+										else
+											listEnemy.push_back(new Ghost(camera->GetXCam() - 34, 330, 1)); // đi từ trái qua phải 
+									}
+								break;
+							}
 
-						}
+							}
 
-						CurrentGhostEnemyCount++;
-						if (CurrentGhostEnemyCount == 3)
-						{
-							isWaitingToCreateGhost = true; // Phải chờ đến khi cả 3 ghost bị giết hoặc out camera (chết)
-							isAllowCheckTimeWaitToCreateGhost = false;
-						}
+							CurrentGhostEnemyCount++;
+							if (CurrentGhostEnemyCount == 3)
+							{
+								isWaitingToCreateGhost = true; // Phải chờ đến khi cả 3 ghost bị giết hoặc out camera (chết)
+								isAllowCheckTimeWaitToCreateGhost = false;
+							}
 
-						CreateGhostTime = now; // Set lại thời điểm đã tạo ghost cuối
+							CreateGhostTime = now; // Set lại thời điểm đã tạo ghost cuối
+						}
+					}
+				}
+#pragma endregion
+
+			}
+			else
+			{
+				if (isAllowCheckTimeWaitToCreateGhost)
+				{
+					if (now - BeginWaitingToCreateGhostTime >= WAIT_TIME_BEFORE_ALLOW_TO_CREATE_GHOST) // Đã chờ đủ 2.5s
+					{
+						isWaitingToCreateGhost = false; // Không phải chờ nữa
 					}
 				}
 			}
+		}
 #pragma endregion
 
-		}
-		else
-		{
-			if (isAllowCheckTimeWaitToCreateGhost)
-			{
-				if (now - BeginWaitingToCreateGhostTime >= WAIT_TIME_BEFORE_ALLOW_TO_CREATE_GHOST) // Đã chờ đủ 2.5s
-				{
-					isWaitingToCreateGhost = false; // Không phải chờ nữa
-				}
-			}
-		}
-	}
-#pragma endregion
-
-#pragma endregion
 
 
 
 #pragma region Vùng tạo Panther
 
-	// Nếu Simon đang nằm trong vùng tạo báo thì cho phép tạo báo
-	if (REGION_CREATE_PANTHER_BOUNDARY_LEFT < simon->GetX() && simon->GetX() < REGION_CREATE_PANTHER_BOUNDARY_RIGHT)
-	{
-		if (isAllowCreatePanther)
+		// Nếu Simon đang nằm trong vùng tạo báo thì cho phép tạo báo
+		if (REGION_CREATE_PANTHER_BOUNDARY_LEFT < simon->GetX() && simon->GetX() < REGION_CREATE_PANTHER_BOUNDARY_RIGHT)
 		{
-			if (CurrentPantherEnemyCount == 0) // Không còn Panther nào sống thì mới dc tạo lại cả 3
+			if (isAllowCreatePanther)
 			{
-				// Hướng mặt của Panther quay về hướng simon
-				int directionPanther = abs(REGION_CREATE_PANTHER_BOUNDARY_LEFT - simon->GetX()) < abs(REGION_CREATE_PANTHER_BOUNDARY_RIGHT - simon->GetX()) ? -1 : 1; 
+				if (CurrentPantherEnemyCount == 0) // Không còn Panther nào sống thì mới dc tạo lại cả 3
+				{
+					// Hướng mặt của Panther quay về hướng simon
+					int directionPanther = abs(REGION_CREATE_PANTHER_BOUNDARY_LEFT - simon->GetX()) < abs(REGION_CREATE_PANTHER_BOUNDARY_RIGHT - simon->GetX()) ? -1 : 1;
 
-				listEnemy.push_back(new BlackPanther(1398.0f, 225.0f, directionPanther, directionPanther == -1 ? 20.0f : 9.0f, simon));
-				listEnemy.push_back(new BlackPanther(1783.0f, 160.0f, directionPanther, directionPanther == -1 ? 278.0f : 180.0f, simon));
-				listEnemy.push_back(new BlackPanther(1923.0f, 225.0f, directionPanther, directionPanther == -1 ? 68.0f : 66.0f, simon));
-				CurrentPantherEnemyCount += 3;
+					listEnemy.push_back(new BlackPanther(1398.0f, 225.0f, directionPanther, directionPanther == -1 ? 20.0f : 9.0f, simon));
+					listEnemy.push_back(new BlackPanther(1783.0f, 160.0f, directionPanther, directionPanther == -1 ? 278.0f : 180.0f, simon));
+					listEnemy.push_back(new BlackPanther(1923.0f, 225.0f, directionPanther, directionPanther == -1 ? 68.0f : 66.0f, simon));
+					CurrentPantherEnemyCount += 3;
+				}
+				isAllowCreatePanther = false;
 			}
-			isAllowCreatePanther = false;
 		}
-	}
-	else // Nếu Simon ngoài vùng tạo báo thì dừng việc tạo báo
-	{
-		isAllowCreatePanther = true;
-	}
+		else // Nếu Simon ngoài vùng tạo báo thì dừng việc tạo báo
+		{
+			isAllowCreatePanther = true;
+		}
 
 #pragma endregion
+
 
 
 
 #pragma region Vùng tạo dơi
 
-	if (isAllowToCreateBat)
-	{
-		DWORD now = GetTickCount(); // Bắt đầu lấy thời gian để tính toán thời gian chờ tạo dơi
-		if (now - CreateBatTime >= WaitingTimeToCreateBat) // Đủ thời gian chờ
+		if (isAllowToCreateBat)
 		{
-			CreateBatTime = now; // Đặt lại thời gian đã tạo bat
-			// Xét toạ độ Simon đang đứng so với biên toạ độ để lấy hướng bay ra cho dơi
+			DWORD now = GetTickCount(); // Bắt đầu lấy thời gian để tính toán thời gian chờ tạo dơi
+			if (now - CreateBatTime >= WaitingTimeToCreateBat) // Đủ thời gian chờ
+			{
+				CreateBatTime = now; // Đặt lại thời gian đã tạo bat
+				// Xét toạ độ Simon đang đứng so với biên toạ độ để lấy hướng bay ra cho dơi
 
-			// Ở bên phần 2 của screen trc cửa 2 thì dơi bay từ bên phải qua hoặc Simon mới qua cửa 1 (Chưa qua hồ cá), or Simon đứng trên phần gạch trc cửa 2
-			if (simon->GetX() < CREATE_BAT_BOUNDARY_DIVISION_DIRECTION_X || (simon->GetX() > CREATE_BAT_BOUNDARY_DIVISION_DIRECTION_X && simon->GetY() > CREATE_BAT_BOUNDARY_DIVISION_DIRECTION_Y))
-				listEnemy.push_back(new Bat(camera->GetXCam() + camera->GetWidth() - 10, simon->GetY() + 40, -1));
-			else // Dơi bay từ bên trái qua khi Simon đã qua hồ cá
-				listEnemy.push_back(new Bat(camera->GetXCam() - 10, simon->GetY() + 40, 1));
+				// Ở bên phần 2 của screen trc cửa 2 thì dơi bay từ bên phải qua hoặc Simon mới qua cửa 1 (Chưa qua hồ cá), or Simon đứng trên phần gạch trc cửa 2
+				if (simon->GetX() < CREATE_BAT_BOUNDARY_DIVISION_DIRECTION_X || (simon->GetX() > CREATE_BAT_BOUNDARY_DIVISION_DIRECTION_X && simon->GetY() > CREATE_BAT_BOUNDARY_DIVISION_DIRECTION_Y))
+					listEnemy.push_back(new Bat(camera->GetXCam() + camera->GetWidth() - 10, simon->GetY() + 40, -1));
+				else // Dơi bay từ bên trái qua khi Simon đã qua hồ cá
+					listEnemy.push_back(new Bat(camera->GetXCam() - 10, simon->GetY() + 40, 1));
 
-			WaitingTimeToCreateBat = 4000 + (rand() % 3000); // Random thời gian tạo dơi >= 4s
+				WaitingTimeToCreateBat = 4000 + (rand() % 3000); // Random thời gian tạo dơi >= 4s
+			}
 		}
-	}
 
 #pragma endregion
+
+
+
+
+#pragma region Vùng tạo Fishmen
+
+		if (isAllowToCreateFishmen && CurrentFishmenEnemyCount < 2) // Chỉ dc tạo 2 Fishmen
+		{
+			DWORD now = GetTickCount();
+			if (now - CreateFishmenTime >= WaitingtimeToCreateFishmen) // Đã đủ thời gian chờ cho phép tạo Fishmen
+			{
+				CreateFishmenTime = now; // Đặt lại thời điểm đã tạo
+
+				float appearPositionX = 0; // Vị trí xuất hiện random của Fishmen
+
+#pragma region Xét vị trí Simon để random vị trí xuất hiện cho Fishmen
+
+				if (FISHMEN_ZONE_1_LEFT < simon->GetX() && simon->GetX() <= FISHMEN_ZONE_1_RIGHT)
+				{
+					appearPositionX = (rand() % 2) ? (FISHMEN_POS_3) : (FISHMEN_POS_4);
+				}
+
+				if (FISHMEN_ZONE_2_LEFT < simon->GetX() && simon->GetX() <= FISHMEN_ZONE_2_RIGHT)
+				{
+					appearPositionX = (rand() % 2) ? (FISHMEN_POS_1) : ((rand() % 2) ? (FISHMEN_POS_3) : (FISHMEN_POS_4));
+				}
+
+				if (FISHMEN_ZONE_3_LEFT < simon->GetX() && simon->GetX() <= FISHMEN_ZONE_3_RIGHT)
+				{
+					appearPositionX = (rand() % 2) ? (FISHMEN_POS_4) : (FISHMEN_POS_5);
+				}
+
+				if (FISHMEN_ZONE_4_LEFT < simon->GetX() && simon->GetX() <= FISHMEN_ZONE_4_RIGHT)
+				{
+					appearPositionX = (rand() % 2) ? (FISHMEN_POS_3) : (FISHMEN_POS_5);
+				}
+
+				if (FISHMEN_ZONE_5_LEFT < simon->GetX() && simon->GetX() <= FISHMEN_ZONE_5_RIGHT)
+				{
+					appearPositionX = (rand() % 2) ? (FISHMEN_POS_4) : (FISHMEN_POS_6);
+				}
+
+				if (FISHMEN_ZONE_6_LEFT < simon->GetX() && simon->GetX() <= FISHMEN_ZONE_6_RIGHT)
+				{
+					appearPositionX = (rand() % 2) ? (FISHMEN_POS_5) : ((rand() % 2) ? (FISHMEN_POS_7) : (FISHMEN_POS_8));
+				}
+
+				if (FISHMEN_ZONE_7_LEFT < simon->GetX() && simon->GetX() <= FISHMEN_ZONE_7_RIGHT)
+				{
+					appearPositionX = (rand() % 2) ? (FISHMEN_POS_6) : (FISHMEN_POS_8);
+				}
+				if (FISHMEN_ZONE_8_LEFT < simon->GetX() && simon->GetX() <= FISHMEN_ZONE_8_RIGHT)
+				{
+					appearPositionX = (rand() % 2) ? (FISHMEN_POS_6) : (FISHMEN_POS_7);
+				}
+
+#pragma endregion
+
+				int directionFishmen = appearPositionX < simon->GetX() ? 1 : -1;
+
+
+				float appearPositionY = FISHMEN_POS_Y;
+
+				listEnemy.push_back(new Fishmen(appearPositionX, appearPositionY, directionFishmen, simon, &listWeaponOfEnemy, camera));
+				CurrentFishmenEnemyCount++;
+
+				STEAM_ADD_EFFECT(listEffect, appearPositionX, appearPositionY); // Thêm hiệu ứng bọt nước vào effect list
+
+				//sound->Play(eSound::soundSplashwater);
+				WaitingtimeToCreateFishmen = 2000 + (rand() % 2000); // >= 2s
+			}
+		}
+
+
+#pragma endregion
+	}
 
 
 //===================================================================================================//
@@ -655,6 +762,20 @@ void MainScene::Update(DWORD dt)
 					break;
 				}
 
+				case TAG::FISHMEN:
+				{
+					if (camera->CHECK_OBJECT_IN_CAMERA(enemy)) // Nếu nằm trong camera thì update
+					{
+						enemy->Update(dt, &listObj);
+					}
+					else
+					{
+						enemy->SetHealth(0); // Ra khỏi cam coi như chết
+						CurrentFishmenEnemyCount--;
+					}
+					break;
+				}
+
 				
 				default:
 					break;
@@ -664,6 +785,16 @@ void MainScene::Update(DWORD dt)
 
 		/*if (boss != NULL)
 			boss->Update(dt, &listObj);*/
+	}
+
+
+	// Update vũ khí của enemy
+	for (UINT i = 0; i < listWeaponOfEnemy.size(); i++)
+	{
+		if (listWeaponOfEnemy[i]->GetFinish() == false)
+		{
+			listWeaponOfEnemy[i]->Update(dt, &listObj);
+		}
 	}
 
 #pragma endregion
@@ -696,6 +827,9 @@ void MainScene::Render()
 
 	for (UINT i = 0; i < listEnemy.size(); i++)
 		listEnemy[i]->Render(camera);
+
+	for (UINT i = 0; i < listWeaponOfEnemy.size(); i++)
+		listWeaponOfEnemy[i]->Render(camera);
 
 	simon->Render(camera);
 
@@ -829,6 +963,19 @@ void MainScene::CheckCollisionWeapon(vector<GameObject*> listObj) // Kiểm tra 
 							}
 
 							RunEffectHit = true;
+							break;
+						}
+
+						case TAG::FISHMEN:
+						{
+							gameObj->SubHealth(1);
+							simon->SetScore(simon->GetScore() + 300);
+							if (rand() % 2 == 1) // tỉ lệ 50% 
+								listItem.push_back(DropItem(gameObj->GetId(), gameObj->GetType(), gameObj->GetX() + 5, gameObj->GetY()));
+
+							RunEffectHit = true;
+							CurrentFishmenEnemyCount--; // giảm số lượng Fishmen đang hoạt động
+
 							break;
 						}
 
@@ -1196,6 +1343,7 @@ void MainScene::CheckCollisionSimonAndHiddenObject()
 							object->SetHealth(0);
 
 							isAllowToCreateBat = false;  // Không cho tạo Bat
+							isAllowToCreateFishmen = true; // Cho phép tạo Fishmen
 
 							gridGame->Insert(GRID_INSERT_OBJECT__GETOUTLAKE_LEFT); // Thêm object ẩn để có thể đi lên
 
@@ -1208,6 +1356,7 @@ void MainScene::CheckCollisionSimonAndHiddenObject()
 							object->SetHealth(0);
 
 							isAllowToCreateBat = true;  // Cho phép tạo Bat
+							isAllowToCreateFishmen = false; // Ngừng việc tạo Fishmen
 
 							gridGame->Insert(GRID_INSERT_OBJECT__GETDOWNLAKE_LEFT); // Thêm object ẩn để có thể đi xuống sau khi đã lên lại
 
@@ -1228,6 +1377,8 @@ void MainScene::CheckCollisionSimonAndHiddenObject()
 							isAllowToCreateBat = true;
 							WaitingTimeToCreateBat = 3000 + rand() % 1000; // Random thời gian chờ tạo Bat, >= 4s
 
+							isAllowToCreateFishmen = false; // Ngừng việc tạo Fishmen
+
 							// Thêm bên trái trong trường hợp Simon rớt ngược lại qua phần cửa đầu tiên
 							gridGame->Insert(GRID_INSERT_OBJECT__GETDOWLAKE_RIGHT); // Thêm object ẩn để có thể đi xuống sau khi đã lên lại
 							gridGame->Insert(GRID_INSERT_OBJECT__GETDOWNLAKE_LEFT); // Thêm object ẩn để có thể đi xuống sau khi đã lên lại
@@ -1242,6 +1393,7 @@ void MainScene::CheckCollisionSimonAndHiddenObject()
 							object->SetHealth(0);
 
 							isAllowToCreateBat = false;  // Không cho tạo Bat
+							isAllowToCreateFishmen = true; // Cho phép tạo Fishmen
 
 							gridGame->Insert(GRID_INSERT_OBJECT__GETOUTLAKE_RIGHT); // Thêm object ẩn để có thể đi xuống sau khi đã lên lại
 
@@ -1365,9 +1517,90 @@ void MainScene::CheckCollisionSimonWithGate()
 void MainScene::CheckCollisionWithEnemy()
 {
 	CheckCollisionWeapon(listEnemy); // Xét va chạm vũ khí với enemy
+	CheckCollisionSimonWithEnemy(); // Xét va chạm giữa Simon và enemy
 }
 
-Item* MainScene::DropItem(int Id, TAG Type, float X, float Y) // xử lí rớt item
+void MainScene::CheckCollisionSimonWithEnemy()
+{
+	// Nếu Simon đã ở trạng thái ko thể va chạm đủ thời gian tối đa thì sẽ có thể va chạm lại
+	if (GetTickCount() - simon->startUntouchableTime > SIMON_UNTOUCHABLE_TIME)
+	{
+		simon->startUntouchableTime = 0;
+		simon->isUntouchable = false;
+	}
+
+	if (isUsingInvisibilityPotion) // Ko sử dụng thuốc tàng hình thì mới xét va chạm
+	{
+		return;
+	}
+
+	// Phần xét va chạm với enemy
+	if (simon->isUntouchable == false) // Nếu Simon ko còn trong trạng thái ko thể va chạm thì sẽ xét va chạm bình thường
+	{
+#pragma region Va chạm với Enemy bình thường
+		for (UINT i = 0; i < listEnemy.size(); i++)
+		{
+			GameObject* gameobj = dynamic_cast<GameObject*> (listEnemy[i]);
+			if (gameobj->GetHealth() > 0) // Enemy còn sống
+			{
+				LPCOLLISIONEVENT e = simon->SweptAABBEx(gameobj);
+				bool isCollision = false;
+				if (e->t > 0 && e->t <= 1) // Có va chạm
+				{
+					simon->SetHurt(e);
+					isCollision = true;
+				}
+				if (isCollision == false && simon->checkAABB(gameobj) == true)
+				{
+					LPCOLLISIONEVENT e = new CollisionEvent(1.0f, (float)-simon->GetDirection(), 0.0f, NULL);
+					simon->SetHurt(e);
+					isCollision = true;
+				}
+
+				if (isCollision)
+				{
+					if (gameobj->GetType() == TAG::BAT) // Nếu va chạm với dơi thì dơi sẽ chết
+					{
+						listEffect.push_back(new Fire(gameobj->GetX() - 5, gameobj->GetY() + 8)); // Hiệu ứng lửa
+						gameobj->SetHealth(0);
+					}
+					return; // Giảm chi phí duyệt, vì nếu Simon đang ở trạng thái untouchable thì ko xét va chạm
+				}
+			}
+		}
+#pragma endregion 
+	}
+
+
+	// Phần xét va chạm với weapon của enemy
+	if (simon->isUntouchable == false)
+	{
+#pragma region Phần xét va chạm với vũ khí của enemy
+
+		for (UINT i = 0; i < listWeaponOfEnemy.size(); i++)
+		{
+			if (listWeaponOfEnemy[i]->GetFinish() == false)
+			{
+				LPCOLLISIONEVENT e = simon->SweptAABBEx(listWeaponOfEnemy[i]);
+				if (e->t > 0 && e->t <= 1) // Có va chạm
+				{
+					simon->SetHurt(e);
+					return; // Giảm chi phí duyệt, vì nếu Simon đang ở trạng thái untouchable thì ko xét va chạm
+				}
+
+				if (simon->checkAABB(listWeaponOfEnemy[i]) == true) // Nếu có va chạm
+				{
+					LPCOLLISIONEVENT e = new CollisionEvent(1.0f, (float)-simon->GetDirection(), 0.0f, NULL);
+					simon->SetHurt(e);
+					return;
+				}
+			}
+		}
+#pragma endregion
+	}
+}
+
+Item* MainScene::DropItem(int Id, TAG Type, float X, float Y) // Xử lí rớt item
 {
 	if (mapCurrent == TAG::MAP1)
 	{
@@ -1561,7 +1794,7 @@ void MainScene::HandleInvisibilityPotion(DWORD dt)
 {
 	if (isUsingInvisibilityPotion)
 	{
-		InvisibilityPotion_WaitedTime += dt;
+		InvisibilityPotion_WaitedTime += dt; // Đếm thời gian sử dụng thuốc
 		// Nếu đã hết thời gian sử dụng thì sẽ ngưng
 		if (InvisibilityPotion_WaitedTime >= INVISIBILITYPOTION_LIMITTIMEWAIT)
 		{
