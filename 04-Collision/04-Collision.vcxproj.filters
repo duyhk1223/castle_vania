@@ -59,6 +59,9 @@
     <Filter Include="Object\Enemy">
       <UniqueIdentifier>{312ac171-920b-4a80-b686-3b3d0ca736d6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Object\Boss">
+      <UniqueIdentifier>{d87c6034-aeee-422f-82ca-6e22576b3f94}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -235,6 +238,9 @@
     <ClCompile Include="Steam.cpp">
       <Filter>Object\Effect</Filter>
     </ClCompile>
+    <ClCompile Include="PhantomBat.cpp">
+      <Filter>Object\Boss</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="debug.h">
@@ -407,6 +413,9 @@
     </ClInclude>
     <ClInclude Include="Steam.h">
       <Filter>Object\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="PhantomBat.h">
+      <Filter>Object\Boss</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -11,9 +11,6 @@ Brick::Brick(float X, float Y, int W, int H, int Model)
 	case BRICK_MODEL_2:
 		texture = TextureManager::GetInstance()->GetTexture(TAG::TEX_BRICK_MAP_2); // Loại màn 2
 		break;
-	case BRICK_MODEL_3:
-		texture = TextureManager::GetInstance()->GetTexture(TAG::TEX_BRICK_MODEL_3); // Loại nhỏ 16px
-		break;
 	case BRICK_MODEL_TRANSPARENT:
 		texture = TextureManager::GetInstance()->GetTexture(TAG::TRANSPARENT_BRICK);// Loại trong suốt 
 		break;

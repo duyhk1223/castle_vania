@@ -99,23 +99,7 @@ void Fishmen::Update(DWORD dt, vector<LPGAMEOBJECT>* listObjects)
 
 	if (!isAttacking) // Đang tấn công thì vẫn cho trọng lực kéo xuống
 	{
-		bool isCollisionDirectionX = false;
-		for (UINT i = 0; i < coEventsResult.size(); i++) // Không cho fishmen vượt qua gạch loại nhỏ theo trục x
-		{
-			if (coEventsResult[i]->nx != 0)
-			{
-				Brick* brick = dynamic_cast<Brick*>(coEventsResult[i]->obj);
-				if (brick->GetModel() == BRICK_MODEL_3)
-				{
-					x += min_tx * dx + nx * 0.4f;
-					direction *= -1; // quay ngược hướng đi 
-					isCollisionDirectionX = true;
-				}
-			}
-		}
-
-		if (!isCollisionDirectionX) // ko va chạm với trục x 
-			x += dx;
+		x += dx;
 	}
 
 

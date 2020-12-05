@@ -164,6 +164,7 @@
     <ClCompile Include="MoneyBag.cpp" />
     <ClCompile Include="MoneyEffect.cpp" />
     <ClCompile Include="MorningStar.cpp" />
+    <ClCompile Include="PhantomBat.cpp" />
     <ClCompile Include="PotRoast.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
@@ -223,6 +224,7 @@
     <ClInclude Include="MoneyBag.h" />
     <ClInclude Include="MoneyEffect.h" />
     <ClInclude Include="MorningStar.h" />
+    <ClInclude Include="PhantomBat.h" />
     <ClInclude Include="PotRoast.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneManager.h" />

@@ -48,7 +48,6 @@ void TextureManager::LoadResource()
 	// Game object ground
 	AddTexture(TAG::TRANSPARENT_BRICK, new Texture("Resources/ground/brick_transparent.png"));
 	AddTexture(TAG::TEX_BRICK_MAP_2, new Texture("Resources/ground/2-2.png"));
-	AddTexture(TAG::TEX_BRICK_MODEL_3, new Texture("Resources/ground/8.png")); // Loại nhỏ 16px
 	AddTexture(TAG::TEX_BRICK_3_32, new Texture("Resources/ground/8-2.png")); // Loại nhỏ 4 ô
 	AddTexture(TAG::TEX_BRICK_4_32, new Texture("Resources/ground/8-1.png")); // Loại nhỏ 4 ô
 
