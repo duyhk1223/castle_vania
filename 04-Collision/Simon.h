@@ -32,7 +32,7 @@
 #define SIMON_GRAVITY_JUMPING 0.001f
 #define SIMON_GRAVITY_HURTING 0.001f
 
-#define SIMON_WALKING_SPEED 0.52f //0.12f 
+#define SIMON_WALKING_SPEED 0.32f //0.12f 
 
 #define SIMON_STATE_IDLE 0
 #define SIMON_STATE_WALKING 1
@@ -86,6 +86,7 @@
 #pragma endregion
 
 //====================================================//
+
 
 #define SIMON_TIME_WAIT_ANI_ATTACKING 120// thời gian thời của mỗi frame khi tấn công
 

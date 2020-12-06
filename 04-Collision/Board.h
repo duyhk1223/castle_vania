@@ -26,7 +26,7 @@ private:
 
 	string FillNumber(string s, UINT MaxNumber);
 
-	//Sprite* _spriteIconDoubleShot;
+	Sprite* _spriteIconDoubleShot;
 
 public:
 	Board(float X, float Y);

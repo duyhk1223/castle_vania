@@ -47,6 +47,8 @@
 #include "Bat.h"
 #include "Fishmen.h"
 
+// Boss
+#include "PhantomBat.h"
 
 #define GAME_TIME_MAX 300 // Thời gian chơi game
 
@@ -184,6 +186,8 @@ private:
 	Board* board;
 	Simon* simon;
 
+	PhantomBat* phantomBat; // Boss
+
 	Sprite* _spriteLagerHeart;
 
 	TAG mapCurrent;
@@ -264,6 +268,7 @@ public:
 	void CheckCollisionSimonWithGate();
 	void CheckCollisionWithEnemy(); // Check xem Simon có tấn công enemy hay bị thương khi va chạm ko
 	void CheckCollisionSimonWithEnemy(); // Check va chạm giữa Simon và enemy
+	void CheckCollisionWithBoss(); // Check va chạm giữa Simon và Boss
 
 
 	Item* DropItem(int Id, TAG Type, float X, float Y);

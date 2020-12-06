@@ -307,6 +307,12 @@ void MainScene::ResetResource()
 
 	isUsingInvisibilityPotion = false; // Ban đầu thì Simon chưa tàng hình
 	isUsingCross = false; // Ban đầu Simon chưa nhắt dc thánh giá
+
+	// Boss
+	if (phantomBat != NULL)
+	{
+		phantomBat->ResetResource();
+	}
 	
 	// Ghost
 	CurrentGhostEnemyCount = 0;
@@ -783,8 +789,9 @@ void MainScene::Update(DWORD dt)
 			}
 		}
 
-		/*if (boss != NULL)
-			boss->Update(dt, &listObj);*/
+		// Update Boss
+		if (phantomBat != NULL)
+			phantomBat->Update(dt, &listObj);
 	}
 
 
@@ -831,9 +838,12 @@ void MainScene::Render()
 	for (UINT i = 0; i < listWeaponOfEnemy.size(); i++)
 		listWeaponOfEnemy[i]->Render(camera);
 
+	if (phantomBat != NULL)
+		phantomBat->Render(camera);
+
 	simon->Render(camera);
 
-	board->Render(simon, StageCurrent, GAME_TIME_MAX, NULL); // Vẽ tạm
+	board->Render(simon, StageCurrent, GAME_TIME_MAX, phantomBat); // Vẽ tạm
 }
 
 void MainScene::LoadMap(TAG mapType)
@@ -883,6 +893,8 @@ void MainScene::CheckCollision()
 
 	if (!isHandlingGoThroughTheDoor1 && !isHandlingGoThroughTheDoor2) // Ko phải đang xử lí qua cửa
 		CheckCollisionWithEnemy(); // Kiểm tra va chạm vũ khí với enemy và Simon với enemy
+
+	CheckCollisionWithBoss();
 }
 
 void MainScene::CheckCollisionWeapon(vector<GameObject*> listObj) // Kiểm tra va chạm của vũ khí 
@@ -917,7 +929,7 @@ void MainScene::CheckCollisionWeapon(vector<GameObject*> listObj) // Kiểm tra 
 						}
 
 
-#pragma region Phần va chạm với Enemy
+#pragma region Phần va chạm với Enemy và Boss
 
 						case TAG::GHOST:
 						{
@@ -976,6 +988,42 @@ void MainScene::CheckCollisionWeapon(vector<GameObject*> listObj) // Kiểm tra 
 							RunEffectHit = true;
 							CurrentFishmenEnemyCount--; // giảm số lượng Fishmen đang hoạt động
 
+							break;
+						}
+
+						case TAG::PHANTOMBAT:
+						{
+							if (objWeapon.second->GetType() == TAG::MORNINGSTAR)
+							{
+								MorningStar* morningstar = dynamic_cast<MorningStar*>(objWeapon.second);
+								if (morningstar->GetLevel() > 0) // Level 1 hoặc 2
+									gameObj->SubHealth(24 / 8); // 8 hit chết
+								else // Level 3
+									gameObj->SubHealth(24 / 12); // 12 hit chết
+
+							}
+							else // Vũ khí khác MorningStar
+								gameObj->SubHealth(24 / 12); // 12 hit chết
+
+							if (gameObj->GetHealth() == 0) // Hết máu thì Boss chết
+							{
+								for (int u = 0; u < 2; u++)
+								{
+									for (int v = 0; v < 3; v++)
+									{
+										listEffect.push_back(new Fire(gameObj->GetX() + v * FIRE_WIDTH, gameObj->GetY() + u * FIRE_HEIGHT - 10, 3)); // Hiệu ứng lửa, 2 hàng 3 cột
+										RunEffectHit = false;
+									}
+								}
+								RunEffectHit = false;
+								//sound->Play(eSound::soundHit);
+								//listItem.push_back(new CrystalBall(CRYSTALBALL_DEFAULT_POSITION_X, CRYSTALBALL_DEFAULT_POSITION_y)); // Boss chết thì hiện ra và clear state
+
+							}
+							else // Nếu Boss còn sống thì mới có hiệu ứng lửa khi đánh
+							{
+								RunEffectHit = true;
+							}
 							break;
 						}
 
@@ -1403,7 +1451,7 @@ void MainScene::CheckCollisionSimonAndHiddenObject()
 
 						case 124: // id 124 : kích hoạt boss
 						{
-							//boss->Start();
+							phantomBat->Start();
 
 							camera->SetBoundary(camera->GetBoundaryRight(), camera->GetBoundaryRight());
 							camera->SetAllowFollowSimon(false);
@@ -1499,6 +1547,9 @@ void MainScene::CheckCollisionSimonWithGate()
 							objGate->Start();
 							DebugOut(L"Simon dung trung cua 2!\n");
 
+							if (phantomBat == NULL)
+								phantomBat = new PhantomBat(simon, camera, &listWeaponOfEnemy); // Thêm vũ khí của Boss vào list
+
 							break;
 						}
 						break;
@@ -1537,7 +1588,9 @@ void MainScene::CheckCollisionSimonWithEnemy()
 	// Phần xét va chạm với enemy
 	if (simon->isUntouchable == false) // Nếu Simon ko còn trong trạng thái ko thể va chạm thì sẽ xét va chạm bình thường
 	{
+
 #pragma region Va chạm với Enemy bình thường
+
 		for (UINT i = 0; i < listEnemy.size(); i++)
 		{
 			GameObject* gameobj = dynamic_cast<GameObject*> (listEnemy[i]);
@@ -1597,6 +1650,49 @@ void MainScene::CheckCollisionSimonWithEnemy()
 			}
 		}
 #pragma endregion
+	}
+}
+
+void MainScene::CheckCollisionWithBoss()
+{
+	// Boss chưa khởi tạo hoặc chết thì ko xét va chạm
+	if (phantomBat == NULL)
+		return;
+
+	if (phantomBat->GetHealth() <= 0)
+		return;
+
+	vector<GameObject*> listObj{ phantomBat };
+	CheckCollisionWeapon(listObj); // Check va chạm giữa Boss và vũ khí của Simon
+
+	if (isUsingInvisibilityPotion) // Nếu Simon đang dùng thuốc tàng hình thì ko xét va chạm
+		return;
+
+	// Nếu Simon đã ở trạng thái ko thể va chạm đủ thời gian tối đa thì sẽ có thể va chạm lại
+	if (GetTickCount() - simon->startUntouchableTime > SIMON_UNTOUCHABLE_TIME)
+	{
+		simon->startUntouchableTime = 0;
+		simon->isUntouchable = false;
+	}
+
+	if (simon->isUntouchable == false) // Nếu Simon ko ở trạng thái ko thể va chạm thì mới xét
+	{
+		if (phantomBat->GetHealth() > 0) // Nếu Boss còn sống thì mới xét va chạm
+		{
+			LPCOLLISIONEVENT e = simon->SweptAABBEx(phantomBat);
+			if (e->t > 0 && e->t <= 1) // Có va chạm
+			{
+				simon->SetHurt(e);
+				return; // Giảm chi phí duyệt, vì nếu Simon đang ở trạng thái untouchable thì ko xét va chạm
+			}
+			if (simon->checkAABB(phantomBat) == true)
+			{
+				LPCOLLISIONEVENT e = new CollisionEvent(1.0f, (float)-simon->GetDirection(), 0.0f, NULL);
+				simon->SetHurt(e);
+				return;
+			}
+		}
+
 	}
 }
 

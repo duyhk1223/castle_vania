@@ -12,6 +12,8 @@ Board::Board(float X, float Y)
 	_texture = TextureManager::GetInstance()->GetTexture(TAG::BOARD);
 	_sprite = new Sprite(_texture, 0);
 
+	_spriteIconDoubleShot = new Sprite(TextureManager::GetInstance()->GetTexture(TAG::ITEMDOUBLESHOT), 0);
+
 	x = X;
 	y = Y;
 
@@ -30,6 +32,13 @@ void Board::Render(Simon* simon, int stage, int RemainingTime, GameObject* boss)
 	_font.Draw(x + 393, y + 51, FillNumber(std::to_string(simon->GetLives()), 2)); // Số mạng còn lại của Simon
 
 	int BossBlood = 16;
+	if (boss != NULL)
+	{
+		BossBlood = (int)(boss->GetHealth() * 16 / 24); // HEALTH = 24 -> 16 vạch, nếu level của roi Simon = 1 thì đánh 12 phát chết, 1 phát = 2 máu nên tổng là 24 máu
+		if (BossBlood == 0 && boss->GetHealth() > 0)
+			BossBlood = 1;
+	}
+
 	_boardHealth->Draw(simon->GetHealth(), BossBlood);
 
 	TAG SubWeaponType = simon->GetTypeSubWeapon();
@@ -54,6 +63,11 @@ void Board::Render(Simon* simon, int stage, int RemainingTime, GameObject* boss)
 	case TAG::STOPWATCH:
 		simon->mapWeapon[SubWeaponType]->RenderIcon(x + 312, y + 31);
 		break;
+	}
+
+	if (simon->GetIsUsingDoubleShot())
+	{
+		_spriteIconDoubleShot->Draw(x + 465, y + 35);
 	}
 }
 
