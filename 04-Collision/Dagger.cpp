@@ -28,6 +28,7 @@ void Dagger::Attack(float X, float Y, int Direction)
 {
 	Weapon::Attack(X, Y + 10, Direction);
 	vx = DAGGER_SPEED * direction;
+	GameSound::GetInstance()->Play(Sound::soundDagger);
 }
 
 void Dagger::RenderIcon(float X, float Y)

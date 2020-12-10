@@ -2,6 +2,7 @@
 #define __STOPWATCH_H__
 
 #include "Weapon.h"
+#include "GameSound.h"
 
 class StopWatch : public Weapon
 {

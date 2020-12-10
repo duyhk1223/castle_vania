@@ -13,26 +13,31 @@
 #include "ThrowingAxe.h"
 #include "Boomerang.h"
 #include "StopWatch.h"
+#include "GameSound.h"
 
 
 #define SIMON_DEFAULT_POSITION  50.0f, 300.0f
+#define SIMON_WALKING_SPEED 0.12f //0.12f 
+#define PULL_UP_SIMON_AFTER_SITTING 18.0f // Kéo simon lên 18px sau khi ngồi rồi đứng dậy, tránh overlaping do BBOX bottom thu lại khi ngồi
+
 
 #define SIMON_BBOX_WIDTH 60
 #define SIMON_BBOX_HEIGHT 63
 #define SIMON_BBOX_SITTING_HEIGHT 45
 #define SIMON_BBOX_JUMPING_HEIGHT 45
 
-#define PULL_UP_SIMON_AFTER_SITTING 18.0f // Kéo simon lên 18px sau khi ngồi rồi đứng dậy, tránh overlaping do BBOX bottom thu lại khi ngồi
+
 
 #define SIMON_VJUMP 0.34f
 #define SIMON_VJUMP_HURTING 0.2f // Nhảy lúc bị đau
 #define PULL_UP_SIMON_AFTER_JUMPING 18.0f // Kéo simon lên 18px sau khi nhảy, tránh overlaping do BBOX bottom thu lại khi nhảy
 
+
 #define SIMON_GRAVITY 0.005f 
 #define SIMON_GRAVITY_JUMPING 0.001f
 #define SIMON_GRAVITY_HURTING 0.001f
 
-#define SIMON_WALKING_SPEED 0.32f //0.12f 
+
 
 #define SIMON_STATE_IDLE 0
 #define SIMON_STATE_WALKING 1
@@ -45,12 +50,12 @@
 
 
 #define SIMON_ANI_IDLE 0
+#define SIMON_ANI_HURTING 8
+
 
 #define SIMON_ANI_JUMPING 4
-
 #define SIMON_ANI_SITTING 4
 
-#define SIMON_ANI_HURTING 8
 
 // Animaition của phần ngồi đánh
 #define SIMON_ANI_SITTING_ATTACKING_BEGIN 15
@@ -105,6 +110,7 @@ class Simon : public GameObject
 private:
 
 	Camera* camera;
+	GameSound* SimonSound;
 
 public:
 	int HeartCollect; // Số lượng item heart người chơi nhặt được

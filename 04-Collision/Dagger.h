@@ -3,6 +3,7 @@
 
 #include "Weapon.h"
 #include "TextureManager.h"
+#include "GameSound.h"
 
 #define DAGGER_SPEED 0.45f
 

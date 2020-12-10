@@ -6,6 +6,7 @@
 #define HOLYWATER_GRAVITY 0.001f
 
 #include "Weapon.h"
+#include "GameSound.h"
 
 class HolyWater : public Weapon
 {

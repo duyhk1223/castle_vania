@@ -62,11 +62,14 @@
     <Filter Include="Object\Boss">
       <UniqueIdentifier>{d87c6034-aeee-422f-82ca-6e22576b3f94}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Framework\GameTime">
+      <UniqueIdentifier>{5c09288f-9d0f-4edd-8b62-a99552361c42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework\Sound">
+      <UniqueIdentifier>{bcf9f7b0-6376-447b-9c52-7dffe1e19f68}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="debug.cpp">
       <Filter>Framework\Debug</Filter>
     </ClCompile>
@@ -241,6 +244,18 @@
     <ClCompile Include="PhantomBat.cpp">
       <Filter>Object\Boss</Filter>
     </ClCompile>
+    <ClCompile Include="GameTime.cpp">
+      <Filter>Framework\GameTime</Filter>
+    </ClCompile>
+    <ClCompile Include="GameSound.cpp">
+      <Filter>Framework\Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Dsutil.cpp">
+      <Filter>Framework\Sound</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="debug.h">
@@ -333,9 +348,6 @@
     <ClInclude Include="Fire.h">
       <Filter>Object\Effect</Filter>
     </ClInclude>
-    <ClInclude Include="MainScene.h">
-      <Filter>Framework\Scene</Filter>
-    </ClInclude>
     <ClInclude Include="HiddenObject.h">
       <Filter>Object</Filter>
     </ClInclude>
@@ -416,6 +428,18 @@
     </ClInclude>
     <ClInclude Include="PhantomBat.h">
       <Filter>Object\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="GameTime.h">
+      <Filter>Framework\GameTime</Filter>
+    </ClInclude>
+    <ClInclude Include="MainScene.h">
+      <Filter>Framework\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="GameSound.h">
+      <Filter>Framework\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="DSutil.h">
+      <Filter>Framework\Sound</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

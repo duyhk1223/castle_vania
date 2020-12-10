@@ -60,7 +60,7 @@ void HolyWater::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				vy = 0;
 				vx = 0;
 				isCollisionWithBrick = true;
-				//Sound::GetInstance()->Play(eSound::soundHolyWater); // chạm đất thì mới playsound
+				GameSound::GetInstance()->Play(Sound::soundHolyWater); // Chạm đất thì mới play sound
 			}
 		}
 		for (UINT i = 0; i < coEvents.size(); i++)

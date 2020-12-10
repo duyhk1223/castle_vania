@@ -6,6 +6,7 @@
 #define THROWINGAXE_SPEED_Y 0.55f
 
 #include "Weapon.h"
+#include "GameSound.h"
 
 class ThrowingAxe : public Weapon
 {

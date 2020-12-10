@@ -12,13 +12,15 @@ StopWatch::StopWatch()
 
 StopWatch::~StopWatch()
 {
+	if (GameSound::GetInstance()->GetIsSoundPlaying(Sound::soundStopWatch)) // Dừng âm thanh
+		GameSound::GetInstance()->Stop(Sound::soundStopWatch);
 }
 
 void StopWatch::Attack(float X, float Y, int Direction)
 {
 	UsedTime = 0;
 	isFinish = false;
-	//Sound::GetInstance()->Play(eSound::soundStopWatch, true, 100);
+	GameSound::GetInstance()->Play(Sound::soundStopWatch, true, 100);
 }
 
 void StopWatch::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
@@ -32,6 +34,9 @@ void StopWatch::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	{
 		UsedTime = 0;
 		isFinish = true;
+
+		if (GameSound::GetInstance()->GetIsSoundPlaying(Sound::soundStopWatch)) // Dừng âm thanh
+			GameSound::GetInstance()->Stop(Sound::soundStopWatch);
 	}
 }
 

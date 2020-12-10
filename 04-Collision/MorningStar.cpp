@@ -73,6 +73,8 @@ void MorningStar::Attack(float X, float Y, int Direction)
 		break;
 	}
 	sprite->ResetAccumulatedTime();
+
+	GameSound::GetInstance()->Play(Sound::soundWhip);
 }
 
 void MorningStar::UpdatePositionFitSimon()

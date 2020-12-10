@@ -8,6 +8,7 @@
 #define BOOMERANG_LIMIT_DISTANCE_X 285.0f // Boomerang đi được 285px thì đổi hướng
 
 #include "Weapon.h" 
+#include "GameSound.h"
 
 class Boomerang :
 	public Weapon

@@ -23,6 +23,9 @@ void ThrowingAxe::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	{
 		isFinish = true;
 
+		if (GameSound::GetInstance()->GetIsSoundPlaying(Sound::soundAxe))
+			GameSound::GetInstance()->Stop(Sound::soundAxe);
+
 		return;
 	}
 
@@ -44,6 +47,8 @@ void ThrowingAxe::Attack(float X, float Y, int Direction)
 	Weapon::Attack(X, Y, Direction);
 	vx = THROWINGAXE_SPEED_X * direction;
 	vy = -THROWINGAXE_SPEED_Y;
+
+	GameSound::GetInstance()->Play(Sound::soundAxe, true);
 }
 
 void ThrowingAxe::RenderIcon(float X, float Y)

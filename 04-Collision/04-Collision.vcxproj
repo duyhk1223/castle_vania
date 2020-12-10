@@ -82,9 +82,10 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>d3dx9.lib;d3d9.lib;dxguid.lib;dxerr.lib;dinput8.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d9.lib;d3dx9.lib;dxerr.lib;dsound.lib;dxguid.lib;winmm.lib;dinput8.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -136,10 +137,13 @@
     <ClCompile Include="Dagger.cpp" />
     <ClCompile Include="debug.cpp" />
     <ClCompile Include="define.cpp" />
+    <ClCompile Include="Dsutil.cpp" />
     <ClCompile Include="Effect.cpp" />
     <ClCompile Include="Fire.cpp" />
     <ClCompile Include="FireBall.cpp" />
     <ClCompile Include="Fishmen.cpp" />
+    <ClCompile Include="GameSound.cpp" />
+    <ClCompile Include="GameTime.cpp" />
     <ClCompile Include="Gate.cpp" />
     <ClCompile Include="Ghost.cpp" />
     <ClCompile Include="HiddenObject.cpp" />
@@ -197,10 +201,13 @@
     <ClInclude Include="Dagger.h" />
     <ClInclude Include="debug.h" />
     <ClInclude Include="define.h" />
+    <ClInclude Include="DSutil.h" />
     <ClInclude Include="Effect.h" />
     <ClInclude Include="Fire.h" />
     <ClInclude Include="FireBall.h" />
     <ClInclude Include="Fishmen.h" />
+    <ClInclude Include="GameSound.h" />
+    <ClInclude Include="GameTime.h" />
     <ClInclude Include="Gate.h" />
     <ClInclude Include="Ghost.h" />
     <ClInclude Include="HiddenObject.h" />

@@ -2,6 +2,7 @@
 #define __GATE_H__
 
 #include "GameObject.h"
+#include "GameSound.h"
 
 // Các trạng thái của cổng
 #define GATE_CLOSE 0

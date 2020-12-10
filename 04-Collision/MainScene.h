@@ -12,6 +12,8 @@
 #include "Board.h"
 #include "GameObject.h"
 #include "TextureManager.h"
+#include "GameTime.h"
+#include "GameSound.h"
 
 // Effect
 #include "Effect.h"
@@ -50,7 +52,8 @@
 // Boss
 #include "PhantomBat.h"
 
-#define GAME_TIME_MAX 300 // Thời gian chơi game
+
+#define MAX_GAME_TIME 300 // Thời gian chơi game
 
 
 
@@ -185,10 +188,13 @@ private:
 	Grid* gridGame;
 	Board* board;
 	Simon* simon;
+	GameSound* gameSound;
 
 	PhantomBat* phantomBat; // Boss
 
 	Sprite* _spriteLagerHeart;
+
+	GameTime* gameTime; //Game time
 
 	TAG mapCurrent;
 	vector<GameObject*> listObj;
@@ -279,6 +285,8 @@ public:
 
 	void HandleInvisibilityPotion(DWORD dt); // Xử lý khi Simon nhặt dc thuốc tàng hình
 	void HandleCross(DWORD dt); // Xử lý khi Simon nhặt dc thánh giá 
+
+	void PlayGameMusic(); // Hàm khởi tạo lại âm thanh game
 };
 
 #endif

@@ -47,8 +47,8 @@ void Boomerang::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		if (!camera->CHECK_OBJECT_IN_CAMERA(this) || isCollision(simon)) // Nếu boomerang ra khỏi cam, hoặc quay lại chạm simon thì dừng tấn công
 		{
 			isFinish = true;
-			/*if (Sound::GetInstance()->isPlaying(eSound::soundBoomerang))
-				Sound::GetInstance()->Stop(eSound::soundBoomerang);*/
+			if (GameSound::GetInstance()->GetIsSoundPlaying(Sound::soundBoomerang)) // Ngừng âm thanh sử dụng boomerang
+				GameSound::GetInstance()->Stop(Sound::soundBoomerang);
 		}
 		break;
 	}
@@ -71,7 +71,7 @@ void Boomerang::Attack(float X, float Y, int Direction)
 
 	initXPosition = X;
 
-	//Sound::GetInstance()->Play(eSound::soundBoomerang, true);
+	GameSound::GetInstance()->Play(Sound::soundBoomerang, true);
 }
 
 Boomerang::~Boomerang()

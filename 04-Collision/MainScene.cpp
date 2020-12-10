@@ -7,6 +7,9 @@ MainScene::MainScene()
 
 MainScene::~MainScene()
 {
+	SAFE_DELETE(tileMap);
+	SAFE_DELETE(board);
+	SAFE_DELETE(gridGame);
 }
 
 void MainScene::KeyState(BYTE* state)
@@ -276,6 +279,8 @@ void MainScene::LoadResources()
 	camera = new Camera(SCREEN_WIDTH, SCREEN_HEIGHT);
 	simon = new Simon(camera);
 	board = new Board(BOARD_DEFAULT_POSITION_X, BOARD_DEFAULT_POSITION_Y);
+	gameTime = new GameTime();
+	gameSound = GameSound::GetInstance();
 
 	_spriteLagerHeart = new Sprite(TextureManager::GetInstance()->GetTexture(TAG::LARGEHEART), 100);
 
@@ -284,8 +289,12 @@ void MainScene::LoadResources()
 
 void MainScene::InitGame()
 {
-	LoadMap(TAG::MAP2);
+	LoadMap(TAG::MAP1);
 	simon->Init();
+
+	gameTime->SetTime(0); // Đếm lại thời gian đã chơi bắt đầu từ 0
+
+	PlayGameMusic(); // Bắt đầu chạy âm thanh game
 }
 
 void MainScene::ResetResource()
@@ -354,6 +363,64 @@ void MainScene::Update(DWORD dt)
 		simon->StartUntouchable();
 
 #pragma endregion
+
+
+
+#pragma region Update game time và health của Simon
+
+	//if (gameTime->GetTime() >= GAME_TIME_MAX || simon->GetHealth() <= 0) // hết thời gian hoặc hết máu
+	//{
+	//	if (simon->GetIsDeadth())
+	//	{
+	//		simon->TimeWaitedAfterDeath += dt;
+	//		if (simon->TimeWaitedAfterDeath >= 1500)
+	//		{
+	//			bool result = simon->LoseLife(); // đã khôi phục x,y
+
+	//			if (result == true) // còn mạng để chơi tiếp, giảm mạng reset máu xong
+	//			{
+	//				camera->RestorePosition(); // khôi phục vị trí camera;
+	//				camera->RestoreBoundary(); // khôi phục biên camera
+
+	//				gameTime->SetTime(0);
+	//				//ReplayMusicGame();
+
+	//				ResetResource(); // reset lại game
+	//			}
+	//			else
+	//			{
+	//				isGameOver = true;
+	//			}
+	//			return;
+	//		}
+	//	}
+	//	else // chưa chết mà hết máu hoặc time thì set trạng thái isDeadth
+	//	{
+	//		simon->SetDeadth();
+	//	}
+
+	//}
+	//else
+	//{
+	//	if (isAllowProcessClearState3 == false) // đang xử lí ClearState thì không đếm time
+	//	{
+	//		gameTime->Update(dt);
+	//	}
+	//}
+
+	if (MAX_GAME_TIME - gameTime->GetPassedTime() <= 30) // Còn lại 30 giây thì bật sound loop
+	{
+		if (gameTime->GetIsChanged()) // Kiểm tra _passedTime đã thay đổi thì mới play nhạc. Nếu chỉ kt <=30s thì cứ mỗi deltatime nó sẽ Play nhạc -> thừa
+		{
+			gameSound->Play(Sound::soundStopTimer);
+		}
+	}
+
+	gameTime->Update(dt); // Để tạm do chưa có trạng thái dead
+
+#pragma endregion
+
+
 
 	// Phần xử lý map 2
 #pragma region Xử lý đi qua Gate 1
@@ -679,7 +746,8 @@ void MainScene::Update(DWORD dt)
 
 				STEAM_ADD_EFFECT(listEffect, appearPositionX, appearPositionY); // Thêm hiệu ứng bọt nước vào effect list
 
-				//sound->Play(eSound::soundSplashwater);
+				gameSound->Play(Sound::soundSplashwater); // Chạy âm thanh khi cá trồi lên mặt nước
+
 				WaitingtimeToCreateFishmen = 2000 + (rand() % 2000); // >= 2s
 			}
 		}
@@ -843,7 +911,7 @@ void MainScene::Render()
 
 	simon->Render(camera);
 
-	board->Render(simon, StageCurrent, GAME_TIME_MAX, phantomBat); // Vẽ tạm
+	board->Render(simon, StageCurrent, MAX_GAME_TIME - gameTime->GetPassedTime(), phantomBat);
 }
 
 void MainScene::LoadMap(TAG mapType)
@@ -998,14 +1066,14 @@ void MainScene::CheckCollisionWeapon(vector<GameObject*> listObj) // Kiểm tra 
 								MorningStar* morningstar = dynamic_cast<MorningStar*>(objWeapon.second);
 								if (morningstar->GetLevel() > 0) // Level 1 hoặc 2
 									gameObj->SubHealth(24 / 8); // 8 hit chết
-								else // Level 3
-									gameObj->SubHealth(24 / 12); // 12 hit chết
+								else
+									gameObj->SubHealth(24 / 12); // 12 hit chết, 1 hit -2 máu của Boss
 
 							}
 							else // Vũ khí khác MorningStar
 								gameObj->SubHealth(24 / 12); // 12 hit chết
 
-							if (gameObj->GetHealth() == 0) // Hết máu thì Boss chết
+							if (gameObj->GetHealth() == 0) // Khi Boss chết
 							{
 								for (int u = 0; u < 2; u++)
 								{
@@ -1016,11 +1084,11 @@ void MainScene::CheckCollisionWeapon(vector<GameObject*> listObj) // Kiểm tra 
 									}
 								}
 								RunEffectHit = false;
-								//sound->Play(eSound::soundHit);
-								//listItem.push_back(new CrystalBall(CRYSTALBALL_DEFAULT_POSITION_X, CRYSTALBALL_DEFAULT_POSITION_y)); // Boss chết thì hiện ra và clear state
+								gameSound->Play(Sound::soundHit);
+								//listItem.push_back(new CrystalBall(CRYSTALBALL_DEFAULT_POSITION_X, CRYSTALBALL_DEFAULT_POSITION_y));
 
 							}
-							else // Nếu Boss còn sống thì mới có hiệu ứng lửa khi đánh
+							else // Boss chưa chết thì có hiệu ứng lửa khi đánh
 							{
 								RunEffectHit = true;
 							}
@@ -1048,6 +1116,7 @@ void MainScene::CheckCollisionWeapon(vector<GameObject*> listObj) // Kiểm tra 
 									gameObject->SubHealth(1);
 									HIT_ADD_EFFECT(listEffect, gameObject); // Hiệu ứng hit
 									BROKEN_BRICK_ADD_EFFECT(listEffect, gameObject); // Hiệu ứng BrokenBrick
+									gameSound->Play(Sound::soundBrokenBrick);
 									break;
 								}
 
@@ -1066,6 +1135,8 @@ void MainScene::CheckCollisionWeapon(vector<GameObject*> listObj) // Kiểm tra 
 									listItem.push_back(DropItem(gameObject->GetId(), gameObject->GetType(), gameObject->GetX(), gameObject->GetY()));
 									HIT_ADD_EFFECT(listEffect, gameObject); // Hiệu ứng hit
 									BROKEN_BRICK_ADD_EFFECT(listEffect, gameObject); // Hiệu ứng BrokenBrick
+									gameSound->Play(Sound::soundBrokenBrick);
+									gameSound->Play(Sound::soundDisplayMonney);
 									break;
 								}
 
@@ -1074,6 +1145,7 @@ void MainScene::CheckCollisionWeapon(vector<GameObject*> listObj) // Kiểm tra 
 									gameObject->SubHealth(1);
 									HIT_ADD_EFFECT(listEffect, gameObject); // Hiệu ứng hit
 									BROKEN_BRICK_ADD_EFFECT(listEffect, gameObject); // Hiệu ứng BrokenBrick
+									gameSound->Play(Sound::soundBrokenBrick);
 									break;
 								}
 
@@ -1082,6 +1154,7 @@ void MainScene::CheckCollisionWeapon(vector<GameObject*> listObj) // Kiểm tra 
 									gameObject->SubHealth(1);
 
 									listItem.push_back(DropItem(gameObject->GetId(), gameObject->GetType(), gameObject->GetX(), gameObject->GetY()));
+									gameSound->Play(Sound::soundBrokenBrick);
 
 									HIT_ADD_EFFECT(listEffect, gameObject); // Hiệu ứng hit
 									BROKEN_BRICK_ADD_EFFECT(listEffect, gameObject); // Hiệu ứng BrokenBrick
@@ -1102,6 +1175,7 @@ void MainScene::CheckCollisionWeapon(vector<GameObject*> listObj) // Kiểm tra 
 							listEffect.push_back(new Hit(listObj[i]->GetX() + 10, listObj[i]->GetY() + 14)); // Hiệu ứng hit
 							listEffect.push_back(new Fire(gameObj->GetX() - 5, gameObj->GetY() + 8)); // Hiệu ứng lửa
 
+							gameSound->Play(Sound::soundHit);
 							
 							// Nếu Dagger va chạm với object thì sẽ mất
 							if (objWeapon.second->GetType() == TAG::DAGGER)
@@ -1133,6 +1207,7 @@ void MainScene::CheckCollisionSimonItem()
 				case TAG::LARGEHEART:
 					simon->SetHeartCollect(simon->GetHeartCollect() + 5);
 					listItem[i]->SetFinish(true);
+					gameSound->Play(Sound::soundCollectItem); // Âm thanh nhặt item
 
 					break;
 
@@ -1142,16 +1217,18 @@ void MainScene::CheckCollisionSimonItem()
 					objMorningStar->UpgradeLevel(); // Nâng cấp roi
 
 					listItem[i]->SetFinish(true);
-					simon->SetFreeze(true); // bật trạng thái đóng băng 
+					simon->SetFreeze(true); // Bật trạng thái đóng băng Simon 
+					gameSound->Play(Sound::soundCollectWeapon); // Âm thanh nhặt vũ khí
 
 					break;
 				}
 
 				
-				case TAG::POTROAST:
+				case TAG::POTROAST: // Đùi gà
 				{
 					listItem[i]->SetFinish(true);
 					simon->SetHealth(min(simon->GetHealth() + 6, SIMON_DEFAULT_HEALTH)); // Tăng 6 đơn vị máu
+					gameSound->Play(Sound::soundCollectItem); // Âm thanh nhặt item
 					break;
 				}
 
@@ -1159,6 +1236,7 @@ void MainScene::CheckCollisionSimonItem()
 				{
 					simon->SetIsUsingDoubleShot(true); // Cho phép chế độ Double Shot
 					listItem[i]->SetFinish(true);
+					gameSound->Play(Sound::soundCollectItem); // Âm thanh nhặt item
 					break;
 				}
 
@@ -1191,8 +1269,8 @@ void MainScene::CheckCollisionSimonItem()
 				case TAG::ITEMTHROWINGAXE:
 				{
 					simon->PickUpSubWeapon(TAG::THROWINGAXE);
-
 					listItem[i]->SetFinish(true);
+
 					break;
 				}
 
@@ -1201,6 +1279,7 @@ void MainScene::CheckCollisionSimonItem()
 					isUsingInvisibilityPotion = true;
 					simon->SetTexture(TextureManager::GetInstance()->GetTexture(TAG::SIMON_TRANS));
 					listItem[i]->SetFinish(true);
+					gameSound->Play(Sound::soundInvisibilityPotion_Begin);
 					break;
 				}
 
@@ -1242,15 +1321,14 @@ void MainScene::CheckCollisionSimonItem()
 					isWaitingToCreateGhost = true;
 					isAllowCheckTimeWaitToCreateGhost = true;
 
-					//CountEnemyFishmen = 0;
-					//CountEnemyBat = 0;
-
+					CurrentFishmenEnemyCount = 0;
+					CurrentEnemyBatCount = 0;
 					CurrentPantherEnemyCount = 0;
 					
 					/*Xóa hết enemy*/
 
 					listItem[i]->SetFinish(true);
-					//sound->Play(eSound::soundHolyCross);
+					gameSound->Play(Sound::soundHolyCross);
 					break;
 				}
 				
@@ -1263,6 +1341,8 @@ void MainScene::CheckCollisionSimonItem()
 					listItem[i]->SetFinish(true);
 					simon->SetScore(simon->GetScore() + 100);
 					listEffect.push_back(new MoneyEffect(listItem[i]->GetX(), listItem[i]->GetY(), TAG::EFFECT_MONEY_100));
+					gameSound->Play(Sound::soundCollectItem); // Âm thanh nhặt item
+
 					break;
 				}
 
@@ -1271,6 +1351,8 @@ void MainScene::CheckCollisionSimonItem()
 					listItem[i]->SetFinish(true);
 					simon->SetScore(simon->GetScore() + 400);
 					listEffect.push_back(new MoneyEffect(listItem[i]->GetX(), listItem[i]->GetY(), TAG::EFFECT_MONEY_400));
+					gameSound->Play(Sound::soundCollectItem); // Âm thanh nhặt item
+
 					break;
 				}
 
@@ -1279,6 +1361,8 @@ void MainScene::CheckCollisionSimonItem()
 					listItem[i]->SetFinish(true);
 					simon->SetScore(simon->GetScore() + 700);
 					listEffect.push_back(new MoneyEffect(listItem[i]->GetX(), listItem[i]->GetY(), TAG::EFFECT_MONEY_700));
+					gameSound->Play(Sound::soundCollectItem); // Âm thanh nhặt item
+
 					break;
 				}
 
@@ -1287,6 +1371,8 @@ void MainScene::CheckCollisionSimonItem()
 					listItem[i]->SetFinish(true);
 					simon->SetScore(simon->GetScore() + 1000);
 					listEffect.push_back(new MoneyEffect(listItem[i]->GetX(), listItem[i]->GetY(), TAG::EFFECT_MONEY_1000));
+					gameSound->Play(Sound::soundCollectItem); // Âm thanh nhặt item
+
 					break;
 				}
 				/* Xử lí ăn tiền */
@@ -1316,8 +1402,10 @@ void MainScene::CheckCollisionSimonAndHiddenObject()
 							LoadMap(TAG::MAP2);
 
 							return;
-						case 8: // Hiden object của bonus
+						case 8: // Hiden object của bonus ở map 1
 							listItem.push_back(DropItem(object->GetId(), object->GetType(), simon->GetX(), simon->GetY()));
+							gameSound->Play(Sound::soundDisplayMonney);
+
 							break;
 						}
 						object->SubHealth(1);
@@ -1353,12 +1441,15 @@ void MainScene::CheckCollisionSimonAndHiddenObject()
 						{
 							listItem.push_back(DropItem(object->GetId(), object->GetType(), simon->GetX(), simon->GetY()));
 							object->SetHealth(0);
+							gameSound->Play(Sound::soundDisplayMonney);
+
 							break;
 						}
 
 						case 66: //id 66: object ẩn -> chạm nước -> chết
 						{
 							simon->SetHealth(0);
+							gameSound->Play(Sound::soundFallingDownWaterSurface);
 
 							break;
 						}
@@ -1372,7 +1463,7 @@ void MainScene::CheckCollisionSimonAndHiddenObject()
 								camera->SetAutoGoX(abs(GATE2_POSITION_CAM_AFTER_GO - camera->GetXCam()), SIMON_WALKING_SPEED);
 							}
 
-							StageCurrent = 3;// set hiển thị đang ở state3
+							StageCurrent = 3; // Set hiển thị Simon đang ở stage 3
 							object->SubHealth(1);
 
 							//isAllowToCreateBat = false; // Ngưng không tạo Bat nữa
@@ -1456,11 +1547,11 @@ void MainScene::CheckCollisionSimonAndHiddenObject()
 							camera->SetBoundary(camera->GetBoundaryRight(), camera->GetBoundaryRight());
 							camera->SetAllowFollowSimon(false);
 
-							/*if (sound->isPlaying(eSound::musicState1))
+							if (gameSound->GetIsSoundPlaying(Sound::musicState1))
 							{
-								sound->Stop(eSound::musicState1);
+								gameSound->Stop(Sound::musicState1);
 							}
-							sound->Play(eSound::music_PhantomBat, true);*/
+							gameSound->Play(Sound::music_PhantomBat, true);
 
 							object->SetHealth(0);
 							break;
@@ -1732,12 +1823,12 @@ Item* MainScene::DropItem(int Id, TAG Type, float X, float Y) // Xử lí rơ�
 				break;
 
 				// Temp
-			/*case 3:
-				return new ItemThrowingAxe(X, Y);
+			case 3:
+				return new ItemBoomerang(X, Y);
 				break;
 			case 4:
-				return new ItemDoubleShot(X, Y);
-				break;*/
+				return new ItemThrowingAxe(X, Y);
+				break;
 
 			case 23: case 98: // Trc 2 cửa
 				return new Cross(X, Y);
@@ -1896,7 +1987,7 @@ void MainScene::HandleInvisibilityPotion(DWORD dt)
 		{
 			isUsingInvisibilityPotion = false; // Kết thúc
 			InvisibilityPotion_WaitedTime = 0;
-			//sound->Play(eSound::soundInvisibilityPotion_End);
+			//gameSound->Play(Sound::soundInvisibilityPotion_End);
 
 			simon->SetTexture(TextureManager::GetInstance()->GetTexture(TAG::SIMON));
 		}
@@ -1936,6 +2027,13 @@ void MainScene::HandleCross(DWORD dt)
 		}
 	}
 }
+
+void MainScene::PlayGameMusic()
+{
+	gameSound->StopAll();// Tắt hết các âm thanh
+	gameSound->Play(Sound::musicState1, true); // Mở nhạc nền
+}
+
 
 #pragma endregion
 

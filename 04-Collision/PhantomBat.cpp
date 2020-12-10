@@ -140,7 +140,7 @@ void PhantomBat::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 		float yy = GetPt(ya, yb, perc); // Chấm đen
 
-		vy = (yy - yLastFrame /* Khoảng cách y giữa frame trước và y dự tính đi */) / dt;   // v = s / t
+		vy = (yy - yLastFrame /* Khoảng cách y giữa frame trước và y dự tính đi */) / dt;   // v = s / t, khi y = yy = yLastFrame = yTarGetPos thì vy = 0 
 
 
 		break;
@@ -429,10 +429,10 @@ void PhantomBat::StartCurvesAttack()
 	xPreviousPos = x;
 	yPreviousPos = y;
 
-	x1 = x;
+	x1 = x; // (P0), contol point
 	y1 = y;
 
-	x2 = simon->GetX(); // Vị trí của Simon
+	x2 = simon->GetX(); // Vị trí của Simon (P1), control point
 	y2 = simon->GetY() + simon->GetHeight();
 
 	if (simon->GetX() < x) // Nếu Simon bên trái boss
@@ -442,10 +442,10 @@ void PhantomBat::StartCurvesAttack()
 
 	yTargetPos = simon->GetY() + simon->GetHeight() - 100;
 
-	x3 = xTargetPos; // Vị trí tấn công
+	x3 = xTargetPos; // Vị trí cuối đường cong (P2), control point
 	y3 = yTargetPos;
 
-	// Vận tốc cần để đi đến target // Quy ước: cứ 1 giây đi 150px, xTargetPositionPosition - xPreviousPosition là quãng đường đi
+	// Vận tốc cần để đi đến target // Quy ước: cứ 1 giây đi 150px, xTargetPos - xPreviousPos là quãng đường đi
 	vx = -(x - xTargetPos) / (abs(xTargetPos - xPreviousPos) * 1000.0f / 150);
 	vy = 0;
 
