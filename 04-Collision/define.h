@@ -85,6 +85,7 @@ enum TAG
 	SMALLHEART = 85,
 	ITEMHOLYWATER = 86,
 	POTROAST = 87,
+	CRYSTALBALL = 88,
 	ITEMTHROWINGAXE = 89,
 	INVISIBILITYPOTION = 90,
 	CROSS = 91,
@@ -112,6 +113,13 @@ enum TAG
 
 	// Boss
 	PHANTOMBAT = 161,
+
+	// Scene Intro
+	MAINMENU = 181, // Menu ở phần ấn phím để start game
+	INTRO_GO_SCENE1 = 182, // Hình lâu đài
+	INTRO_BAT_MENU = 183, // Bat ở menu (Phần press key to start)
+	HELICOPTER = 184,
+	INTRO_BAT = 185 // Bat ở intro (Phần Simon tự đi sau khi ấn phím)
 };
 
 #ifndef CHECK_OBJECT_IN_CAMERA 

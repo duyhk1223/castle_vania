@@ -511,7 +511,7 @@ void PhantomBat::StartAttackWithWeapon()
 	//DebugOut(L"!------------------------!\n\n");
 
 
-	//Sound::GetInstance()->Play(eSound::soundHit);
+	GameSound::GetInstance()->Play(Sound::soundHit);
 
 	WaitedTime = 0;
 	isWaiting = true;

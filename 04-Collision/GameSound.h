@@ -32,6 +32,8 @@ enum Sound
 	musicState1 = 51,
 
 	music_PhantomBat = 53,
+	musicClearState = 54,
+	musicGame_Start_Game_IntroScene = 55
 };
 
 class GameSound

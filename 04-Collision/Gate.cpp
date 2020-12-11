@@ -1,4 +1,4 @@
-#include "Gate.h"
+﻿#include "Gate.h"
 
 Gate::Gate(float X, float Y)
 {
@@ -45,6 +45,7 @@ void Gate::Render(Camera* camera)
 			sprite->timeAccumulated = 0;
 			sprite->MoveToNextFrame();
 			isStart++;
+			GameSound::GetInstance()->Play(Sound::soundOpenDoor); // Chạy âm thanh mở cửa
 		}
 		break;
 	}

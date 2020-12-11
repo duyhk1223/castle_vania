@@ -39,6 +39,7 @@
 #include "Cross.h"
 #include "ItemBoomerang.h"
 #include "ItemStopWatch.h"
+#include "CrystalBall.h"
 
 // Weapon
 #include "Dagger.h"

@@ -64,6 +64,8 @@ void GameSound::LoadSoundResources()
 	AddSound(Sound::musicState1, L"Resources/music/Stage_01_Vampire_Killer.wav");
 
 	AddSound(Sound::music_PhantomBat, L"Resources/music/Boss_Battle_Poison_Mind.wav");
+	AddSound(Sound::musicClearState, L"Resources/music/Stage_Clear.wav");
+	AddSound(Sound::musicGame_Start_Game_IntroScene, L"Resources/music/Start_Game_IntroScene.wav");
 }
 
 bool GameSound::GetIsSoundPlaying(Sound type)

@@ -95,6 +95,8 @@
 
 #define SIMON_TIME_WAIT_ANI_ATTACKING 120// thời gian thời của mỗi frame khi tấn công
 
+#define SIMON_ANI_HIDE_FACE 9 // Animation Simon quay lưng, dùng cho intro scene
+
 #define SIMON_DEFAULT_HEALTH 16
 #define SIMON_DEFAULT_HEARTCOLLECT 5
 #define SIMON_DEFAULT_SCORE 0

@@ -7,7 +7,7 @@
 #define MAIN_WINDOW_TITLE L"Castlevania"
 
 #include "MainScene.h"
-//#include "Scene_Intro.h"
+#include "IntroScene.h"
 
 Game* game;
 SceneManager* _sceneManager;
@@ -157,7 +157,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	_sceneManager = SceneManager::GetInstance();
 
 
-	_sceneManager->SetScene(new MainScene());
+	_sceneManager->SetScene(new IntroScene());
 
 
 	game->InitKeyboard();

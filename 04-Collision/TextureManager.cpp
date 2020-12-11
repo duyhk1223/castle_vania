@@ -32,6 +32,14 @@ Texture* TextureManager::GetTexture(TAG oType)
 
 void TextureManager::LoadResource()
 {
+	// Intro Scene
+	AddTexture(TAG::MAINMENU, new Texture("Resources/mainmenu.png"));
+	AddTexture(TAG::INTRO_BAT, new Texture("Resources/intro_bat.png", 2, 1, 2));
+	AddTexture(TAG::INTRO_BAT_MENU, new Texture("Resources/IntroBatMenu.png", 5, 3, 15));
+	AddTexture(TAG::INTRO_GO_SCENE1, new Texture("Resources/intro_go_scene_1.png"));
+	AddTexture(TAG::HELICOPTER, new Texture("Resources/helicopter.png"));
+
+
 	// Player
 	AddTexture(TAG::SIMON, new Texture("Resources/simon.png", 8, 3, 24));
 	AddTexture(TAG::SIMON_TRANS, new Texture("Resources/simon_trans.png", 8, 3, 24));
@@ -69,6 +77,7 @@ void TextureManager::LoadResource()
 	AddTexture(TAG::INVISIBILITYPOTION, new Texture("Resources/item/14.png"));
 	AddTexture(TAG::CROSS, new Texture("Resources/item/6.png"));
 	AddTexture(TAG::ITEMBOOMERANG, new Texture("Resources/item/8.png"));
+	AddTexture(TAG::CRYSTALBALL, new Texture("Resources/item/13.png", 2, 1, 2));
 
 	// Effect
 	AddTexture(TAG::HIT, new Texture("Resources/other/0.png", 2, 1, 2));

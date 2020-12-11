@@ -256,6 +256,18 @@
     <ClCompile Include="Dsutil.cpp">
       <Filter>Framework\Sound</Filter>
     </ClCompile>
+    <ClCompile Include="SceneIntroBat.cpp">
+      <Filter>Framework\Scene\SceneIntro</Filter>
+    </ClCompile>
+    <ClCompile Include="Helicopter.cpp">
+      <Filter>Framework\Scene\SceneIntro</Filter>
+    </ClCompile>
+    <ClCompile Include="IntroScene.cpp">
+      <Filter>Framework\Scene\SceneIntro</Filter>
+    </ClCompile>
+    <ClCompile Include="CrystalBall.cpp">
+      <Filter>Object\Item</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="debug.h">
@@ -440,6 +452,18 @@
     </ClInclude>
     <ClInclude Include="DSutil.h">
       <Filter>Framework\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneIntroBat.h">
+      <Filter>Framework\Scene\SceneIntro</Filter>
+    </ClInclude>
+    <ClInclude Include="Helicopter.h">
+      <Filter>Framework\Scene\SceneIntro</Filter>
+    </ClInclude>
+    <ClInclude Include="IntroScene.h">
+      <Filter>Framework\Scene\SceneIntro</Filter>
+    </ClInclude>
+    <ClInclude Include="CrystalBall.h">
+      <Filter>Object\Item</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

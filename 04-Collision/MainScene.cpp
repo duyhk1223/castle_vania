@@ -1085,7 +1085,7 @@ void MainScene::CheckCollisionWeapon(vector<GameObject*> listObj) // Kiểm tra 
 								}
 								RunEffectHit = false;
 								gameSound->Play(Sound::soundHit);
-								//listItem.push_back(new CrystalBall(CRYSTALBALL_DEFAULT_POSITION_X, CRYSTALBALL_DEFAULT_POSITION_y));
+								listItem.push_back(new CrystalBall(CRYSTALBALL_DEFAULT_POSITION_X, CRYSTALBALL_DEFAULT_POSITION_y));
 
 							}
 							else // Boss chưa chết thì có hiệu ứng lửa khi đánh
@@ -1244,6 +1244,20 @@ void MainScene::CheckCollisionSimonItem()
 				{
 					simon->SetHeartCollect(simon->GetHeartCollect() + 1);
 					listItem[i]->SetFinish(true);
+					break;
+				}
+
+				case TAG::CRYSTALBALL:
+				{
+					listItem[i]->SetFinish(true);
+					if (gameSound->GetIsSoundPlaying(Sound::music_PhantomBat))
+					{
+						gameSound->Stop(Sound::music_PhantomBat);
+					}
+					gameSound->Play(Sound::musicClearState);
+
+					//isAllowProcessClearState3 = true;
+
 					break;
 				}
 
@@ -1823,12 +1837,12 @@ Item* MainScene::DropItem(int Id, TAG Type, float X, float Y) // Xử lí rơ�
 				break;
 
 				// Temp
-			case 3:
+			/*case 3:
 				return new ItemBoomerang(X, Y);
 				break;
 			case 4:
 				return new ItemThrowingAxe(X, Y);
-				break;
+				break;*/
 
 			case 23: case 98: // Trc 2 cửa
 				return new Cross(X, Y);

@@ -134,6 +134,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Candle.cpp" />
     <ClCompile Include="Cross.cpp" />
+    <ClCompile Include="CrystalBall.cpp" />
     <ClCompile Include="Dagger.cpp" />
     <ClCompile Include="debug.cpp" />
     <ClCompile Include="define.cpp" />
@@ -146,8 +147,10 @@
     <ClCompile Include="GameTime.cpp" />
     <ClCompile Include="Gate.cpp" />
     <ClCompile Include="Ghost.cpp" />
+    <ClCompile Include="Helicopter.cpp" />
     <ClCompile Include="HiddenObject.cpp" />
     <ClCompile Include="HolyWater.cpp" />
+    <ClCompile Include="IntroScene.cpp" />
     <ClCompile Include="InvisibilityPotion.cpp" />
     <ClCompile Include="ItemBoomerang.cpp" />
     <ClCompile Include="ItemDoubleShot.cpp" />
@@ -171,6 +174,7 @@
     <ClCompile Include="PhantomBat.cpp" />
     <ClCompile Include="PotRoast.cpp" />
     <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="SceneIntroBat.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="SmallHeart.cpp" />
     <ClCompile Include="Sprite.cpp" />
@@ -198,6 +202,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Candle.h" />
     <ClInclude Include="Cross.h" />
+    <ClInclude Include="CrystalBall.h" />
     <ClInclude Include="Dagger.h" />
     <ClInclude Include="debug.h" />
     <ClInclude Include="define.h" />
@@ -210,8 +215,10 @@
     <ClInclude Include="GameTime.h" />
     <ClInclude Include="Gate.h" />
     <ClInclude Include="Ghost.h" />
+    <ClInclude Include="Helicopter.h" />
     <ClInclude Include="HiddenObject.h" />
     <ClInclude Include="HolyWater.h" />
+    <ClInclude Include="IntroScene.h" />
     <ClInclude Include="InvisibilityPotion.h" />
     <ClInclude Include="ItemBoomerang.h" />
     <ClInclude Include="ItemDoubleShot.h" />
@@ -234,6 +241,7 @@
     <ClInclude Include="PhantomBat.h" />
     <ClInclude Include="PotRoast.h" />
     <ClInclude Include="Scene.h" />
+    <ClInclude Include="SceneIntroBat.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="SmallHeart.h" />
     <ClInclude Include="Sprite.h" />
