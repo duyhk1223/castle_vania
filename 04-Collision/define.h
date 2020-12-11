@@ -32,6 +32,13 @@ extern int isDebug_RenderBBox;
 
 extern int isDebug_Untouchable;
 
+// Tuỳ chọn khi gameover
+#define GAMEOVER_SELECT_CONTINUE 0
+#define GAMEOVER_SELECT_END 1
+#define LIMIT_TIME_WAITING_TO_RESET_GAME 300 // Thời gian chờ màn màu đen kết thúc khi reset game, 300ms
+
+
+
 // ID của Sprite, object
 enum TAG
 {

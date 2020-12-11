@@ -17,6 +17,9 @@ void MainScene::KeyState(BYTE* state)
 	if (simon->GetFreeze() == true) // disable control
 		return;
 
+	if (/*simon->GetIsDeadth() ||*/ isWaitingToResetGame || isGameOver) // Nếu Simon chết hoặc game over và đang đợi reset game thì ko quan tâm phím
+		return;
+
 	// Nếu Simon đang tự đi
 	if (simon->GetIsAutoGoX() == true) // Đang chế độ tự đi thì ko xét phím
 		return;
@@ -26,6 +29,8 @@ void MainScene::KeyState(BYTE* state)
 
 	if (simon->isHurting) // Simon đang bị thương thì ko quan tâm phím
 		return;
+
+
 
 
 	if (Game::GetInstance()->IsKeyDown(DIK_UP) && Game::GetInstance()->IsKeyDown(DIK_A) && simon->isProcessingOnStair == 0 && !simon->isAttacking)
@@ -213,6 +218,53 @@ void MainScene::OnKeyDown(int KeyCode)
 	if (simon->GetFreeze() == true) // Đang bóng băng thì không quan tâm phím
 		return;
 
+
+#pragma region Xử lý nút khi trong màn hình chọn option khi reset game và gameover
+
+	if (isGameOver)
+	{
+		switch (KeyCode)
+		{
+		case DIK_UP:
+		{
+			GameOverSelectedOption = GAMEOVER_SELECT_CONTINUE;
+			break;
+		}
+		case DIK_DOWN:
+		{
+			GameOverSelectedOption = GAMEOVER_SELECT_END;
+			break;
+		}
+		case DIK_RETURN:
+		{
+			// Xét option lựa chọn để reset hoặc thoát game
+			if (GameOverSelectedOption == GAMEOVER_SELECT_CONTINUE)
+			{
+				InitGame();
+				isGameOver = false;
+			}
+			else
+				if (GameOverSelectedOption == GAMEOVER_SELECT_END)
+				{
+					DestroyWindow(Game::GetInstance()->GetWindowHandle()); // Thoát game
+				}
+			break;
+		}
+		}
+
+		return;
+	}
+
+	if (/*simon->GetIsDeadth() ||*/ isWaitingToResetGame) // Nếu Simon chết hoặc đang chờ reset game thì ko quan tâm phím
+	{
+		return;
+	}
+
+#pragma endregion
+
+
+
+
 	if (simon->GetIsAutoGoX()) // Simon đang ơ chế độ tự đi thì ko xét phím
 		return;
 
@@ -249,6 +301,7 @@ void MainScene::OnKeyDown(int KeyCode)
 		}
 	}
 
+
 #pragma region Keydown Debug
 
 	if (KeyCode == DIK_U)
@@ -265,6 +318,11 @@ void MainScene::OnKeyDown(int KeyCode)
 void MainScene::OnKeyUp(int KeyCode)
 {
 	if (simon->GetFreeze() == true) // Đang bóng băng thì không quan tâm phím
+	{
+		return;
+	}
+
+	if (/*simon->GetIsDeadth() ||*/ isWaitingToResetGame || isGameOver) // Nếu Simon chết hoặc game over và đang đợi reset game thì ko quan tâm phím
 	{
 		return;
 	}
@@ -297,6 +355,7 @@ void MainScene::InitGame()
 	PlayGameMusic(); // Bắt đầu chạy âm thanh game
 }
 
+// Load map thì reset lại các grid, enemy, cử lý qua cửa, gameover
 void MainScene::ResetResource()
 {
 	gridGame->ReloadGrid();
@@ -342,10 +401,23 @@ void MainScene::ResetResource()
 	CreateFishmenTime = 0;
 	WaitingtimeToCreateFishmen = 0;
 	CurrentFishmenEnemyCount = 0;
+
+	/* Set các biến xử lý cho màn đen chờ reset game*/
+	isWaitingToResetGame = true;
+	WaitedTimeToResetGame = 0;
+
+	/*Xử lý gameover*/
+	isGameOver = false;
+	GameOverSelectedOption = GAMEOVER_SELECT_CONTINUE;
 }
 
 void MainScene::Update(DWORD dt)
 {
+	// Nếu gameover thì ko Update nữa
+	if (isGameOver)
+		return;
+
+
 	// Xử lí freeze
 	if (simon->GetFreeze() == true)
 	{
@@ -362,6 +434,21 @@ void MainScene::Update(DWORD dt)
 	if (isDebug_Untouchable == 1)
 		simon->StartUntouchable();
 
+#pragma endregion
+
+
+#pragma region Xử lí khi đang vẽ màn đen chờ trước khi bắt đầu game
+
+	if (isWaitingToResetGame)
+	{
+		WaitedTimeToResetGame += dt; // Nếu chưa chờ đủ thời gian thì sẽ chờ tiếp
+		if (WaitedTimeToResetGame >= LIMIT_TIME_WAITING_TO_RESET_GAME) // Đã chờ đủ thì reset biến cờ
+		{
+			isWaitingToResetGame = false;
+		}
+		else
+			return;
+	}
 #pragma endregion
 
 
@@ -881,37 +968,66 @@ void MainScene::Update(DWORD dt)
 	CheckCollision();
 	HandleInvisibilityPotion(dt);
 	HandleCross(dt);
+	HandleClearStage3(dt); // Xử lí clear stage và end game sau khi diệt xong Boss
 
 #pragma endregion
 }
 
 void MainScene::Render()
 {
-	tileMap->DrawMap(camera);
+	if (isWaitingToResetGame) // Nếu đang ở màn đen trước khi bắt đầu game
+		return; // Thoát và ko vẽ gì
 
-	for (UINT i = 0; i < listObj.size(); i++)
-		listObj[i]->Render(camera);
-	
-	for (UINT i = 0; i < listItem.size(); i++)
-		if (listItem[i]->GetFinish() == false)
-			listItem[i]->Render(camera);
+	// Chưa hết game thì render bình thường
+	if (!isGameOver)
+	{
+		tileMap->DrawMap(camera);
 
-	for (UINT i = 0; i < listEffect.size(); i++)
-		if (listEffect[i]->GetFinish() == false)
-			listEffect[i]->Render(camera);
+		for (UINT i = 0; i < listObj.size(); i++)
+			listObj[i]->Render(camera);
 
-	for (UINT i = 0; i < listEnemy.size(); i++)
-		listEnemy[i]->Render(camera);
+		for (UINT i = 0; i < listItem.size(); i++)
+			if (listItem[i]->GetFinish() == false)
+				listItem[i]->Render(camera);
 
-	for (UINT i = 0; i < listWeaponOfEnemy.size(); i++)
-		listWeaponOfEnemy[i]->Render(camera);
+		for (UINT i = 0; i < listEffect.size(); i++)
+			if (listEffect[i]->GetFinish() == false)
+				listEffect[i]->Render(camera);
 
-	if (phantomBat != NULL)
-		phantomBat->Render(camera);
+		for (UINT i = 0; i < listEnemy.size(); i++)
+			listEnemy[i]->Render(camera);
 
-	simon->Render(camera);
+		for (UINT i = 0; i < listWeaponOfEnemy.size(); i++)
+			listWeaponOfEnemy[i]->Render(camera);
 
-	board->Render(simon, StageCurrent, MAX_GAME_TIME - gameTime->GetPassedTime(), phantomBat);
+		if (phantomBat != NULL)
+			phantomBat->Render(camera);
+
+		simon->Render(camera);
+
+		board->Render(simon, StageCurrent, MAX_GAME_TIME - gameTime->GetPassedTime(), phantomBat);
+	}
+	else
+	{
+		// Render option khi game over
+		EndGameText.Draw(200, 200, "GAME OVER");
+		EndGameText.Draw(215, 250, "CONTINUE");
+		EndGameText.Draw(215, 280, "END");
+		switch (GameOverSelectedOption)
+		{
+		case GAMEOVER_SELECT_CONTINUE:
+		{
+			_spriteLagerHeart->Draw(175, 245);
+			break;
+		}
+		case GAMEOVER_SELECT_END:
+		{
+			_spriteLagerHeart->Draw(175, 275);
+			break;
+		}
+
+		}
+	}
 }
 
 void MainScene::LoadMap(TAG mapType)
@@ -1256,7 +1372,7 @@ void MainScene::CheckCollisionSimonItem()
 					}
 					gameSound->Play(Sound::musicClearState);
 
-					//isAllowProcessClearState3 = true;
+					isAllowHandleClearStage3 = true; // Cho phép clear state và end game
 
 					break;
 				}
@@ -2048,6 +2164,97 @@ void MainScene::PlayGameMusic()
 	gameSound->Play(Sound::musicState1, true); // Mở nhạc nền
 }
 
+// Xử lý clear state 3 khi Simon hạ dc Boss
+void MainScene::HandleClearStage3(DWORD dt)
+{
+	if (isAllowHandleClearStage3)
+	{
+		// Xét các trạng thái xử lý khi clear state
+		switch (HandleClearStage3Status)
+		{
+		case CLEARSTAGE3_HANDLE_HEALTH_STATUS:
+		{
+			WaitedTimeTo_ClearState3 += dt; // Đếm thời gian chờ để xử lý máu
+			if (WaitedTimeTo_ClearState3 >= CLEARSTAGE3_LIMITTIME_WAITING_TO_HANDLE_HEALTH)
+			{
+				WaitedTimeTo_ClearState3 = 0; // Reset đếm thời gian chờ
+
+				if (simon->GetHealth() < SIMON_DEFAULT_HEALTH) // Hồi lại đầy máu nếu Simon có mất máu
+				{
+					simon->SetHealth(simon->GetHealth() + 1);
+				}
+				else
+				{
+					HandleClearStage3Status = CLEARSTAGE3_HANDLE_GETSCORE_TIME_STATUS; // Chuyển sang trạng thái tính điểm trên thời gian còn lại
+				}
+			}
+
+			break;
+		}
+			
+		case CLEARSTAGE3_HANDLE_GETSCORE_TIME_STATUS:
+		{
+			WaitedTimeTo_ClearState3 += dt; // Đếm thời gian chờ để xử lý tính điểm trên thời gian còn lại
+			if (WaitedTimeTo_ClearState3 >= CLEARSTAGE3_LIMITTIME_WAITING_TO_HANDLE_GETSCORE_TIME)
+			{
+				WaitedTimeTo_ClearState3 = 0; // Reset đếm thời gian chờ
+
+				if (MAX_GAME_TIME - gameTime->GetPassedTime() > 0) // Thời gian chơi còn lại > 0
+				{
+					simon->SetScore(simon->GetScore() + 10); // Mỗi giây còn lại sẽ +10 điểm
+					gameTime->SetTime(gameTime->GetPassedTime() + 1); // Giảm số giây còn lại
+					gameSound->Play(Sound::soundGetScoreTimer, true);
+				}
+				else
+				{
+					HandleClearStage3Status = CLEARSTATG3_HANDLE_GETSCORE_HEART_STATUS; // Chuyển sang trạng thái tính điểm dựa trên số tím còn lại
+					WaitedTimeTo_ClearState3 = 0;
+					gameSound->Stop(Sound::soundGetScoreTimer);
+				}
+			}
+
+			break;
+		}
+
+		case CLEARSTATG3_HANDLE_GETSCORE_HEART_STATUS:
+		{
+			WaitedTimeTo_ClearState3 += dt; // Đếm thời gian chờ để xử lý tính điểm trên số heart còn lại
+			if (WaitedTimeTo_ClearState3 >= CLEARSTAGE3_LIMITTIME_WAITING_TO_HANDLE_GETSCORE_HEART)
+			{
+				WaitedTimeTo_ClearState3 = 0;
+
+				if (simon->GetHeartCollect() > 0) // Số heart còn lại > 0
+				{
+					simon->SetScore(simon->GetScore() + 100); // Mỗi heart còn lại sẽ +100 điểm
+					simon->SetHeartCollect(simon->GetHeartCollect() - 1); // giảm 1 heart
+					gameSound->Play(Sound::soundGetScoreHeart, true);
+				}
+				else
+				{
+					gameSound->Stop(Sound::soundGetScoreHeart);
+					HandleClearStage3Status = CLEARSTAGE3_HANDLE_DONE_STATUS; // Chuyển sang trạng thái xử lý kết thúc và end game
+				}
+			}
+
+			break;
+		}
+
+		case CLEARSTAGE3_HANDLE_DONE_STATUS:
+		{
+			WaitedTimeTo_ClearState3 += dt; // Đếm thời gian chờ để xử lý end game
+			if (WaitedTimeTo_ClearState3 >= CLEARSTAGE3_LIMITTIMEWAIT_HANDLE_OPENGAMEOVER)
+			{
+				isAllowHandleClearStage3 = false; // Dừnf trạng thái clear stage
+				isGameOver = true; // Bật bảng hiện gameover
+			}
+			break;
+		}
+
+		default:
+			break;
+		}
+	}
+}
 
 #pragma endregion
 

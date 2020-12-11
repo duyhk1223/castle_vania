@@ -172,6 +172,22 @@
 
 
 
+#pragma region Xử lý clear state 3
+
+#define CLEARSTAGE3_HANDLE_HEALTH_STATUS 0 // Trạng thái xử lí làm đầy máu
+#define CLEARSTAGE3_HANDLE_GETSCORE_TIME_STATUS 1 // Trạng thái xử lí quy đổi thời gian dư ra điểm
+#define CLEARSTATG3_HANDLE_GETSCORE_HEART_STATUS 2 // Trạng thái xử lí quy đổi số heart dư ra điểm
+#define CLEARSTAGE3_HANDLE_DONE_STATUS 3 // Trạng thái đã xử lí xong
+
+#define CLEARSTAGE3_LIMITTIME_WAITING_TO_HANDLE_HEALTH 200 // Thời gian chờ tối đa để xử lý tăng mỗi đơn vị máu
+#define CLEARSTAGE3_LIMITTIME_WAITING_TO_HANDLE_GETSCORE_TIME 10 // Thời gian chờ tối đa để xử lý mỗi lượt update time
+#define CLEARSTAGE3_LIMITTIME_WAITING_TO_HANDLE_GETSCORE_HEART 50 // Thời gian chờ tối đa để xử lý mỗi lượt update heart
+#define CLEARSTAGE3_LIMITTIMEWAIT_HANDLE_OPENGAMEOVER 2000 // Thời gian chờ tối đa để xử lý mở gameover sau khi clearstate xong
+
+#pragma endregion
+
+
+
 
 #define CAMERA_BOUNDARY_BOSS_RIGHT (5648.0f - SCREEN_WIDTH) // Biên camera cho phần boss
 
@@ -248,6 +264,21 @@ private:
 	DWORD Cross_ChangeColorBackground_WaitedTime; // Thời gian đã qua khi thay đổi màu nền
 	DWORD Cross_ChangeColorBackground_MaxWaitingTime; // Thời gian cần chờ để đổi màu nền
 
+	/* Xử lí liên quan Clear State 3 */
+	bool isAllowHandleClearStage3; // Biến cờ cho phép clear state 3 khi Simon hạ dc boss
+	int HandleClearStage3Status; // Trạng thái khi clear state, tính điểm, máu thời gian
+	DWORD WaitedTimeTo_ClearState3; // Biến đếm thời gian để tính toán điểm, thời gian khi clear state
+	DWORD LimitTimeToWaitFor_ClearState3; // Thời gian chờ tối đa cho thao tác tính toán
+
+	/* Xử lí gameover*/
+	bool isGameOver;
+	Font EndGameText;
+	int GameOverSelectedOption; // Option lựa chọn khi end game
+
+	/* xử lí màn đen chờ khi bắt đầu lại game*/
+	bool isWaitingToResetGame;
+	DWORD WaitedTimeToResetGame; // Thới gian đã chờ để reset game
+
 
 
 public:
@@ -288,6 +319,9 @@ public:
 	void HandleCross(DWORD dt); // Xử lý khi Simon nhặt dc thánh giá 
 
 	void PlayGameMusic(); // Hàm khởi tạo lại âm thanh game
+
+	// Xử lý clear state và end game
+	void HandleClearStage3(DWORD dt);
 };
 
 #endif
