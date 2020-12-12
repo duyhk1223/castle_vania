@@ -498,7 +498,7 @@ void MainScene::Update(DWORD dt)
 	{
 		if (isAllowHandleClearStage3 == false) // đang xử lí ClearState thì không đếm time
 		{
-			//gameTime->Update(dt);
+			gameTime->Update(dt);
 		}
 	}
 
@@ -510,7 +510,7 @@ void MainScene::Update(DWORD dt)
 		}
 	}
 
-	gameTime->Update(dt); // Để tạm do chưa có trạng thái dead
+	
 
 #pragma endregion
 
