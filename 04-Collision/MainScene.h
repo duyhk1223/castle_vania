@@ -54,7 +54,7 @@
 #include "PhantomBat.h"
 
 
-#define MAX_GAME_TIME 10 // Thời gian chơi game
+#define MAX_GAME_TIME 300 // Thời gian chơi game
 
 
 

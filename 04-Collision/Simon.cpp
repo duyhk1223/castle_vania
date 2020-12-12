@@ -1129,7 +1129,7 @@ void Simon::SetHeartCollect(int h)
 void Simon::SetDeadth()
 {
 	SetIsDeadth(true);
-	TimeWaitedAfterDeath = 0;
+	WaitedTimeAfterDeath = 0;
 
 	ResetSit();
 	vx = 0;
@@ -1244,6 +1244,12 @@ bool Simon::IsUsingWeapon(TAG weaponType)
 	return false;
 }
 
+#pragma endregion
+
+
+
+
+#pragma region Các hàm xử lý dead của Simon
 
 void Simon::SetCheckPoint(float X, float Y)
 {
@@ -1270,6 +1276,5 @@ bool Simon::LoseLife()
 
 	return true;
 }
-
 
 #pragma endregion

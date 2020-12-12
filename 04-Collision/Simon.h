@@ -17,7 +17,7 @@
 
 
 #define SIMON_DEFAULT_POSITION  50.0f, 300.0f
-#define SIMON_WALKING_SPEED 0.32f //0.12f 
+#define SIMON_WALKING_SPEED 0.12f //0.12f 
 #define PULL_UP_SIMON_AFTER_SITTING 18.0f // Kéo simon lên 18px sau khi ngồi rồi đứng dậy, tránh overlaping do BBOX bottom thu lại khi ngồi
 
 
@@ -165,6 +165,11 @@ public:
 	float AutoGoX_GoDirection; // hướng tự động đi
 	float AutoGoX_Backup_X; // Lưu vị trí trước khi đi tự động
 
+	// Xử lý dead của Simon
+	bool isDeadth;
+	DWORD WaitedTimeAfterDeath; // Đếm thời gian để chờ hồi sinh sau khi Simon chết
+
+
 	float passedDistance = 0; // Độ cao cầu thang Simon đã đi dc
 
 	bool isCollisionAxisYWithBrick = false; // Đang va chạm với đất theo trục y
@@ -173,8 +178,7 @@ public:
 
 	unordered_map<TAG, Weapon*> mapWeapon;
 
-	bool isDeadth;
-	DWORD TimeWaitedAfterDeath;
+	
 
 
 public:
