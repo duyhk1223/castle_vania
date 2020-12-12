@@ -195,7 +195,7 @@ void PhantomBat::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			}
 			else
 			{
-				HandleAttackType();
+				HandleSmartAttack();
 			}
 		}
 
@@ -379,7 +379,7 @@ void PhantomBat::Stop()
 	vx = vy = 0;
 }
 
-void PhantomBat::HandleAttackType()
+void PhantomBat::HandleSmartAttack() // xử lí AI
 {
 	// Nếu nhảy lên & khoảng cách nhỏ hơn 150 thì random cách xử lí
 	if (simon->isJumping && sqrt((simon->GetX() - x) * (simon->GetX() - x) + (simon->GetY() - y) * (simon->GetY() - y)) <= 150.0f)

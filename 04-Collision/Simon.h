@@ -17,7 +17,7 @@
 
 
 #define SIMON_DEFAULT_POSITION  50.0f, 300.0f
-#define SIMON_WALKING_SPEED 0.12f //0.12f 
+#define SIMON_WALKING_SPEED 0.32f //0.12f 
 #define PULL_UP_SIMON_AFTER_SITTING 18.0f // Kéo simon lên 18px sau khi ngồi rồi đứng dậy, tránh overlaping do BBOX bottom thu lại khi ngồi
 
 

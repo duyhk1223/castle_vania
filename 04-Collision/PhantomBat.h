@@ -90,7 +90,7 @@ public:
 	float GetPt(float n1, float n2, float perc);
 	void Stop(); // Debug
 
-	void HandleAttackType(); // Random ra 1 loại tấn công bất kì dựa vào độ cao nhảy dc của Simon
+	void HandleSmartAttack(); // Random ra 1 loại tấn công bất kì dựa vào độ cao nhảy dc của Simon
 
 	void ResetResource();
 };

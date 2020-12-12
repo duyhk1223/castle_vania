@@ -537,12 +537,12 @@ bool Simon::isCollisionWithItem(Item* objItem)
 
 	float l, t, r, b;
 	float l1, t1, r1, b1;
-	this->GetBoundingBox(l, t, r, b);  // lấy BBOX của simon
+	this->GetBoundingBox(l, t, r, b);  // Lấy BBOX của simon
 
 	objItem->GetBoundingBox(l1, t1, r1, b1);
 	if (Game::GetInstance()->checkAABB(l, t, r, b, l1, t1, r1, b1) == true)
 	{
-		return true; // check with AABB
+		return true; // Check with AABB
 	}
 
 	return false;
@@ -550,13 +550,13 @@ bool Simon::isCollisionWithItem(Item* objItem)
 
 void Simon::CollisionWithStair(vector<LPGAMEOBJECT>* coObjects)
 {
-	if (directionY == 1) // đang đi xuống
+	if (directionY == 1) // Nếu Simon đang đi xuống
 	{
 		int CountCollisionBottom = 0; // Biến cờ để check Simon có va chạm với nền hay chưa
 		vector<LPGAMEOBJECT> listobj;
 		listobj.clear();
 		for (UINT i = 0; i < (*coObjects).size(); i++)
-			if ((*coObjects)[i]->GetType() == TAG::STAIR_BOTTOM) // nếu là object ở dưới
+			if ((*coObjects)[i]->GetType() == TAG::STAIR_BOTTOM) // Nếu là object ở dưới
 			{
 				if (this->isCollitionObjectWithObject((*coObjects)[i]))
 				{
@@ -592,7 +592,7 @@ void Simon::CollisionWithStair(vector<LPGAMEOBJECT>* coObjects)
 				{
 					vx = 0;
 					vy = 0;
-					isOnStair = false; // kết thúc việc đang trên cầu thang
+					isOnStair = false; // Kết thúc việc đang trên cầu thang
 					isWalking = false;
 					isProcessingOnStair = 0;
 				}
@@ -606,28 +606,28 @@ void Simon::CollisionWithStair(vector<LPGAMEOBJECT>* coObjects)
 
 	}
 
-	if (directionY == -1) // đang đi lên
+	if (directionY == -1) // Nếu Simon đang đi lên
 	{
 		vector<LPGAMEOBJECT> listobj;
 		int CountCollisionTop = 0;
 		listobj.clear();
 		for (UINT i = 0; i < (*coObjects).size(); i++)
-			if ((*coObjects)[i]->GetType() == TAG::STAIR_TOP) // nếu là object ở trên
+			if ((*coObjects)[i]->GetType() == TAG::STAIR_TOP) // Nếu là object ở trên
 			{
-				if (this->isCollitionObjectWithObject((*coObjects)[i])) // có va chạm với top stair
+				if (this->isCollitionObjectWithObject((*coObjects)[i])) // Có va chạm với top stair
 				{
 					CountCollisionTop++;
 					break;
 				}
 			}
 
-		if (CountCollisionTop > 0) // có va chạm với top, và nó đang đi lên
+		if (CountCollisionTop > 0) // Nếu có va chạm với top, và Simon đang đi lên
 		{
 			float backupVy = vy;
 
-			y = y - 50; // kéo simon lên cao, để tạo va chạm giả xuống mặt đất, tránh overlaping. tính thời gian tiếp đất
-			vy = 9999999999.0f; // vận tốc kéo xuống lớn để chạm đất ngay trong 1 frame
-			dy = vy * dt; // cập nhật lại dy
+			y = y - 50; // Kéo simon lên cao, để tạo va chạm giả xuống mặt đất, tránh overlaping. tính thời gian tiếp đất
+			vy = 9999999999.0f; // Vận tốc kéo xuống lớn để chạm đất ngay trong 1 frame
+			dy = vy * dt; // Cập nhật lại dy
 
 			vector<LPCOLLISIONEVENT> coEvents;
 			vector<LPCOLLISIONEVENT> coEventsResult;
@@ -656,7 +656,7 @@ void Simon::CollisionWithStair(vector<LPGAMEOBJECT>* coObjects)
 				{
 					vx = 0;
 					vy = 0;
-					isOnStair = false; // kết thúc việc đang trên cầu thang
+					isOnStair = false; // Kết thúc việc đang trên cầu thang
 					isWalking = false;
 					isProcessingOnStair = 0;
 				}
@@ -666,13 +666,13 @@ void Simon::CollisionWithStair(vector<LPGAMEOBJECT>* coObjects)
 				delete coEvents[i];
 
 			vy = backupVy;
-			dy = vy * dt; // cập nhật lại dy
+			dy = vy * dt; // Cập nhật lại dy
 
-			return; // ko cần xét tiếp
+			return; // Ko cần xét tiếp
 		}
 	}
 
-	// nếu không đụng top và bot thì di chuyển bt
+	// Nếu không đụng top và bot thì di chuyển bt
 	x += dx;
 	y += dy;
 }

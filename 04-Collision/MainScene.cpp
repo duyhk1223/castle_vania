@@ -218,6 +218,10 @@ void MainScene::OnKeyDown(int KeyCode)
 	if (simon->GetFreeze() == true) // Đang bóng băng thì không quan tâm phím
 		return;
 
+	if (KeyCode == DIK_1) // render bbox debug
+	{
+		simon->SetPosition(3900, 50);
+	}
 
 #pragma region Xử lý nút khi trong màn hình chọn option khi reset game và gameover
 
@@ -426,6 +430,7 @@ void MainScene::Update(DWORD dt)
 		if (simon->GetFreeze() == true)// dang freeze thì k update
 			return;
 	}
+
 
 //===================================================================================================//
 
@@ -1087,8 +1092,6 @@ void MainScene::CheckCollisionWeapon(vector<GameObject*> listObj) // Kiểm tra 
 	{
 		if (objWeapon.second->GetFinish() == false) // Vũ khí không đang hoạt động
 		{
-
-
 			for (UINT i = 0; i < listObj.size(); i++) {
 				if (objWeapon.second->GetLastTimeAttack() > listObj[i]->GetLastTimeAttacked()) // Nếu chưa xét va chạm của lượt attack này ở các frame trước
 				{
@@ -1119,16 +1122,16 @@ void MainScene::CheckCollisionWeapon(vector<GameObject*> listObj) // Kiểm tra 
 						{
 							gameObj->SubHealth(1);
 							simon->SetScore(simon->GetScore() + 100);
-							if (rand() % 2 == 1) // tỉ lệ 50%
+							if (rand() % 2 == 1) // Tỉ lệ 50%
 							{
 								listItem.push_back(DropItem(gameObj->GetId(), gameObj->GetType(), gameObj->GetX() + 5, gameObj->GetY()));
 							}
 
 							RunEffectHit = true;
-							CurrentGhostEnemyCount--; // giảm số lượng Ghost đang hoạt động
+							CurrentGhostEnemyCount--; // Giảm số lượng Ghost đang hoạt động
 							if (CurrentGhostEnemyCount == 0)
 							{
-								BeginWaitingToCreateGhostTime = GetTickCount(); // set thời điểm hiện tại
+								BeginWaitingToCreateGhostTime = GetTickCount(); // Set lại thời gian chờ là thời điểm hiện tại
 								isWaitingToCreateGhost = true;
 								isAllowCheckTimeWaitToCreateGhost = true;
 							}
@@ -1768,6 +1771,7 @@ void MainScene::CheckCollisionSimonWithGate()
 							objGate->Start();
 							DebugOut(L"Simon dung trung cua 2!\n");
 
+							// Khởi tạo Boss
 							if (phantomBat == NULL)
 								phantomBat = new PhantomBat(simon, camera, &listWeaponOfEnemy); // Thêm vũ khí của Boss vào list
 

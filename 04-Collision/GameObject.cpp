@@ -41,6 +41,7 @@ void GameObject::SetHealth(int h)
 
 void GameObject::SubHealth(int th)
 {
+	DebugOut(L"aaa");
 	Health -= th;
 	if (Health < 0)
 		Health = 0;

@@ -55,7 +55,7 @@ bool Weapon::isCollision(GameObject* obj)
 		return false;
 
 	// dt, dx, dy đã update 
-	if (obj->GetHealth() <= 0) // đã chết
+	if (obj->GetHealth() <= 0) // Nếu object đã chết
 		return false;
 	return isCollitionObjectWithObject(obj);
 }
