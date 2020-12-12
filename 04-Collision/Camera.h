@@ -62,6 +62,10 @@ public:
 	bool GetIsAutoGoX();
 
 	void SetBoundaryBackup(float l, float r);
+	void SetPositionBackup(float X, float Y);
+
+	void RestoreBoundary();
+	void RestorePosition();
 };
 
 #endif

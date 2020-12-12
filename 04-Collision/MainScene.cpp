@@ -17,7 +17,7 @@ void MainScene::KeyState(BYTE* state)
 	if (simon->GetFreeze() == true) // disable control
 		return;
 
-	if (/*simon->GetIsDeadth() ||*/ isWaitingToResetGame || isGameOver) // Nếu Simon chết hoặc game over và đang đợi reset game thì ko quan tâm phím
+	if (simon->GetIsDeadth() || isWaitingToResetGame || isGameOver) // Nếu Simon chết hoặc game over và đang đợi reset game thì ko quan tâm phím
 		return;
 
 	// Nếu Simon đang tự đi
@@ -218,9 +218,12 @@ void MainScene::OnKeyDown(int KeyCode)
 	if (simon->GetFreeze() == true) // Đang bóng băng thì không quan tâm phím
 		return;
 
-	if (KeyCode == DIK_1) // render bbox debug
+	if (KeyCode == DIK_1)
 	{
-		simon->SetPosition(3900, 50);
+		DebugOut(L"[SET POSITION SIMON] x = .... \n");
+		simon->SetPosition(3940, 100);
+		
+		isAllowToCreateFishmen = false;
 	}
 
 #pragma region Xử lý nút khi trong màn hình chọn option khi reset game và gameover
@@ -259,7 +262,7 @@ void MainScene::OnKeyDown(int KeyCode)
 		return;
 	}
 
-	if (/*simon->GetIsDeadth() ||*/ isWaitingToResetGame) // Nếu Simon chết hoặc đang chờ reset game thì ko quan tâm phím
+	if (simon->GetIsDeadth() || isWaitingToResetGame) // Nếu Simon chết hoặc đang chờ reset game thì ko quan tâm phím
 	{
 		return;
 	}
@@ -326,10 +329,10 @@ void MainScene::OnKeyUp(int KeyCode)
 		return;
 	}
 
-	if (/*simon->GetIsDeadth() ||*/ isWaitingToResetGame || isGameOver) // Nếu Simon chết hoặc game over và đang đợi reset game thì ko quan tâm phím
-	{
-		return;
-	}
+	//if (simon->GetIsDeadth() || isWaitingToResetGame || isGameOver) // Nếu Simon chết hoặc game over và đang đợi reset game thì ko quan tâm phím
+	//{
+	//	return;
+	//}
 }
 
 void MainScene::LoadResources()
@@ -460,45 +463,45 @@ void MainScene::Update(DWORD dt)
 
 #pragma region Update game time và health của Simon
 
-	//if (gameTime->GetTime() >= GAME_TIME_MAX || simon->GetHealth() <= 0) // hết thời gian hoặc hết máu
-	//{
-	//	if (simon->GetIsDeadth())
-	//	{
-	//		simon->TimeWaitedAfterDeath += dt;
-	//		if (simon->TimeWaitedAfterDeath >= 1500)
-	//		{
-	//			bool result = simon->LoseLife(); // đã khôi phục x,y
+	if (gameTime->GetPassedTime() >= MAX_GAME_TIME || simon->GetHealth() <= 0) // hết thời gian hoặc hết máu
+	{
+		if (simon->GetIsDeadth())
+		{
+			simon->TimeWaitedAfterDeath += dt;
+			if (simon->TimeWaitedAfterDeath >= 1500)
+			{
+				bool result = simon->LoseLife(); // đã khôi phục x,y
 
-	//			if (result == true) // còn mạng để chơi tiếp, giảm mạng reset máu xong
-	//			{
-	//				camera->RestorePosition(); // khôi phục vị trí camera;
-	//				camera->RestoreBoundary(); // khôi phục biên camera
+				if (result == true) // còn mạng để chơi tiếp, giảm mạng reset máu xong
+				{
+					camera->RestorePosition(); // khôi phục vị trí camera;
+					camera->RestoreBoundary(); // khôi phục biên camera
 
-	//				gameTime->SetTime(0);
-	//				//ReplayMusicGame();
+					gameTime->SetTime(0);
+					PlayGameMusic();
 
-	//				ResetResource(); // reset lại game
-	//			}
-	//			else
-	//			{
-	//				isGameOver = true;
-	//			}
-	//			return;
-	//		}
-	//	}
-	//	else // chưa chết mà hết máu hoặc time thì set trạng thái isDeadth
-	//	{
-	//		simon->SetDeadth();
-	//	}
+					ResetResource(); // reset lại game
+				}
+				else
+				{
+					isGameOver = true;
+				}
+				return;
+			}
+		}
+		else // chưa chết mà hết máu hoặc time thì set trạng thái isDeadth
+		{
+			simon->SetDeadth();
+		}
 
-	//}
-	//else
-	//{
-	//	if (isAllowProcessClearState3 == false) // đang xử lí ClearState thì không đếm time
-	//	{
-	//		gameTime->Update(dt);
-	//	}
-	//}
+	}
+	else
+	{
+		if (isAllowHandleClearStage3 == false) // đang xử lí ClearState thì không đếm time
+		{
+			gameTime->Update(dt);
+		}
+	}
 
 	if (MAX_GAME_TIME - gameTime->GetPassedTime() <= 30) // Còn lại 30 giây thì bật sound loop
 	{
@@ -508,7 +511,7 @@ void MainScene::Update(DWORD dt)
 		}
 	}
 
-	gameTime->Update(dt); // Để tạm do chưa có trạng thái dead
+	
 
 #pragma endregion
 
@@ -970,7 +973,10 @@ void MainScene::Update(DWORD dt)
 
 #pragma region Các update khác
 
-	CheckCollision();
+	if (!simon->GetIsDeadth())
+	{
+		CheckCollision();
+	}
 	HandleInvisibilityPotion(dt);
 	HandleCross(dt);
 	HandleClearStage3(dt); // Xử lí clear stage và end game sau khi diệt xong Boss
@@ -1050,6 +1056,7 @@ void MainScene::LoadMap(TAG mapType)
 	
 		camera->SetPosition(0, 0);
 		simon->SetPosition(SIMON_DEFAULT_POSITION);
+		simon->SetCheckPoint(SIMON_DEFAULT_POSITION);
 
 		StageCurrent = 1;
 		break;
@@ -1063,6 +1070,7 @@ void MainScene::LoadMap(TAG mapType)
 			camera->SetBoundary(0, CAMERA_BOUNDARY_BEFORE_GO_GATE1_RIGHT); // biên camera khi chưa qua cửa
 			
 			simon->SetPosition(SIMON_DEFAULT_POSITION);
+			simon->SetCheckPoint(SIMON_DEFAULT_POSITION);
 			break;
 	}
 
@@ -1554,7 +1562,8 @@ void MainScene::CheckCollisionSimonAndHiddenObject()
 							{
 								isWentThroughTheDoor1 = true;
 								camera->SetAutoGoX(abs(GATE1_POSITION_CAM_AFTER_GO - camera->GetXCam()), SIMON_WALKING_SPEED);
-								//simon->SetPositionBackup(simon->GetX(), 0); // backup lại vị trí sau khi qua màn 
+								simon->SetCheckPoint(simon->GetX(), 0); // backup lại vị trí sau khi qua màn 
+								
 							}
 
 							
@@ -1565,7 +1574,7 @@ void MainScene::CheckCollisionSimonAndHiddenObject()
 							CreateBatTime = GetTickCount();
 							WaitingTimeToCreateBat = 3000;
 							isAllowToCreateBat = true;
-
+							camera->SetPositionBackup(camera->GetXCam(), camera->GetYCam());
 							DebugOut(L"Xac nhan qua xong cua 1!\n");
 							break;
 						}
@@ -1594,6 +1603,7 @@ void MainScene::CheckCollisionSimonAndHiddenObject()
 								// Di chuyển camera qua phần cuối
 								isWentThroughTheDoor2 = true;
 								camera->SetAutoGoX(abs(GATE2_POSITION_CAM_AFTER_GO - camera->GetXCam()), SIMON_WALKING_SPEED);
+								simon->SetCheckPoint(simon->GetX(), 0); // backup lại vị trí sau khi qua màn 
 							}
 
 							StageCurrent = 3; // Set hiển thị Simon đang ở stage 3
@@ -2261,4 +2271,3 @@ void MainScene::HandleClearStage3(DWORD dt)
 }
 
 #pragma endregion
-

@@ -114,6 +114,8 @@ private:
 	Camera* camera;
 	GameSound* SimonSound;
 
+	Sprite* _sprite_deadth;
+
 public:
 	int HeartCollect; // Số lượng item heart người chơi nhặt được
 	int Lives; // số mạng của Simon
@@ -170,6 +172,9 @@ public:
 	bool isAutoGoX = 0; // Biến xét xem Simon có đang ở chế độ auto go không
 
 	unordered_map<TAG, Weapon*> mapWeapon;
+
+	bool isDeadth;
+	DWORD TimeWaitedAfterDeath;
 
 
 public:
@@ -231,11 +236,17 @@ public:
 	int GetHeartCollect();
 	void SetHeartCollect(int collectedHeart);
 
+	void SetDeadth();
+	bool GetIsDeadth();
+	void SetIsDeadth(bool b);
+
 	// Kiểm tra và cho phép dùng double shot
 	bool GetIsUsingDoubleShot();
 	void SetIsUsingDoubleShot(bool IsUsingDoubleShot);
+
+	void SetCheckPoint(float X, float Y);
+	bool LoseLife(); // kiem tra mang + reset status simon
+
 };
-
-
 
 #endif
