@@ -5,12 +5,12 @@ Simon::Simon(Camera* camera)
 {
 	texture = TextureManager::GetInstance()->GetTexture(TAG::SIMON);
 	sprite = new Sprite(texture, 150);
-	// _sprite_deadth = new Sprite(TextureManager::GetInstance()->GetTexture(TAG::SIMON_DEADTH), 250);
+	_sprite_deadth = new Sprite(TextureManager::GetInstance()->GetTexture(TAG::SIMON_DEADTH), 250);
 	type = TAG::SIMON;
 
 
 	this->camera = camera;
-	// this->sound = Sound::GetInstance();
+	this->SimonSound = GameSound::GetInstance();
 	mapWeapon[TAG::MORNINGSTAR] = new MorningStar();
 
 	Init();
@@ -53,6 +53,7 @@ void Simon::Reset()
 
 	isUsingDoubleShot = false;
 	SubWeaponType = TAG::NO_SUBWEAPON;
+	isDeadth = false;
 }
 
 void Simon::GetBoundingBox(float& left, float& top, float& right, float& bottom)
@@ -432,20 +433,30 @@ void Simon::Render(Camera* camera)
 
 	D3DXVECTOR2 pos = camera->Transform(x, y);
 
-	if (this->GetFreeze() == true)
+	if (isDeadth && isCollisionAxisYWithBrick)
 	{
 		if (direction == -1)
-			sprite->Draw(pos.x, pos.y, alpha, rand() % 256, rand() % 256, rand() % 256);
+			_sprite_deadth->Draw(pos.x, pos.y, 255);
 		else
-			sprite->DrawFlipX(pos.x, pos.y, alpha, rand() % 256, rand() % 256, rand() % 256);
-
+			_sprite_deadth->DrawFlipX(pos.x, pos.y, 255);
 	}
 	else
 	{
-		if (direction == -1)
-			sprite->Draw(pos.x, pos.y, alpha);
+		if (this->GetFreeze() == true)
+		{
+			if (direction == -1)
+				sprite->Draw(pos.x, pos.y, alpha, rand() % 256, rand() % 256, rand() % 256);
+			else
+				sprite->DrawFlipX(pos.x, pos.y, alpha, rand() % 256, rand() % 256, rand() % 256);
+
+		}
 		else
-			sprite->DrawFlipX(pos.x, pos.y, alpha);
+		{
+			if (direction == -1)
+				sprite->Draw(pos.x, pos.y, alpha);
+			else
+				sprite->DrawFlipX(pos.x, pos.y, alpha);
+		}
 	}
 
 	for (auto& objWeapon : mapWeapon)
@@ -1115,6 +1126,31 @@ void Simon::SetHeartCollect(int h)
 	HeartCollect = h;
 }
 
+void Simon::SetDeadth()
+{
+	SetIsDeadth(true);
+	TimeWaitedAfterDeath = 0;
+
+	ResetSit();
+	vx = 0;
+	isWalking = 0;
+	isOnStair = 0;
+
+	SimonSound->Play(Sound::musicLifeLost);
+
+	Stop();
+}
+
+bool Simon::GetIsDeadth()
+{
+	return isDeadth;
+}
+
+void Simon::SetIsDeadth(bool b)
+{
+	isDeadth = b;
+}
+
 int Simon::GetHeartCollect()
 {
 	return HeartCollect;
@@ -1207,5 +1243,33 @@ bool Simon::IsUsingWeapon(TAG weaponType)
 	}
 	return false;
 }
+
+
+void Simon::SetCheckPoint(float X, float Y)
+{
+	PositionBackup = D3DXVECTOR2(X, Y);
+}
+
+bool Simon::LoseLife()
+{
+	if (Lives - 1 < 0)
+		return false;
+
+	Health = SIMON_DEFAULT_HEALTH;
+	Lives = Lives - 1;
+
+	HeartCollect = SIMON_DEFAULT_HEARTCOLLECT;
+
+
+
+	Reset();
+
+
+	x = PositionBackup.x;
+	y = PositionBackup.y;
+
+	return true;
+}
+
 
 #pragma endregion

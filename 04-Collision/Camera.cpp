@@ -12,6 +12,8 @@ Camera::Camera(int w, int h)
 	_boundaryLeft = 0;
 	_boundaryRight = 0;// (float)(MapWidth - SCREEN_WIDTH);
 
+	_xCamBackup = _yCamBackup = 0;
+	SetBoundaryBackup(_boundaryLeft, _boundaryRight);
 	vx = 0;
 }
 
@@ -138,4 +140,27 @@ void Camera::SetBoundaryBackup(float l, float r)
 {
 	_boundaryLeftBackup = l;
 	_boundaryRightBackup = r;
+}
+
+void Camera::SetPositionBackup(float X, float Y)
+{
+	_xCamBackup = X;
+	_yCamBackup = Y;
+}
+
+void Camera::RestoreBoundary()
+{
+	_boundaryLeft = _boundaryLeftBackup;
+	_boundaryRight = _boundaryRightBackup;
+}
+
+void Camera::RestorePosition()
+{
+	_xCam = _xCamBackup;
+	_yCam = _yCamBackup;
+
+	_boundaryLeft = _boundaryLeftBackup;
+	_boundaryRight = _boundaryRightBackup;
+
+
 }

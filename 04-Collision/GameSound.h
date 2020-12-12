@@ -30,7 +30,7 @@ enum Sound
 	soundBoomerang = 21,
 
 	musicState1 = 51,
-
+	musicLifeLost = 52,
 	music_PhantomBat = 53,
 	musicClearState = 54,
 	musicGame_Start_Game_IntroScene = 55
