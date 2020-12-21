@@ -368,7 +368,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				vy += SIMON_GRAVITY_HURTING * dt;
 			}
 			else
-				vy += SIMON_GRAVITY * dt;// Simple fall down
+				vy += SIMON_GRAVITY * dt; // Simple fall down
 		}
 	}
 
@@ -412,7 +412,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	{
 		if (abs(x - AutoGoX_Backup_X) >= AutoGoX_Distance)
 		{
-			x = x - (abs(x - AutoGoX_Backup_X) - AutoGoX_Distance);
+			x = x - (abs(x - AutoGoX_Backup_X) - AutoGoX_Distance); // Nếu Simon đi vượt quá vị trí dừng sau khi tự đi thì trừ lại đoạn này
 			RestoreBackupAutoGoX();
 			isAutoGoX = false;
 
@@ -587,7 +587,7 @@ void Simon::CollisionWithStair(vector<LPGAMEOBJECT>* coObjects)
 				if (coObjects->at(i)->GetType() == TAG::BRICK)
 					list_Brick.push_back(coObjects->at(i));
 			CalcPotentialCollisions(&list_Brick, coEvents);
-			if (coEvents.size() == 0)
+			if (coEvents.size() == 0) // Chưa có va chạm thì cho Simon tiếp tục xuống thang
 			{
 				x += dx;
 				y += dy;
@@ -599,7 +599,7 @@ void Simon::CollisionWithStair(vector<LPGAMEOBJECT>* coObjects)
 				FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny);
 				x += min_tx * dx + nx * 0.4f;
 				y += min_ty * dy + ny * 0.4f;
-				if (nx != 0 || ny != 0)
+				if (nx != 0 || ny != 0) // Có va chạm thì ko cho đi xuống nữa
 				{
 					vx = 0;
 					vy = 0;
@@ -651,7 +651,7 @@ void Simon::CollisionWithStair(vector<LPGAMEOBJECT>* coObjects)
 					list_Brick.push_back(coObjects->at(i));
 
 			CalcPotentialCollisions(&list_Brick, coEvents);
-			if (coEvents.size() == 0)
+			if (coEvents.size() == 0) // Nếu chưa va chạm thì cho Simon tiép tục đi
 			{
 				x += dx;
 				y += dy;
@@ -663,7 +663,7 @@ void Simon::CollisionWithStair(vector<LPGAMEOBJECT>* coObjects)
 				FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny);
 				x += min_tx * dx + nx * 0.4f;
 				y += min_ty * dy + ny * 0.4f;
-				if (nx != 0 || ny != 0)
+				if (nx != 0 || ny != 0) // Có va chạm thì ko cho lên nữa
 				{
 					vx = 0;
 					vy = 0;
@@ -1089,9 +1089,9 @@ void Simon::RestoreBackupAutoGoX()
 	isWalking = 0; // tắt trạng thái đang đi
 	isAutoGoX = 0; // tắt trạng thái auto
 
+	// Sau khi tự đi xong thì cho Simon đứng yên
 	vx = 0;
 	vy = 0;
-	// đi xong thì cho simon đứng yên
 }
 
 #pragma endregion

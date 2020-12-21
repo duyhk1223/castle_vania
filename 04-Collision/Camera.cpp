@@ -158,9 +158,4 @@ void Camera::RestorePosition()
 {
 	_xCam = _xCamBackup;
 	_yCam = _yCamBackup;
-
-	_boundaryLeft = _boundaryLeftBackup;
-	_boundaryRight = _boundaryRightBackup;
-
-
 }

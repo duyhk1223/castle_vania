@@ -285,6 +285,10 @@ void MainScene::OnKeyDown(int KeyCode)
 	if (simon->isJumping && simon->isWalking)
 		return;
 
+	// Nếu Simon đang attack thì ko cho nhảy
+	if (simon->isAttacking)
+		return;
+
 	if (KeyCode == DIK_S && simon->isOnStair == false)
 	{
 		if (simon->isJumping == false) // Nếu đang nhảy thì ko cho ấn S nữa
@@ -584,7 +588,7 @@ void MainScene::Update(DWORD dt)
 	simon->Update(dt, &listObj);
 
 	if (camera->AllowFollowSimon())
-		camera->SetPosition(simon->GetX() - SCREEN_WIDTH / 2 + 30, camera->GetYCam()); // Cho camera chạy theo simon
+		camera->SetPosition(simon->GetX() - SCREEN_WIDTH / 2 + 30, camera->GetYCam()); // Cho camera chạy theo Simon
 
 	camera->Update(dt);
 
@@ -603,7 +607,7 @@ void MainScene::Update(DWORD dt)
 			if (isWaitingToCreateGhost == false) // Nếu không phải chờ xử lí thì vào xử lí tạo ghost
 			{
 
-#pragma region Vùng 1 & 2, phần trc khi qua cửa 1
+#pragma region Vùng 1 & 2, vùng trc khi qua cửa 1
 
 				// Simon nằm trong vùng ngoài cùng của map 2 hoặc phần gần cầu thang qua cửa 1
 				if ((simon->GetX() >= GHOST_ZONE1_LEFT && simon->GetX() <= GHOST_ZONE1_RIGHT) || (simon->GetX() > GHOST_ZONE2_LEFT && simon->GetX() < GHOST_ZONE2_RIGHT))
@@ -649,7 +653,7 @@ void MainScene::Update(DWORD dt)
 
 #pragma endregion
 
-#pragma region Vùng 3
+#pragma region Vùng 3, vùng sau khi qua cửa 2
 
 				if ((simon->GetX() >= GHOST_ZONE3_LEFT && simon->GetX() <= GHOST_ZONE3_RIGHT)) // Simon ở giữa 2 vùng tạo Ghost
 				{
@@ -906,9 +910,9 @@ void MainScene::Update(DWORD dt)
 					else // Nằm ngoài camera
 					{
 						BlackPanther* objPanther = dynamic_cast<BlackPanther*>(enemy);
-						if (objPanther->GetIsStart())// ngoài cam và đã được kích hoạt r
+						if (objPanther->GetIsStart()) // Ngoài cam và đã được kích hoạt rồi
 						{
-							objPanther->SetHealth(0); // cho Panther chết
+							objPanther->SetHealth(0); // Cho Panther chết
 							CurrentPantherEnemyCount--;
 						}
 					}
@@ -1451,7 +1455,7 @@ void MainScene::CheckCollisionSimonItem()
 					Cross_WaitedTime = 0;
 					Cross_ChangeColorBackground_WaitedTime = 0;
 
-					board->SetTexure(TextureManager::GetInstance()->GetTexture(TAG::BOARD_TRANS)); // đổi thành Board màu nền trong suốt
+					board->SetTexure(TextureManager::GetInstance()->GetTexture(TAG::BOARD_TRANS)); // Đổi thành Board màu nền trong suốt
 
 					/*Xóa hết enemy*/
 					for (UINT k = 0; k < listEnemy.size(); k++)
@@ -1460,7 +1464,7 @@ void MainScene::CheckCollisionSimonItem()
 						if (enemy->GetHealth() > 0) // còn máu
 						{
 							enemy->SetHealth(0);
-							listEffect.push_back(new Fire(enemy->GetX() - 5, enemy->GetY() + 8)); // hiệu ứng lửa
+							listEffect.push_back(new Fire(enemy->GetX() - 5, enemy->GetY() + 8)); // Hiệu ứng lửa
 						}
 					}
 					CurrentGhostEnemyCount = 0;
@@ -2137,7 +2141,7 @@ void MainScene::HandleInvisibilityPotion(DWORD dt)
 		{
 			isUsingInvisibilityPotion = false; // Kết thúc
 			InvisibilityPotion_WaitedTime = 0;
-			//gameSound->Play(Sound::soundInvisibilityPotion_End);
+			gameSound->Play(Sound::soundInvisibilityPotion_End);
 
 			simon->SetTexture(TextureManager::GetInstance()->GetTexture(TAG::SIMON));
 		}
@@ -2163,7 +2167,7 @@ void MainScene::HandleCross(DWORD dt)
 			if (Cross_ChangeColorBackground_WaitedTime >= Cross_ChangeColorBackground_MaxWaitingTime) // Xét xem đã tới thời điểm đổi màu nên hay chưa
 			{
 				Cross_ChangeColorBackground_WaitedTime = 0;
-				Cross_ChangeColorBackground_MaxWaitingTime = rand() % 100; // Giảm dần thời gian đổi màu
+				Cross_ChangeColorBackground_MaxWaitingTime = rand() % 100;
 				/*Đổi màu nền*/
 				if (D3DBACKGROUND_COLOR == BACKGROUND_DEFAULT_COLOR)
 				{
